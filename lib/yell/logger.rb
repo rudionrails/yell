@@ -2,7 +2,7 @@ module Yell
   class Logger
     Levels = [ 'debug', 'info', 'warn', 'error', 'fatal', 'unknown' ]
 
-    
+
     def initialize( *args, &block )
       @adapters = []
 
@@ -26,7 +26,7 @@ module Yell
     def adapter ( type, options = {}, &block )
       @adapters << Yell::Adapters.new( type, @options.merge(options), &block )
     rescue LoadError => e
-
+      raise Yell::NoSuchAdapter, e.message
     end
 
     def level ( val )

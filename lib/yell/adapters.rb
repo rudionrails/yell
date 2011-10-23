@@ -13,6 +13,8 @@ module Yell
       end
       
       klass.new( options, &block )
+    rescue NameError => e
+      raise Yell::NoSuchAdapter, "no such adapter #{type.inspect}"
     end
     
   end

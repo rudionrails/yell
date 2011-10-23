@@ -5,8 +5,6 @@ module Yell
   autoload :Logger,     File.dirname(__FILE__) + '/yell/logger'
   autoload :Adapters,   File.dirname(__FILE__) + '/yell/adapters'
 
-  # custom errors
-  class NoAdaptersDefined < StandardError; end
   class NoSuchAdapter < StandardError; end
 
 
