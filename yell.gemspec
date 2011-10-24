@@ -9,10 +9,10 @@ Gem::Specification.new do |s|
   s.authors     = ["Rudolf Schmidt"]
   
   s.homepage    = "http://rubygems.org/gems/yell"
-  s.summary     = %q{Logging library to log into files and databases}
-  s.description = %q{Logging library to log into files and databases}
+  s.summary     = %q{Yell - Your Extensible Logging Library }
+  s.description = %q{An easy to use logging library to log into files and any other self-defined adapters}
 
-  s.rubyforge_project = "d_log"
+  s.rubyforge_project = "yell"
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
