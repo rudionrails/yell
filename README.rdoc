@@ -1,0 +1,21 @@
+= Yell
+Yell - Your Extensible Logging Library
+
+== Installation
+  # system wide
+  gem install yell
+  
+  # or in your Gemfile
+  gem 'yell'
+
+== Usage
+Yell works just like any other logger.
+  # When no arguments are given, Yell will check for ENV['RACK_ENV'] and determine the filename from that.
+  # Alternatively, you may define ENV['YELL_ENV'] to set the filename. If neither is defined, 'development' will be
+  # the default. Also, if a :log: directory exists, Yell will place the file there.
+  logger = Yell.new
+
+Naturally, you may pass a :filename: to Yell:
+  logger = Yell.new 'custom.log'
+
+Copyright (c) 2011 Rudolf Schmidt, released under the MIT license

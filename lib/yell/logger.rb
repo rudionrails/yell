@@ -2,12 +2,34 @@ module Yell
   class Logger
     Levels = [ 'debug', 'info', 'warn', 'error', 'fatal', 'unknown' ]
 
-
+    # == Defining a standard logger
+    #   Yell::Logger.new
+    #   Yell::Logger.new 'development.log'
+    #
+    #   # alternate outputter
+    #   Yell::Logger.new :datefile
+    #   Yell::Logger.new :datefile, 'development.log'
+    #
+    # == Setting the Log Level
+    #   Yell::Logger.new :level => :warn
+    #
+    #   Yell::Logger.new do
+    #     level :warn
+    #   end
+    #
+    # == Specify different file for certain log levels
+    #   Yell::Logger.new do
+    #     adapter :file, "standard.log" do
+    #       warn "warn.log"
+    #       error "error.log"
+    #     end
+    #   end
     def initialize( *args, &block )
       @adapters = []
 
       # extract options
       @options = args.last.is_a?(Hash) ? args.pop : {}
+      level @options[:level] if @options[:level] # set the log level when given
 
       # check if filename was given as argument and put it into the @options
       if args.last.is_a?( String )
@@ -16,20 +38,20 @@ module Yell
 
       @default_adapter = args.last.is_a?( Symbol ) ? args.pop : :file
 
-      # eval the given block if any
-      instance_eval( &block ) if block
+      # eval the given block
+      instance_eval &block  if block
 
       build
     end
 
     # === the following methods are used for the logger setup
-    def adapter ( type, options = {}, &block )
+    def adapter( type, options = {}, &block )
       @adapters << Yell::Adapters.new( type, @options.merge(options), &block )
     rescue LoadError => e
       raise Yell::NoSuchAdapter, e.message
     end
 
-    def level ( val )
+    def level( val )
       @level = case val
         when Integer then val
         when String, Symbol then Levels.index( val.to_s )
@@ -62,7 +84,7 @@ module Yell
         instance_eval %-
           def #{name}?; #{@level.nil? || index >= @level}; end
 
-          def #{name} ( data = '' )
+          def #{name}( data = '' )
             return unless #{name}?
 
             data = yield if block_given?

@@ -5,25 +5,20 @@ module Yell::Adapters
 
     # Initialize a new base adapter. Other adapters should inherit from it.
     def initialize ( options = {}, &block )
-      @block = block
+      @name = options[:name] || Yell.env
+      @level, @data = nil, nil # default
 
-      @name = options[:name] || Yell.config.env
-      @level, @data = '', '' # default
+      instance_eval &block if block
     end
 
     def call ( level, msg )
-      reset!(true) if reset? # connect / get a file handle or whatever
-
       @level, @message = level, msg
 
-      # self.instance_eval &@block if @block
-      @block.call( self ) if @block
+      reset! :now if reset? # connect, get a file handle or whatever
     end
 
     def message
-      return @message if @message.is_a?( String )
-
-      @message.inspect
+      @message.is_a?(String) ? @message : @message.inspect
     end
 
     # Convenience method for resetting the processor.

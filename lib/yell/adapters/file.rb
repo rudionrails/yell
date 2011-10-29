@@ -2,33 +2,30 @@ module Yell::Adapters
   class File < Yell::Adapters::Base
 
     Colors = {
-      'DEBUG'   => "\e[32;1m",  # green;bold
-#        'INFO'    => "\e[0m",     # white
-      'WARN'    => "\e[33;1m",  # yello;bold
-      'ERROR'   => "\e[31;1m",  # red;bold
-      'FATAL'   => "\e[35;1m",  # magenta;bold
-      'UNKNOWN' => "\e[36m",    # cyan
-      'DEFAULT' => "\e[0m"      # NONE
+      'debug'   => "\e[32;1m",  # green;bold
+#        'info'    => "\e[0m",     # white
+      'warn'    => "\e[33;1m",  # yello;bold
+      'error'   => "\e[31;1m",  # red;bold
+      'fatal'   => "\e[35;1m",  # magenta;bold
+      'unknown' => "\e[36m",    # cyan
+      'default' => "\e[0m"      # NONE
     }
 
     def initialize ( options = {}, &block )
-      super
-
-      @formatter = formatter_from( options )
-
-      @colorize = options[:colorize]
-      @filename = options[:filename] || default_filename
+      @handles   = {} # the possible file handles
+      @filenames = {} # keeps different filenames
+      @filenames[:default] = options[:filename] || default_filename
 
       @file_prefix, @file_suffix = options[:file_prefix], options[:file_suffix]
 
-      # validate the filename
-      unless @filename.is_a?( String )
-        raise( TypeError, "Argument :filename must be a string." )
-      end
+      @formatter = formatter_from( options )
+      @colorize  = options[:colorize]
+
+      super
     end
 
     def call ( level, msg )
-      super # Base call
+      super
 
       msg = @formatter.format( @level, message )
       msg = colorize( @level, msg ) if @colorize
@@ -37,33 +34,40 @@ module Yell::Adapters
       write( msg )
     end
 
+    def level( name, filename )
+      @filenames[ name.to_s ] = filename
+    end
+
 
     private
 
-    def write ( msg )
-      @file.print( msg )
-      @file.flush
+    def write( msg )
+      handle = @handles[ @level ] || @handles[ :default ]
+
+      handle.print( msg )
+      handle.flush
     rescue Exception => e
       close # make sure the file gets closed
       raise( e ) # re-raise the error
     end
 
     def close!
-      @file.close
-      @file = nil
+      @handles.values.each( &:close )
+      @handles.clear # empty the hash
     end
 
     def open!
-      # create directory if not exists
-      dirname = ::File.dirname( @filename )
-      FileUtils.mkdir_p( dirname ) unless ::File.directory?( dirname )
+      @filenames.each do |handle, filename|
+        dirname  = ::File.dirname( filename )
+        filename = ::File.join( dirname, "#{@file_prefix}#{::File.basename(filename)}#{@file_suffix}" )
 
-      # open file for appending if exists, or create a new
-      filename = [ dirname, "#{@file_prefix}#{::File.basename(@filename)}#{@file_suffix}" ].join( '/' )
-      @file = ::File.open( filename, ::File::WRONLY|::File::APPEND|::File::CREAT )
+        @handles[handle] = ::File.open( filename, ::File::WRONLY|::File::APPEND|::File::CREAT )
+      end
     end
 
-    def opened?; !@file.nil?; end
+    def opened?
+      @handles.any? 
+    end
 
     # Returns the right formatter from the given options
     def formatter_from( options )
@@ -83,12 +87,12 @@ module Yell::Adapters
     end
 
     def colorize( level, msg )
-      return msg unless color = Colors[level.upcase]
-      color + msg + Colors['DEFAULT']
+      return msg unless color = Colors[level]
+      color + msg + Colors['default']
     end
 
     def default_filename
-      "#{Yell.config.env}.log"
+      ::File.directory?( "log" ) ? "log/#{Yell.env}.log" : "#{Yell.env}.log"
     end
 
   end
