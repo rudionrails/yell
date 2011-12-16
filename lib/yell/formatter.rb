@@ -1,35 +1,39 @@
-module Yell
+# encoding: utf-8
+
+module Yell #:nodoc:
+
+  # The +Formatter+ provides a handle to configure your log message style.
   class Formatter
 
     PatternTable = {
-      "m" => "message", 
+      "m" => "message",
       "d" => "date",
       "l" => "level.downcase",
       "L" => "level.upcase",
-      "p" => "$$", # pid
+      "p" => "$$",
       "h" => "hostname"
     }
     PatternRegexp = /([^%]*)(%\d*)?([dlLphm])?(.*)/
     DefaultPattern = "%d [%5L] %p %h: %m"
 
 
-    def initialize ( pattern = nil, date_pattern = nil )
-      @pattern = pattern || DefaultPattern
-      @date_pattern = date_pattern # may be nil
+    def initialize( pattern = nil, date_pattern = nil )
+      @pattern      = pattern || DefaultPattern
+      @date_pattern = date_pattern
 
-      define_format_method
+      define_format_method!
     end
 
 
     private
 
-    def define_format_method
+    def define_format_method!
       buff, args, _pattern = "", [], @pattern.dup
 
       while true
         match = PatternRegexp.match( _pattern )
 
-        buff << match[1] unless match[1].empty? 
+        buff << match[1] unless match[1].empty?
         break if match[2].nil?
 
         buff << match[2] + 's' # '%s'
@@ -39,7 +43,7 @@ module Yell
       end
 
       instance_eval %-
-        def format ( level, message )
+        def format( level, message )
           sprintf( "#{buff}", #{args.join(',')} )
         end
       -
@@ -56,3 +60,4 @@ module Yell
 
   end
 end
+

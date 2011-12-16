@@ -1,38 +1,56 @@
-module Yell::Adapters
-  class Datefile < Yell::Adapters::File
+# encoding: utf-8
 
-    DefaultDatePattern = "%Y%m%d"
+module Yell #:nodoc:
+  module Adapters #:nodoc:
 
-    def initialize ( options = {}, &block )
-      @date_pattern = options[:date_pattern] || DefaultDatePattern
-      @date = nil # default; do not override --R
+    # The +Datefile+ adapter is similar to the +File+ adapter. However, it
+    # rotates the file at midnight.
+    class Datefile < Yell::Adapters::File
 
-      @file_basename = options[:filename] || default_filename
-      options[:filename] = @file_basename
+      # The default date pattern, e.g. "19820114" (14 Jan 1982)
+      DefaultDatePattern = "%Y%m%d"
 
-      super( options, &block )
-    end
+      def initialize ( options = {}, &block )
+        @date_pattern = options[:date_pattern] || DefaultDatePattern
+        @date = nil # default; do not override --R
 
-    def reset!( now )
-      @filename = new_filename
-      super( now )
-    end
+        @file_basename = options[:filename] || default_filename
+        options[:filename] = @file_basename
 
-
-    private
-
-    def reset?
-      _date = Time.now.strftime( @date_pattern )
-      unless opened? && _date == @date
-        @date = _date
-        return true
+        super( options, &block )
       end
 
-      false
-    end
+      # @override Reset the file handle
+      def reset!( now = false )
+        @filename = new_filename
 
-    def new_filename
-      @file_basename.sub( /(\.\w+)?$/, ".#{@date}\\1" )
+        super( now )
+      end
+
+
+      private
+
+      # @override Determines whether to reset the file handle or not.
+      #
+      # It is based on the `:date_pattern` (can be passed as option upon initialize). 
+      # If the current time hits the pattern, it resets the file handle.
+      #
+      # @return [Boolean] true or false
+      def reset?
+        _date = Time.now.strftime( @date_pattern )
+        unless opened? && _date == @date
+          @date = _date
+          return true
+        end
+
+        false
+      end
+
+      # Sets the filename with the `:date_pattern` appended to it.
+      def new_filename
+        @file_basename.sub( /(\.\w+)?$/, ".#{@date}\\1" )
+      end
+
     end
 
   end

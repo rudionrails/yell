@@ -1,67 +1,81 @@
-module Yell::Adapters
-  class Base
+# encoding: utf-8
 
-    attr_reader :name # name of the logger this adapter belongs to
+module Yell #:nodoc:
+  module Adapters #:nodoc:
 
-    # Initialize a new base adapter. Other adapters should inherit from it.
-    def initialize ( options = {}, &block )
-      @name = options[:name] || Yell.env
-      @level, @data = nil, nil # default
-
-      instance_eval &block if block
-    end
-
-    def call ( level, msg )
-      @level, @message = level, msg
-
-      reset! :now if reset? # connect, get a file handle or whatever
-    end
-
-    def message
-      @message.is_a?(String) ? @message : @message.inspect
-    end
-
-    # Convenience method for resetting the processor.
+    # This class provides the basic interface for all allowed operations 
+    # on any adapter implementation.
     #
-    # @param [true, false] now Perform the reset immediately? (default false)
-    def reset!( now = false )
-      close
-      open if now
-    end
+    # Other adapters should inherit from it.
+    class Base
 
-    # Opens the logfile or connection (in case of a database adapter)
-    def open
-      open! unless opened?
-    end
+      # Define a new adapter.
+      #
+      # @params [Hash] options Adapter specific optionos
+      #
+      # @yield The block to be evaluated by the implemented adapter
+      def initialize( options = {}, &block )
+        @level, @data = nil, nil # default
+      end
 
-    # Closes the file handle or connection (in case of a database adapter)
-    def close
-      close! unless closed?
-    end
+      # The main method to calling an adapter. Subclasses will have to
+      # overwrite it as it only defines the basic operations.
+      def call( level, msg )
+        @level, @message = level, msg
+
+        reset! :now if reset? # connect, get a file handle or whatever
+      end
+
+      # The message to be logged.
+      #
+      # If the mssage is not a +String+ then we call `:inspect` on it.
+      def message
+        @message.is_a?(String) ? @message : @message.inspect
+      end
+
+      # Convenience method for resetting the processor.
+      #
+      # @param [Boolean] now Perform the reset immediately (default false)
+      def reset!( now = false )
+        close
+        open if now
+      end
+
+      # Opens the logfile or connection (in case of a database adapter)
+      def open; open! unless opened?; end
+
+      # Closes the file handle or connection (in case of a database adapter)
+      def close; close! unless closed?; end
 
 
-    private
+      private
 
-    def reset?; closed?; end
+      # Stub method to be implemented by the adapter subclass
+      def write; raise 'Not implemented'; end
 
-    # stub
-    def open!
-      raise "Not implemented"
-    end
+      # Stub method to be implemented by the adapter subclass
+      def open!; raise "Not implemented"; end
 
-    def opened?; false; end
+      # Stub method to be implemented by the adapter subclass
+      def close!; raise "Not implemented"; end
 
-    # stub
-    def close!
-      raise "Not implemented"
-    end
+      # Returns whether a handle is opened.
+      #
+      # @return [Boolean] true or false
+      def opened?; false; end
 
-    def closed?; !opened?; end
+      # Returns whether a handle is closed.
+      #
+      # @return [Boolean] true or false
+      def closed?; !opened?; end
 
-    # stub
-    def write
-      raise 'Not implemented'
+      # Returns whether a handle is to be reset.
+      #
+      # @return [Boolean] true or false
+      def reset?; closed?; end
+
     end
 
   end
 end
+
