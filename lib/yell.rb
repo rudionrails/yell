@@ -1,3 +1,5 @@
+require 'time'
+
 module Yell
 
   autoload :Formatter,  File.dirname(__FILE__) + '/yell/formatter'

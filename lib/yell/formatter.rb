@@ -10,24 +10,22 @@ module Yell
       "h" => "hostname"
     }
     PatternRegexp = /([^%]*)(%\d*)?([dlLphm])?(.*)/
-    
     DefaultPattern = "%d [%5L] %p %h: %m"
-    DefaultDatePattern = "%Y-%m-%d %H:%M:%S" # ISO8601
 
-    
+
     def initialize ( pattern = nil, date_pattern = nil )
       @pattern = pattern || DefaultPattern
-      @date_pattern = date_pattern || DefaultDatePattern
-      
+      @date_pattern = date_pattern # may be nil
+
       define_format_method
     end
-    
+
 
     private
 
     def define_format_method
       buff, args, _pattern = "", [], @pattern.dup
-      
+
       while true
         match = PatternRegexp.match( _pattern )
 
@@ -47,8 +45,10 @@ module Yell
       -
     end
 
-    def date; Time.now.strftime( @date_pattern ); end
-    
+    def date
+      @date_pattern ? Time.now.strftime( @date_pattern ) : Time.now.iso8601
+    end
+
     def hostname
       return @hostname if defined?( @hostname )
       @hostname = Socket.gethostname rescue nil
