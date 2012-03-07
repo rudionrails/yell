@@ -10,14 +10,14 @@ module Yell #:nodoc:
       # The default date pattern, e.g. "19820114" (14 Jan 1982)
       DefaultDatePattern = "%Y%m%d"
 
-      def initialize ( options = {}, &block )
+      def initialize ( options = {} )
         @date_pattern = options[:date_pattern] || DefaultDatePattern
         @date = nil # default; do not override --R
 
         @file_basename = options[:filename] || default_filename
         options[:filename] = @file_basename
 
-        super( options, &block )
+        super( options )
       end
 
       # @override Reset the file handle

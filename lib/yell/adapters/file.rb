@@ -17,11 +17,9 @@ module Yell #:nodoc:
         'default' => "\e[0m"      # NONE
       }
 
-      def initialize ( options = {}, &block )
+      def initialize( options = {} )
         @handle   = nil
         @filename = options[:filename] || default_filename
-
-        # @file_prefix, @file_suffix = options[:file_prefix], options[:file_suffix]
 
         @formatter = formatter_from( options )
         @colorize  = options[:colorize]
@@ -32,11 +30,11 @@ module Yell #:nodoc:
       # Main method to calling the file adapter.
       #
       # The method formats the message and writes it to the file handle.
-      def call( level, msg )
-        super
+      def call( level, message )
+        return unless super(level, message)
 
-        msg = @formatter.format( @level, message )
-        msg = colorize( @level, msg ) if @colorize
+        msg = @formatter.format( level, self.message )
+        msg = colorize( level, msg ) if @colorize
         msg << "\n" unless msg[-1] == ?\n # add new line if there is none
 
         write( msg )
@@ -53,7 +51,7 @@ module Yell #:nodoc:
         # make sure the file gets closed and the re-raise the exception
         close
 
-        raise( e, caller )
+        raise( e )
       end
 
       # @override Close a file handle
@@ -63,7 +61,7 @@ module Yell #:nodoc:
 
       # @override Open a file handle
       def open!
-        @handle = ::File.open( @filename, ::File::WRONLY|::File::APPEND|::File::CREAT )
+        @handle = ::File.open(@filename, ::File::WRONLY|::File::APPEND|::File::CREAT)
       end
 
       # @override Return whether a file handle is open

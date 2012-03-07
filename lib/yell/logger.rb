@@ -4,8 +4,6 @@ module Yell #:nodoc:
 
   # The +Logger+ is yout entrypoint. Anything onwards is derived from here.
   class Logger
-    # The possible log levels
-    Levels = [ 'debug', 'info', 'warn', 'error', 'fatal', 'unknown' ]
 
     # Creates a new Logger instance
     #
@@ -37,7 +35,8 @@ module Yell #:nodoc:
       @options = args.last.is_a?(Hash) ? args.pop : {}
 
       # set the log level when given
-      level @options[:level] if @options[:level]
+      # level @options[:level] if @options[:level]
+      level @options[:level] # default
 
       # check if filename was given as argument and put it into the @options
       if args.last.is_a?( String )
@@ -89,12 +88,8 @@ module Yell #:nodoc:
     #   level :warn
     #
     # @param [String, Symbol, Integer] val The minimum log level
-    def level( val )
-      @level = case val
-        when Integer then val
-        when String, Symbol then Levels.index( val.to_s )
-        else nil
-      end
+    def level( val = nil )
+      @level = Yell::Level.new( val )
     end
 
     # Convenience method for resetting all adapters of the Logger.
@@ -104,6 +99,7 @@ module Yell #:nodoc:
       close
       open if now
     end
+
 
     private
 
@@ -124,9 +120,9 @@ module Yell #:nodoc:
     # Creates instance methods for every defined log level (debug, info, ...) depending
     # on whether anything should be logged upon, for instance, #info.
     def define_log_methods!
-      Levels.each_with_index do |name, index|
+      Yell::Level::Stages.each do |name|
         instance_eval %-
-          def #{name}?; #{@level.nil? || index >= @level}; end  # def info?; true; end
+          def #{name}?; @level.at?(:#{name}); end               # def info?; @level.at?(:info); end
                                                                 #
           def #{name}( data = '' )                              # def info( data = '' )
             return unless #{name}?                              #   return unless info?

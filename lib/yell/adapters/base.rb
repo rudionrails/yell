@@ -9,21 +9,25 @@ module Yell #:nodoc:
     # Other adapters should inherit from it.
     class Base
 
+      # The options given to the adapter
+      attr_reader :options
+
       # Define a new adapter.
       #
       # @params [Hash] options Adapter specific optionos
-      #
-      # @yield The block to be evaluated by the implemented adapter
-      def initialize( options = {}, &block )
-        @level, @data = nil, nil # default
+      def initialize( options = {} )
+        @options = options
+
+        @level = @options[:level] || Yell::Level.new
       end
 
       # The main method to calling an adapter. Subclasses will have to
       # overwrite it as it only defines the basic operations.
-      def call( level, msg )
-        @level, @message = level, msg
+      def call( level, message )
+        return unless @level.at?( level )
 
-        reset! :now if reset? # connect, get a file handle or whatever
+        @message = message
+        reset! :now if reset?
       end
 
       # The message to be logged.

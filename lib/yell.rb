@@ -27,6 +27,7 @@ $: << File.dirname(__FILE__)
 
 require 'yell/formatter'
 require 'yell/adapters'
+require 'yell/level'
 require 'yell/logger'
 
 module Yell #:nodoc:
@@ -41,9 +42,13 @@ module Yell #:nodoc:
     Yell::Logger.new( *args, &block )
   end
 
-  # The environment
-  def env
+
+  def env #:nodoc:
     ENV['YELL_ENV'] || ENV['RACK_ENV'] || 'development'
+  end
+
+  def level( val = nil ) #:nodoc:
+    Yell::Level.new( val )
   end
 
 end
