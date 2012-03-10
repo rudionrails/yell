@@ -9,28 +9,29 @@ module Yell #:nodoc:
     # Other adapters should inherit from it.
     class Base
 
+      # The message to log
+      attr_reader :message
+
+      # The level to be logged with
+      attr_reader :level
+
       # Define a new adapter.
       #
       # @params [Hash] options Adapter specific optionos
       #
       # @yield The block to be evaluated by the implemented adapter
       def initialize( options = {}, &block )
-        @level, @data = nil, nil # default
+        @level, @message = nil, nil # default
+
+        instance_eval &block if block
       end
 
       # The main method to calling an adapter. Subclasses will have to
       # overwrite it as it only defines the basic operations.
-      def call( level, msg )
-        @level, @message = level, msg
+      def call( level, message )
+        @level, @message = level, message
 
         reset! :now if reset? # connect, get a file handle or whatever
-      end
-
-      # The message to be logged.
-      #
-      # If the mssage is not a +String+ then we call `:inspect` on it.
-      def message
-        @message.is_a?(String) ? @message : @message.inspect
       end
 
       # Convenience method for resetting the processor.
@@ -42,10 +43,14 @@ module Yell #:nodoc:
       end
 
       # Opens the logfile or connection (in case of a database adapter)
-      def open; open! unless opened?; end
+      def open
+        open! if closed?
+      end
 
       # Closes the file handle or connection (in case of a database adapter)
-      def close; close! unless closed?; end
+      def close
+        close! unless closed?
+      end
 
 
       private
@@ -59,15 +64,10 @@ module Yell #:nodoc:
       # Stub method to be implemented by the adapter subclass
       def close!; raise "Not implemented"; end
 
-      # Returns whether a handle is opened.
-      #
-      # @return [Boolean] true or false
-      def opened?; false; end
-
       # Returns whether a handle is closed.
       #
       # @return [Boolean] true or false
-      def closed?; !opened?; end
+      def closed?; true; end
 
       # Returns whether a handle is to be reset.
       #

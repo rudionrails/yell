@@ -5,7 +5,18 @@ module Yell #:nodoc:
   # The +Logger+ is yout entrypoint. Anything onwards is derived from here.
   class Logger
     # The possible log levels
-    Levels = [ 'debug', 'info', 'warn', 'error', 'fatal', 'unknown' ]
+    Levels = [ 'DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL', 'UNKNOWN' ]
+
+    # The possible log colors
+    Colors = {
+      'DEBUG'   => "\e[32;1m",  # green;bold
+      # 'INFO'    => "\e[0m",     # white
+      'WARN'    => "\e[33;1m",  # yello;bold
+      'ERROR'   => "\e[31;1m",  # red;bold
+      'FATAL'   => "\e[35;1m",  # magenta;bold
+      'UNKNOWN' => "\e[36m",    # cyan
+      'DEFAULT' => "\e[0m"      # NONE
+    }
 
     # Creates a new Logger instance
     #
@@ -36,21 +47,21 @@ module Yell #:nodoc:
       # extract options
       @options = args.last.is_a?(Hash) ? args.pop : {}
 
-      # set the log level when given
-      level @options[:level] if @options[:level]
-
       # check if filename was given as argument and put it into the @options
       if args.last.is_a?( String )
         @options[:filename] = args.pop unless @options[:filename]
       end
 
-      # set the default adapter
-      @default_adapter = args.last.is_a?( Symbol ) ? args.pop : :file
+      # extract adapter
+      adapter args.pop
+
+      # set the log level when given
+      level @options[:level] if @options[:level]
 
       # eval the given block
       instance_eval &block if block
 
-      build!
+      define!
     end
 
     # Define an adapter to be used for logging.
@@ -78,7 +89,7 @@ module Yell #:nodoc:
     def adapter( type = :file, *args, &block )
       options = [@options, *args].inject( Hash.new ) { |h,c| h.merge( c.is_a?(String) ? {:filename => c} : c  ) }
 
-      @adapters << ( type.instance_of?(Yell::Adapters::Base) ? type : Yell::Adapters.new(type, options, &block) )
+      @adapters << Yell::Adapters[ type, options, &block ]
     rescue LoadError => e
       raise Yell::NoSuchAdapter, e.message
     end
@@ -92,7 +103,7 @@ module Yell #:nodoc:
     def level( val )
       @level = case val
         when Integer then val
-        when String, Symbol then Levels.index( val.to_s )
+        when String, Symbol then Levels.index( val.to_s.upcase )
         else nil
       end
     end
@@ -115,8 +126,8 @@ module Yell #:nodoc:
 
     # Sets a default adapter if none was given explicitly and defines the log methods on
     # the logger instance.
-    def build!
-      adapter @default_adapter if @adapters.empty? # default adapter when none defined
+    def define!
+      adapter :file if @adapters.empty? # default adapter when none defined
 
       define_log_methods!
     end
@@ -124,17 +135,18 @@ module Yell #:nodoc:
     # Creates instance methods for every defined log level (debug, info, ...) depending
     # on whether anything should be logged upon, for instance, #info.
     def define_log_methods!
-      Levels.each_with_index do |name, index|
+      Levels.each_with_index do |l, index|
+        name = l.downcase
         instance_eval %-
           def #{name}?; #{@level.nil? || index >= @level}; end  # def info?; true; end
                                                                 #
-          def #{name}( data = '' )                              # def info( data = '' )
+          def #{name}( message = '' )                           # def info( message = '' )
             return unless #{name}?                              #   return unless info?
                                                                 #
-            data = yield if block_given?                        #   data = yield if block_given?
-            call( "#{name}", data )                             #   call( "info", data )
+            message = yield if block_given?                     #   message = yield if block_given?
+            call( "#{l}", message )                             #   call( "INFO", message )
                                                                 #
-            data                                                #   data
+            true                                                #   true
           end                                                   # end
         -
       end

@@ -8,7 +8,7 @@ module Yell #:nodoc:
     PatternTable = {
       "m" => "message",
       "d" => "date",
-      "l" => "level.downcase",
+      "l" => "level[0]",
       "L" => "level.upcase",
       "p" => "$$",
       "h" => "hostname"
@@ -21,13 +21,13 @@ module Yell #:nodoc:
       @pattern      = pattern || DefaultPattern
       @date_pattern = date_pattern
 
-      define_format_method!
+      define!
     end
 
 
     private
 
-    def define_format_method!
+    def define!
       buff, args, _pattern = "", [], @pattern.dup
 
       while true
