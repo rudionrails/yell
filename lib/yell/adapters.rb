@@ -1,7 +1,6 @@
 # encoding: utf-8
 
 require 'yell/adapters/base'
-require 'yell/adapters/io'
 require 'yell/adapters/file'
 require 'yell/adapters/datefile'
 

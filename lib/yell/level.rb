@@ -7,40 +7,41 @@ module Yell #:nodoc:
   # @todo Class not in use, implement for future
   class Level
 
-    def initialize( name = nil, filename = nil )
-      @operations = []
+    def initialize( name = nil )
+      @levels = Yell::Severities.map { true }
 
-      at( name, filename ) if name && filename # default
+      gte( name ) if name # default
     end
 
-    def at( name, filename )
-      @operations << [ :at, name, filename ]
-
+    def at( name )
+      calculate!( :==, name )
       self
     end
 
-    def gt( name, filename )
-      @operations << [ :gt, name, filename ]
-
+    def gt( name )
+      calculate!( :>, name )
       self
     end
 
-    def gte( name, filename )
-      @operations << [ :gte, name, filename ]
-
+    def gte( name )
+      calculate!( :>=, name )
       self
     end
 
-    def lt( name, filename )
-      @operations << [ :lt, name, filename ]
-
+    def lt( name )
+      calculate!( :<, name )
       self
     end
 
-    def lte( name, filename )
-      @operations << [ :lte, name, filename ]
-
+    def lte( name )
+      calculate!( :<=, name )
       self
+    end
+
+
+    private
+
+    def calculate!( modifier, name )
     end
 
   end

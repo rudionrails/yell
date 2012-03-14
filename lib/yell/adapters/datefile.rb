@@ -12,25 +12,32 @@ module Yell #:nodoc:
 
       def initialize ( options = {}, &block )
         @date_pattern = options[:date_pattern] || DefaultDatePattern
-        @date = nil # default; do not override --R
 
         @file_basename = options[:filename] || default_filename
         options[:filename] = @file_basename
 
+        @date = nil # default; do not override --R
+
         super( options, &block )
       end
 
+      def write( level, message )
+        reset! if reset?
+
+        super( level, message )
+      end
+
       # @override Reset the file handle
-      def reset!( now = false )
+      def reset!
         @filename = new_filename
 
-        super( now )
+        super
       end
 
 
       private
 
-      # @override Determines whether to reset the file handle or not.
+      # Determines whether to reset the file handle or not.
       #
       # It is based on the `:date_pattern` (can be passed as option upon initialize). 
       # If the current time hits the pattern, it resets the file handle.
