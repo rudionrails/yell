@@ -36,12 +36,15 @@ module Yell #:nodoc:
       # Main method to calling the file adapter.
       #
       # The method formats the message and writes it to the file handle.
+      #
+      # @example
+      #   write( 'INFO', 'Hello World' )
       def write( level, message )
         msg = @formatter.format( level, message )
 
         # colorize if applicable
-        if @colorize and color = Colors[level]
-          color + msg + Colors['default']
+        if colorize? and color = Colors[level]
+          msg = color + msg + Colors['DEFAULT']
         end
 
         msg << "\n" unless msg[-1] == ?\n # add new line if there is none
@@ -63,14 +66,20 @@ module Yell #:nodoc:
         @colorize = true
       end
 
+      # Determie whether to colorize the log output or nor
+      #
+      # @return [Boolean] true or false
+      def colorize?; !!@colorize; end
+
 
       private
 
       def build!( options )
-        @colorize = false
         @filename = options[:filename] || default_filename
 
+        level options[:level]
         format options[:format]
+
         colorize! if options[:colorize]
       end
 

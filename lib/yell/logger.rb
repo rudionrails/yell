@@ -77,12 +77,11 @@ module Yell #:nodoc:
     #
     # @raise [Yell::NoSuchAdapter] Will be thrown when the adapter is not defined
     def adapter( type = :file, *args, &block )
-      puts "adapter: #{type.inspect}"
       options = [@options, *args].inject( Hash.new ) { |h,c| h.merge( c.is_a?(String) ? {:filename => c} : c  ) }
 
       @adapters << Yell::Adapters[ type, options, &block ]
-    rescue LoadError => e
-      raise Yell::NoSuchAdapter, e.message
+    rescue NameError => e
+      raise Yell::NoSuchAdapter, type
     end
 
     # Set the minimum log level.
@@ -120,23 +119,23 @@ module Yell #:nodoc:
         name = l.downcase
 
         instance_eval %-
-          def #{name}?; #{@level.nil? or index >= @level}; end  # def info?; true; end
-                                                                #
-          def #{name}( message = nil )                          # def info( message = nil )
-            return unless #{name}?                              #   return unless info?
-                                                                #
-            message = yield if block_given?                     #   message = yield if block_given?
-            write( "#{l}", message )                            #   write( "INFO", message )
-                                                                #
-            true                                                #   true
-          end                                                   # end
+          def #{name}?; #{@level.at?(index)}; end   # def info?; true; end
+                                                    #
+          def #{name}( message = nil )              # def info( message = nil )
+            return unless #{name}?                  #   return unless info?
+                                                    #
+            message = yield if block_given?         #   message = yield if block_given?
+            write( "#{l}", message )                #   write( "INFO", message )
+                                                    #
+            true                                    #   true
+          end                                       # end
         -
       end
     end
 
     # Cycles all the adapters and writes the message
     def write( level, message )
-      @adapters.each { |a| a.write(level, message) }
+      @adapters.each { |a| a.write(level, message) if a.write?(level) }
     end
 
   end

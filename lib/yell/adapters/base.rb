@@ -12,12 +12,18 @@ module Yell #:nodoc:
       # Accessor to the file or databse handle
       attr_reader :handle
 
-      # Accessor for the level to be logged at
-      attr_reader :level
 
+      # Set the log level
+      def level( severity = nil )
+        @level = Yell::Level.new( severity )
+      end
 
-      def level( val )
-        @level = Yell::Level.new( val )
+      # Determine whether to write at the given severity
+      #
+      # @example
+      #   write? :error
+      def write?( severity )
+        @level.nil? || @level.at?( severity )
       end
 
 
@@ -38,9 +44,6 @@ module Yell #:nodoc:
 
         # re-raise the exception
         raise( e, caller )
-      end
-
-      def write?( level )
       end
 
     end
