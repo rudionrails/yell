@@ -4,7 +4,6 @@ module Yell #:nodoc:
 
   # The +Logger+ is yout entrypoint. Anything onwards is derived from here.
   class Logger
-
     # Creates a new Logger instance
     #
     # @example A standard file logger
@@ -43,13 +42,16 @@ module Yell #:nodoc:
         @options[:filename] = args.pop unless @options[:filename]
       end
 
-      # set the default adapter
-      @default_adapter = args.last.is_a?( Symbol ) ? args.pop : :file
+      # extract adapter
+      adapter args.pop if args.any?
+
+      # set the log level when given
+      level @options[:level] if @options[:level]
 
       # eval the given block
       instance_eval &block if block
 
-      build!
+      define!
     end
 
     # Define an adapter to be used for logging.
@@ -75,9 +77,10 @@ module Yell #:nodoc:
     #
     # @raise [Yell::NoSuchAdapter] Will be thrown when the adapter is not defined
     def adapter( type = :file, *args, &block )
+      puts "adapter: #{type.inspect}"
       options = [@options, *args].inject( Hash.new ) { |h,c| h.merge( c.is_a?(String) ? {:filename => c} : c  ) }
 
-      @adapters << ( type.instance_of?(Yell::Adapters::Base) ? type : Yell::Adapters.new(type, options, &block) )
+      @adapters << Yell::Adapters[ type, options, &block ]
     rescue LoadError => e
       raise Yell::NoSuchAdapter, e.message
     end
@@ -96,23 +99,16 @@ module Yell #:nodoc:
     #
     # @param [Boolean] now Perform the reset immediately (default false)
     def reset!( now = false )
-      close
-      open if now
+      @adapters.each(&:reset!)
     end
 
 
     private
 
-    # Closes all adapters
-    def close; @adapters.each(&:close); end
-
-    # Opens all adapters
-    def open; @adapters.each(&:open); end
-
     # Sets a default adapter if none was given explicitly and defines the log methods on
     # the logger instance.
-    def build!
-      adapter @default_adapter if @adapters.empty? # default adapter when none defined
+    def define!
+      adapter :file if @adapters.empty? # default adapter when none defined
 
       define_log_methods!
     end
@@ -120,26 +116,29 @@ module Yell #:nodoc:
     # Creates instance methods for every defined log level (debug, info, ...) depending
     # on whether anything should be logged upon, for instance, #info.
     def define_log_methods!
-      Yell::Level::Stages.each do |name|
+      Yell::Severities.each_with_index do |l, index|
+        name = l.downcase
+
         instance_eval %-
-          def #{name}?; @level.at?(:#{name}); end               # def info?; @level.at?(:info); end
+          def #{name}?; #{@level.nil? or index >= @level}; end  # def info?; true; end
                                                                 #
-          def #{name}( data = '' )                              # def info( data = '' )
+          def #{name}( message = nil )                          # def info( message = nil )
             return unless #{name}?                              #   return unless info?
                                                                 #
-            data = yield if block_given?                        #   data = yield if block_given?
-            call( "#{name}", data )                             #   call( "info", data )
+            message = yield if block_given?                     #   message = yield if block_given?
+            write( "#{l}", message )                            #   write( "INFO", message )
                                                                 #
-            data                                                #   data
+            true                                                #   true
           end                                                   # end
         -
       end
     end
 
-    # Cycles all the adapters and calls them
-    def call( level, data )
-      @adapters.each { |a| a.call( level, data ) }
+    # Cycles all the adapters and writes the message
+    def write( level, message )
+      @adapters.each { |a| a.write(level, message) }
     end
 
   end
 end
+

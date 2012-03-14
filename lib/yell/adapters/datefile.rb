@@ -10,27 +10,34 @@ module Yell #:nodoc:
       # The default date pattern, e.g. "19820114" (14 Jan 1982)
       DefaultDatePattern = "%Y%m%d"
 
-      def initialize ( options = {} )
+      def initialize( options = {}, &block )
         @date_pattern = options[:date_pattern] || DefaultDatePattern
-        @date = nil # default; do not override --R
 
         @file_basename = options[:filename] || default_filename
         options[:filename] = @file_basename
 
-        super( options )
+        @date = nil # default; do not override --R
+
+        super( options, &block )
+      end
+
+      def write( level, message )
+        reset! if reset?
+
+        super( level, message )
       end
 
       # @override Reset the file handle
-      def reset!( now = false )
+      def reset!
         @filename = new_filename
 
-        super( now )
+        super
       end
 
 
       private
 
-      # @override Determines whether to reset the file handle or not.
+      # Determines whether to reset the file handle or not.
       #
       # It is based on the `:date_pattern` (can be passed as option upon initialize). 
       # If the current time hits the pattern, it resets the file handle.
@@ -38,7 +45,7 @@ module Yell #:nodoc:
       # @return [Boolean] true or false
       def reset?
         _date = Time.now.strftime( @date_pattern )
-        unless opened? && _date == @date
+        if closed? or _date != @date
           @date = _date
           return true
         end

@@ -7,76 +7,41 @@ module Yell #:nodoc:
     # on any adapter implementation.
     #
     # Other adapters should inherit from it.
-    class Base
+    module Base
 
-      # The options given to the adapter
-      attr_reader :options
+      # Accessor to the file or databse handle
+      attr_reader :handle
 
-      # Define a new adapter.
-      #
-      # @params [Hash] options Adapter specific optionos
-      def initialize( options = {} )
-        @options = options
+      # Accessor for the level to be logged at
+      attr_reader :level
 
-        @level = @options[:level] || Yell::Level.new
+
+      def level( val )
+        @level = Yell::Level.new( val )
       end
-
-      # The main method to calling an adapter. Subclasses will have to
-      # overwrite it as it only defines the basic operations.
-      def call( level, message )
-        return unless @level.at?( level )
-
-        @message = message
-        reset! :now if reset?
-      end
-
-      # The message to be logged.
-      #
-      # If the mssage is not a +String+ then we call `:inspect` on it.
-      def message
-        @message.is_a?(String) ? @message : @message.inspect
-      end
-
-      # Convenience method for resetting the processor.
-      #
-      # @param [Boolean] now Perform the reset immediately (default false)
-      def reset!( now = false )
-        close
-        open if now
-      end
-
-      # Opens the logfile or connection (in case of a database adapter)
-      def open; open! unless opened?; end
-
-      # Closes the file handle or connection (in case of a database adapter)
-      def close; close! unless closed?; end
 
 
       private
 
-      # Stub method to be implemented by the adapter subclass
-      def write; raise 'Not implemented'; end
+      # Reset the adapter.
+      def reset!
+        @handle.close if @handle.respond_to?(:close)
+        @handle = nil
+      end
 
-      # Stub method to be implemented by the adapter subclass
-      def open!; raise "Not implemented"; end
+      # Writes the message to the handle
+      def write!( message )
+        handle.write( message )
+        handle.flush
+      rescue => e
+        reset!
 
-      # Stub method to be implemented by the adapter subclass
-      def close!; raise "Not implemented"; end
+        # re-raise the exception
+        raise( e, caller )
+      end
 
-      # Returns whether a handle is opened.
-      #
-      # @return [Boolean] true or false
-      def opened?; false; end
-
-      # Returns whether a handle is closed.
-      #
-      # @return [Boolean] true or false
-      def closed?; !opened?; end
-
-      # Returns whether a handle is to be reset.
-      #
-      # @return [Boolean] true or false
-      def reset?; closed?; end
+      def write?( level )
+      end
 
     end
 
