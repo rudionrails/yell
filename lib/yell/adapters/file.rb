@@ -62,8 +62,8 @@ module Yell #:nodoc:
       end
 
       # Enable colorizing the log output
-      def colorize!
-        @colorize = true
+      def colorize!( color = true )
+        @colorize = color
       end
 
       # Determie whether to colorize the log output or nor
@@ -80,7 +80,7 @@ module Yell #:nodoc:
         level options[:level]
         format options[:format]
 
-        colorize! if options[:colorize]
+        colorize! options[:colorize]
       end
 
       def default_filename

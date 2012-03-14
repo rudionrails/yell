@@ -12,7 +12,6 @@ module Yell #:nodoc:
       # Accessor to the file or databse handle
       attr_reader :handle
 
-
       # Set the log level
       def level( severity = nil )
         @level = Yell::Level.new( severity )
@@ -29,7 +28,7 @@ module Yell #:nodoc:
 
       private
 
-      # Reset the adapter.
+      # Reset the handle.
       def reset!
         @handle.close if @handle.respond_to?(:close)
         @handle = nil

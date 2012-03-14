@@ -45,7 +45,7 @@ module Yell #:nodoc:
       # @return [Boolean] true or false
       def reset?
         _date = Time.now.strftime( @date_pattern )
-        if closed? or _date != @date
+        if !@handle or _date != @date
           @date = _date
           return true
         end
