@@ -39,24 +39,22 @@ module Yell #:nodoc:
     # @example Pass a range to set the level within the severities
     #   Yell::Level.new (:info..:error)
     #
-    # @param [String,Integer,Symbol,Array,Range] severity The severity for the level.
+    # @param [Integer,String,Symbol,Array,Range,nil] severity The severity for the level.
     def initialize( severity = nil )
       @severities = Yell::Severities.map { true } # all levels allowed by default
-
-      taint
 
       case severity
         when Array then severity.each { |s| at(s) }
         when Range then gte(severity.first).lte(severity.last)
-        else gte(severity)
+        when Integer, String, Symbol then gte(severity)
       end
     end
 
     # Returns whether the level is allowed at the given severity
     #
     # @example
-    #   level.at? :warn
-    #   level.at? 0       # debug
+    #   at? :warn
+    #   at? 0       # debug
     def at?( severity )
       index = index_from( severity )
 
@@ -103,7 +101,7 @@ module Yell #:nodoc:
         else set!( index ) # :==
       end
 
-      untaint if tainted?
+      taint unless tainted?
     end
 
     def index_from( severity )
@@ -131,7 +129,7 @@ module Yell #:nodoc:
     end
 
     def set!( index )
-      @severities.map! { false } if tainted?
+      @severities.map! { false } unless tainted?
 
       @severities[index] = true
     end
