@@ -45,7 +45,7 @@ module Yell #:nodoc:
 
       case severity
         when Array then severity.each { |s| at(s) }
-        when Range then gte(severity.first).lte(range.last)
+        when Range then gte(severity.first).lte(severity.last)
         else gte(severity)
       end
     end

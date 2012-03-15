@@ -41,8 +41,11 @@ module Yell #:nodoc:
     # Simple camelcase converter
     #
     # @example
-    #   "file "#=> "File"
-    #   "date_file" #=> "DateFile"
+    #   camelize("file")
+    #   #=> "File"
+    #
+    #   camelize("date_file")
+    #   #=> "DateFile"
     def camelize( str )
       str.capitalize.gsub( /(_\w)/ ) { |match| match.reverse.chop.upcase }
     end
