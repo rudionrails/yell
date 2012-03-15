@@ -43,6 +43,8 @@ module Yell #:nodoc:
     def initialize( severity = nil )
       @severities = Yell::Severities.map { true } # all levels allowed by default
 
+      taint
+
       case severity
         when Array then severity.each { |s| at(s) }
         when Range then gte(severity.first).lte(severity.last)
@@ -98,8 +100,10 @@ module Yell #:nodoc:
         when :>=  then ascending!( index )
         when :<   then descending!( index-1 )
         when :<=  then descending!( index )
-        else @severities[index] = true # equals :==
+        else set!( index ) # :==
       end
+
+      untaint if tainted?
     end
 
     def index_from( severity )
@@ -124,6 +128,12 @@ module Yell #:nodoc:
 
         @severities[i] = index < i ? false : true
       end
+    end
+
+    def set!( index )
+      @severities.map! { false } if tainted?
+
+      @severities[index] = true
     end
 
   end

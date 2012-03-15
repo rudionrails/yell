@@ -38,7 +38,7 @@ module Yell #:nodoc:
 
     private
 
-    # Simple camelcase converter
+    # Simple camelcase converter.
     #
     # @example
     #   camelize("file")
