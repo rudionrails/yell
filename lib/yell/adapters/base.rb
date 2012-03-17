@@ -3,46 +3,49 @@
 module Yell #:nodoc:
   module Adapters #:nodoc:
 
-    # This class provides the basic interface for all allowed operations 
-    # on any adapter implementation.
+    # This class provides the basic interface for all allowed 
+    # operations on any adapter implementation.
     #
-    # Other adapters should inherit from it.
+    # Other adapters should include it for the base methods used 
+    # by the {Yell::Logger}.
     module Base
 
-      # Accessor to the file or databse handle
-      attr_reader :handle
-
-      # Set the log level
-      def level( severity = nil )
-        @level = Yell::Level.new( severity )
+      # The main method for calling the adapter.
+      #
+      # Adapter classes should provide their own implementation 
+      # of this method.
+      def write( level, message )
+        nil
       end
 
-      # Determine whether to write at the given severity
+      # Determine whether to write at the given severity.
       #
       # @example
       #   write? :error
+      #
+      # @param [String,Symbol,Integer] severity The severity to ask if to write or not.
+      #
+      # @return [Boolean] true or false
       def write?( severity )
         @level.nil? || @level.at?( severity )
       end
 
-
-      private
-
-      # Reset the handle.
-      def reset!
-        @handle.close if @handle.respond_to?(:close)
-        @handle = nil
+      # Close the adapter (stream, connection, etc).
+      #
+      # Adapter classes should provide their own implementation 
+      # of this method.
+      def close
+        nil
       end
 
-      # Writes the message to the handle
-      def write!( message )
-        handle.write( message )
-        handle.flush
-      rescue => e
-        reset!
-
-        # re-raise the exception
-        raise( e, caller )
+      # Set the log level.
+      #
+      # @example Set minimum level to :info
+      #   level :info
+      #
+      # For more examples, refer to {Yell::Level}.
+      def level( severity = nil )
+        @level = Yell::Level.new( severity )
       end
 
     end

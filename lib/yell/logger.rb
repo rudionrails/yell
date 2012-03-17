@@ -2,7 +2,7 @@
 
 module Yell #:nodoc:
 
-  # The +Logger+ is yout entrypoint. Anything onwards is derived from here.
+  # The +Logger+ is your entrypoint. Anything onwards is derived from here.
   class Logger
     # Creates a new Logger instance
     #
@@ -77,7 +77,9 @@ module Yell #:nodoc:
     #
     # @raise [Yell::NoSuchAdapter] Will be thrown when the adapter is not defined
     def adapter( type = :file, *args, &block )
-      options = [@options, *args].inject( Hash.new ) { |h,c| h.merge( c.is_a?(String) ? {:filename => c} : c  ) }
+      options = [@options, *args].inject( Hash.new ) do |h,c| 
+        h.merge( c.is_a?(String) ? {:filename => c} : c  )
+      end
 
       @adapters << Yell::Adapters[ type, options, &block ]
     rescue NameError => e
@@ -97,8 +99,8 @@ module Yell #:nodoc:
     # Convenience method for resetting all adapters of the Logger.
     #
     # @param [Boolean] now Perform the reset immediately (default false)
-    def reset!( now = false )
-      @adapters.each(&:reset!)
+    def close( now = false )
+      @adapters.each(&:close)
     end
 
 
@@ -115,20 +117,20 @@ module Yell #:nodoc:
     # Creates instance methods for every defined log level (debug, info, ...) depending
     # on whether anything should be logged upon, for instance, #info.
     def define_log_methods!
-      Yell::Severities.each_with_index do |l, index|
+      Yell::Severities.each do |l|
         name = l.downcase
 
         instance_eval %-
-          def #{name}?; #{@level.at?(index)}; end   # def info?; true; end
-                                                    #
-          def #{name}( message = nil )              # def info( message = nil )
-            return unless #{name}?                  #   return unless info?
-                                                    #
-            message = yield if block_given?         #   message = yield if block_given?
-            write( "#{l}", message )                #   write( "INFO", message )
-                                                    #
-            true                                    #   true
-          end                                       # end
+          def #{name}?; #{@level.at?(name)}; end  # def info?; true; end
+                                                  #
+          def #{name}( message = nil )            # def info( message = nil )
+            return unless #{name}?                #   return unless info?
+                                                  #
+            message = yield if block_given?       #   message = yield if block_given?
+            write( "#{l}", message )              #   write( "INFO", message )
+                                                  #
+            true                                  #   true
+          end                                     # end
         -
       end
     end

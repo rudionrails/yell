@@ -5,83 +5,21 @@ module Yell #:nodoc:
 
     # The +File+ adapter is the most basic. As one would expect, it's used 
     # for logging into files.
-    class File
-      include Yell::Adapters::Base
-
-      # The possible log colors
-      Colors = {
-        'DEBUG'   => "\e[32;1m",  # green;bold
-        # 'INFO'    => "\e[0m",     # white
-        'WARN'    => "\e[33;1m",  # yello;bold
-        'ERROR'   => "\e[31;1m",  # red;bold
-        'FATAL'   => "\e[35;1m",  # magenta;bold
-        'UNKNOWN' => "\e[36m",    # cyan
-        'DEFAULT' => "\e[0m"      # NONE
-      }
-
+    class File < Yell::Adapters::Io
 
       def initialize( options = {}, &block )
-        build!( options )
+        super( nil, options, &block )
 
-        instance_eval &block if block
-
-        reset!
+        @filename = options.fetch(:filename, default_filename)
       end
 
       # @override Lazily open the file handle
-      def handle
-        @handle ||= ::File.open( @filename, ::File::WRONLY|::File::APPEND|::File::CREAT )
+      def stream
+        @stream ||= ::File.open( @filename, ::File::WRONLY|::File::APPEND|::File::CREAT )
       end
-
-      # Main method to calling the file adapter.
-      #
-      # The method formats the message and writes it to the file handle.
-      #
-      # @example
-      #   write( 'INFO', 'Hello World' )
-      def write( level, message )
-        msg = @formatter.format( level, message )
-
-        # colorize if applicable
-        if colorize? and color = Colors[level]
-          msg = color + msg + Colors['DEFAULT']
-        end
-
-        msg << "\n" unless msg[-1] == ?\n # add new line if there is none
-
-        write!( msg )
-      end
-
-      # Set the format for your message.
-      def format( pattern, date_pattern = nil )
-        @formatter = case pattern
-          when Yell::Formatter then pattern
-          when false then Yell::Formatter.new( "%m" )
-          else Yell::Formatter.new( pattern, date_pattern )
-        end
-      end
-
-      # Enable colorizing the log output
-      def colorize!( color = true )
-        @colorize = color
-      end
-
-      # Determie whether to colorize the log output or nor
-      #
-      # @return [Boolean] true or false
-      def colorize?; !!@colorize; end
 
 
       private
-
-      def build!( options )
-        @filename = options[:filename] || default_filename
-
-        level options[:level]
-        format options[:format]
-
-        colorize! options[:colorize]
-      end
 
       def default_filename
         ::File.directory?("log") ? "log/#{Yell.env}.log" : "#{Yell.env}.log"

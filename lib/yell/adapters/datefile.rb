@@ -22,13 +22,13 @@ module Yell #:nodoc:
       end
 
       def write( level, message )
-        reset! if reset?
+        close if close?
 
         super( level, message )
       end
 
       # @override Reset the file handle
-      def reset!
+      def close
         @filename = new_filename
 
         super
@@ -37,15 +37,15 @@ module Yell #:nodoc:
 
       private
 
-      # Determines whether to reset the file handle or not.
+      # Determines whether to close the file handle or not.
       #
       # It is based on the `:date_pattern` (can be passed as option upon initialize). 
-      # If the current time hits the pattern, it resets the file handle.
+      # If the current time hits the pattern, it closes the file stream.
       #
       # @return [Boolean] true or false
-      def reset?
+      def close?
         _date = Time.now.strftime( @date_pattern )
-        if !@handle or _date != @date
+        if !@stream or _date != @date
           @date = _date
           return true
         end
