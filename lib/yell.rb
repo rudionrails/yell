@@ -34,24 +34,19 @@ module Yell #:nodoc:
   # The possible log levels
   Severities = [ 'DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL', 'UNKNOWN' ]
 
-  extend self
+  class << self
+    # Creates a new logger instance.
+    #
+    # Refer to #Yell::Loggger for usage.
+    #
+    # @return [Yell::Logger] The logger instance
+    def new( *args, &block )
+      Yell::Logger.new( *args, &block )
+    end
 
-  # Creates a new logger instance.
-  #
-  # Refer to #Yell::Loggger for usage.
-  #
-  # @returns [Yell::Logger] The logger instance
-  def new( *args, &block )
-    Yell::Logger.new( *args, &block )
-  end
-
-
-  def env #:nodoc:
-    ENV['YELL_ENV'] || ENV['RACK_ENV'] || 'development'
-  end
-
-  def level( val = nil ) #:nodoc:
-    Yell::Level.new( val )
+    def env #:nodoc:
+      ENV['YELL_ENV'] || ENV['RACK_ENV'] || 'development'
+    end
   end
 
 end

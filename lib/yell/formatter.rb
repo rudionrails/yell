@@ -2,6 +2,17 @@
 
 module Yell #:nodoc:
 
+  NoFormat        = "%m"
+  BasicFormat     = "%l, %d : %m"
+  DefaultFormat   = "%d [%5L] %p : %m"
+  ExtendedFormat  = "%d [%5L] %p %h : %m"
+
+
+  def format( pattern, date_pattern ) #:nodoc:
+    Yell::Formatter.new( pattern, date_pattern )
+  end
+
+
   # The +Formatter+ provides a handle to configure your log message style.
   class Formatter
 
@@ -14,11 +25,10 @@ module Yell #:nodoc:
       "h" => "hostname"
     }
     PatternRegexp = /([^%]*)(%\d*)?([dlLphm])?(.*)/
-    DefaultPattern = "%d [%5L] %p %h: %m"
 
 
     def initialize( pattern = nil, date_pattern = nil )
-      @pattern      = pattern || DefaultPattern
+      @pattern      = pattern || Yell::DefaultFormat
       @date_pattern = date_pattern
 
       define!

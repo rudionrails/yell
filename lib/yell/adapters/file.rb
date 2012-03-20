@@ -13,7 +13,7 @@ module Yell #:nodoc:
         @filename = options.fetch(:filename, default_filename)
       end
 
-      # @override Lazily open the file handle
+      # @overload Lazily open the file handle
       def stream
         @stream ||= ::File.open( @filename, ::File::WRONLY|::File::APPEND|::File::CREAT )
       end

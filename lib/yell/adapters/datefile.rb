@@ -27,7 +27,7 @@ module Yell #:nodoc:
         super( level, message )
       end
 
-      # @override Reset the file handle
+      # @overload Reset the file handle
       def close
         @filename = new_filename
 
