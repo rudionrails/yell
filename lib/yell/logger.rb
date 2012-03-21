@@ -117,27 +117,26 @@ module Yell #:nodoc:
     # Creates instance methods for every defined log level (debug, info, ...) depending
     # on whether anything should be logged upon, for instance, #info.
     def define_log_methods!
-      Yell::Severities.each do |l|
-        name = l.downcase
+      Yell::Severities.each do |s|
+        name = s.downcase
 
         instance_eval %-
-          def #{name}?; #{@level.at?(name)}; end  # def info?; true; end
-                                                  #
-          def #{name}( message = nil )            # def info( message = nil )
-            return unless #{name}?                #   return unless info?
-                                                  #
-            message = yield if block_given?       #   message = yield if block_given?
-            write( "#{l}", message )              #   write( "INFO", message )
-                                                  #
-            true                                  #   true
-          end                                     # end
+          def #{name}?; #{@level.at?(name)}; end    # def info?; true; end
+                                                    #
+          def #{name}( m = nil, &b )                # def info( m = nil, &b )
+            return unless #{name}?                  #   return unless info?
+                                                    #
+            write Yell::Event.new( '#{s}', m, &b )  #   write Yell::Event.new( "INFO", m, &b )
+                                                    #
+            true                                    #   true
+          end                                       # end
         -
       end
     end
 
     # Cycles all the adapters and writes the message
-    def write( level, message )
-      @adapters.each { |a| a.write(level, message) if a.write?(level) }
+    def write( event )
+      @adapters.each { |a| a.write(event) if a.write?(event.level) }
     end
 
   end

@@ -16,7 +16,6 @@ module Yell #:nodoc:
   #   lt :warn    # Will set from :info level an below
   #   lte :warn   # Will set from :warn level and below
   #
-  #
   # You are able to combine those modifiers to your convenience.
   #
   # @example Set from :info to :error (including)
@@ -93,7 +92,7 @@ module Yell #:nodoc:
 
     private
 
-    def calculate!( modifier, severity )
+    def calculate!( modifier, severity ) #:nodoc:
       index = index_from( severity )
       return if index.nil?
 
@@ -108,7 +107,7 @@ module Yell #:nodoc:
       taint unless tainted?
     end
 
-    def index_from( severity )
+    def index_from( severity ) #:nodoc:
       case severity
         when Integer        then severity
         when String, Symbol then Yell::Severities.index( severity.to_s.upcase )
@@ -116,7 +115,7 @@ module Yell #:nodoc:
       end
     end
 
-    def ascending!( index )
+    def ascending!( index ) #:nodoc:
       @severities.each_with_index do |s, i|
         next if s == false # skip
 
@@ -124,7 +123,7 @@ module Yell #:nodoc:
       end
     end
 
-    def descending!( index )
+    def descending!( index ) #:nodoc:
       @severities.each_with_index do |s, i|
         next if s == false # skip
 
@@ -132,7 +131,7 @@ module Yell #:nodoc:
       end
     end
 
-    def set!( index )
+    def set!( index ) #:nodoc:
       @severities.map! { false } unless tainted?
 
       @severities[index] = true

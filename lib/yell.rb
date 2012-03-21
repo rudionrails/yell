@@ -23,11 +23,16 @@
 
 require 'time'
 
-$: << File.dirname(__FILE__)
+begin
+  require 'yell/event'
+rescue LoadError
+  $: << File.dirname(__FILE__)
+  require 'yell/event'
+end
 
+require 'yell/level'
 require 'yell/formatter'
 require 'yell/adapters'
-require 'yell/level'
 require 'yell/logger'
 
 module Yell #:nodoc:

@@ -119,7 +119,7 @@ a filename explicitly.
 Naturally, if you pass a `:filename` to Yell:
 
 ```ruby
-logger = Yell.new 'custom.log'
+logger = Yell.new 'yell.log'
 ```
 
 Copyright &copy; 2011-2012 Rudolf Schmidt, released under the MIT license

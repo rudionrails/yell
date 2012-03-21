@@ -36,17 +36,17 @@ module Yell
       #
       # @example
       #   write( 'info', 'Hello World' )
-      def write( level, message )
-        msg = @formatter.format( level, message )
+      def write( event )
+        message = @formatter.format( event )
 
         # colorize if applicable
         if colorize? and color = Colors[level]
-          msg = color + msg + Colors['DEFAULT']
+          message = color + message + Colors['DEFAULT']
         end
 
-        msg << "\n" unless msg[-1] == ?\n # add new line if there is none
+        message << "\n" unless message[-1] == ?\n # add new line if there is none
 
-        write!( msg )
+        write!( message )
       end
 
       # Set the format for your message.

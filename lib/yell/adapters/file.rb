@@ -21,7 +21,7 @@ module Yell #:nodoc:
 
       private
 
-      def default_filename
+      def default_filename #:nodoc:
         ::File.directory?("log") ? "log/#{Yell.env}.log" : "#{Yell.env}.log"
       end
 

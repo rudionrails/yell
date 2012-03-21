@@ -21,10 +21,11 @@ module Yell #:nodoc:
         super( options, &block )
       end
 
-      def write( level, message )
+      # @overload Close the file if date is expired
+      def write( event )
         close if close?
 
-        super( level, message )
+        super( event )
       end
 
       # @overload Reset the file handle

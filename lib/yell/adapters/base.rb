@@ -14,7 +14,7 @@ module Yell #:nodoc:
       #
       # Adapter classes should provide their own implementation 
       # of this method.
-      def write( level, message )
+      def write( event )
         nil
       end
 
