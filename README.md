@@ -11,10 +11,11 @@ gem install yell
 Or in your Gemfile:
 
 ```ruby
-gem 'yell'
+gem "yell"
 ```
 
 ## Usage
+
 On the basics, Yell works just like any other logging library. However, it 
 tries to make your log mesages  more readable. By default, it will format the given 
 message as follows:
@@ -32,17 +33,17 @@ When no arguments are given, Yell will check for `ENV['RACK_ENV']` and
 determine the filename from that.
 
 Alternatively, you may define `ENV['YELL_ENV']` to set the filename. If neither 
-`YELL_ENV` or `RACK_ENV` is defined, `'development'` will be the default. Also, if a 
+`YELL_ENV` or `RACK_ENV` is defined, `development` will be the default. Also, if a 
 `log` directory exists, Yell will place the file there (only if you have not passed
 a filename explicitly.
 
 Naturally, you can pass a `:filename` to Yell:
 
 ```ruby
-logger = Yell.new 'yell.log'
+logger = Yell.new "yell.log"
 ```
 
-To learn about how to use [log levels](https://github.com/rudionrails/yell/wiki/101-setting-the-log-level), [log formatting](https://github.com/rudionrails/yell/wiki/101-formatting-log-messages), or different [adapters](https://github.com/rudionrails/yell/wiki/101-using-adapters) see the [wiki](https://github.com/rudionrails/yell/wiki) or have a look into the examples folder.
+Have a look into the examples folder or refer to the wiki for further usage: https://github.com/rudionrails/yell/wiki
 
 
 Copyright &copy; 2011-2012 Rudolf Schmidt, released under the MIT license
