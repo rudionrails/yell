@@ -36,14 +36,14 @@ Alternatively, you may define `ENV['YELL_ENV']` to set the filename. If neither
 `log` directory exists, Yell will place the file there (only if you have not passed
 a filename explicitly.
 
-Naturally, if you pass a `:filename` to Yell:
+Naturally, you can pass a `:filename` to Yell:
 
 ```ruby
 logger = Yell.new 'yell.log'
 ```
 
-Please refer to the wiki for further usage examples:  
-https://github.com/rudionrails/yell/wiki/
+To learn about how to use [log levels](https://github.com/rudionrails/yell/wiki/101-setting-the-log-level), [log formatting](https://github.com/rudionrails/yell/wiki/101-formatting-log-messages), or different [adapters](https://github.com/rudionrails/yell/wiki/101-using-adapters) see the [wiki](https://github.com/rudionrails/yell/wiki) or have a look into the examples folder.
+
 
 Copyright &copy; 2011-2012 Rudolf Schmidt, released under the MIT license
 
