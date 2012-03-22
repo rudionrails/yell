@@ -57,7 +57,7 @@ module Yell #:nodoc:
       "L" => "event.level",                   # Level, e.g. 'INFO', 'WARN'
       "d" => "date(event)",                   # ISO8601 Timestamp
       "p" => "Process.pid",                   # PID
-      "h" => "Socket.gethostname rescue nil", # Hostname
+      "h" => "hostname",                      # Hostname
       "F" => "event.file",                    # Path with filename where the logger was called
       "f" => "File.basename(event.file)",     # Filename where the loger was called
       "M" => "event.method",                  # Method name where the logger was called
@@ -103,6 +103,12 @@ module Yell #:nodoc:
 
     def date( event )
       @date_pattern ? event.time.strftime( @date_pattern ) : event.time.iso8601
+    end
+
+    def hostname
+      require 'socket' unless defined? Socket
+
+      Socket.gethostname rescue nil
     end
 
   end
