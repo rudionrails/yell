@@ -42,7 +42,7 @@ module Yell #:nodoc:
   ExtendedFormat  = "%d [%5L] %p %h : %m"
 
 
-  def format( pattern, date_pattern ) #:nodoc:
+  def self.format( pattern, date_pattern )
     Yell::Formatter.new( pattern, date_pattern )
   end
 

@@ -1,7 +1,7 @@
 module Yell #:nodoc:
 
   class Event
-    CallerRegexp = /^(.+?):(\d+)(?::in `(.*)')?/ #:nodoc:
+    CallerRegexp = /^(.+?):(\d+)(?::in `(.*)')?/
 
     # Accessor to the log level
     attr_reader :level

@@ -2,7 +2,7 @@
 
 module Yell #:nodoc:
 
-  def level( val = nil ) #:nodoc:
+  def self.level( val = nil )
     Yell::Level.new( val )
   end
 

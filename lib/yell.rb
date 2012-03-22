@@ -36,7 +36,6 @@ require 'yell/adapters'
 require 'yell/logger'
 
 module Yell #:nodoc:
-  # The possible log levels
   Severities = [ 'DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL', 'UNKNOWN' ]
 
   class << self
