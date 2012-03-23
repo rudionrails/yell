@@ -42,7 +42,7 @@ module Yell #:nodoc:
   ExtendedFormat  = "%d [%5L] %p %h : %m"
 
 
-  def self.format( pattern, date_pattern )
+  def self.format( pattern, date_pattern = nil )
     Yell::Formatter.new( pattern, date_pattern )
   end
 
@@ -50,7 +50,6 @@ module Yell #:nodoc:
   # The +Formatter+ provides a handle to configure your log message style.
   class Formatter
 
-    #:nodoc:
     PatternTable = {
       "m" => "event.message",                 # Message
       "l" => "event.level[0]",                # Level (short), e.g.'I', 'W'
@@ -64,7 +63,6 @@ module Yell #:nodoc:
       "n" => "event.line"                     # Line where the logger was called
     }
 
-    #:nodoc:
     PatternRegexp = /([^%]*)(%\d*)?([#{PatternTable.keys.join}])?(.*)/
 
 
