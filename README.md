@@ -1,6 +1,6 @@
 Yell - Your Extensible Logging Library
 
-[![Build Status](https://secure.travis-ci.org/rudionrails/yell)](http://travis-ci.org/rudionrails/yell)
+[![Build Status](https://secure.travis-ci.org/rudionrails/yell.png)](http://travis-ci.org/rudionrails/yell)
 
 ## Installation
 
