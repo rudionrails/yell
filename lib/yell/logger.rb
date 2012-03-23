@@ -81,7 +81,7 @@ module Yell #:nodoc:
         h.merge( c.is_a?(String) ? {:filename => c} : c  )
       end
 
-      @adapters << Yell::Adapters[ type, options, &block ]
+      @adapters << Yell::Adapters.new( type, options, &block )
     rescue NameError
       raise Yell::NoSuchAdapter, type
     end
