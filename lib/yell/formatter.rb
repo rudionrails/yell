@@ -68,13 +68,17 @@ module Yell #:nodoc:
     PatternRegexp = /([^%]*)(%\d*)?([#{PatternTable.keys.join}])?(.*)/
 
 
+    # Initializes a new +Yell::Formatter+.
+    #
+    # Upon initialization it defines a format method. `format` takes 
+    # a {Yell::Event} instance as agument in order to apply for desired log 
+    # message formatting.
     def initialize( pattern = nil, date_pattern = nil )
       @pattern      = pattern || Yell::DefaultFormat
       @date_pattern = date_pattern
 
       define!
     end
-
 
     private
 
