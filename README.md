@@ -1,5 +1,7 @@
 Yell - Your Extensible Logging Library
 
+[![Build Status](https://secure.travis-ci.org/rudionrails/yell)](http://travis-ci.org/rudionrails/yell)
+
 ## Installation
 
 System wide:

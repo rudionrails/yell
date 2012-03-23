@@ -27,7 +27,7 @@ module Yell
         format options.fetch(:format, nil)
         colorize options.fetch(:colorize, false)
 
-        instance_eval &block if block
+        instance_eval( &block ) if block
       end
 
       # Set the format for your message.

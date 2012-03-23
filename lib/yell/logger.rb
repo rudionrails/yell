@@ -49,7 +49,7 @@ module Yell #:nodoc:
       level @options[:level] if @options[:level]
 
       # eval the given block
-      instance_eval &block if block
+      instance_eval( &block ) if block
 
       define!
     end
@@ -82,7 +82,7 @@ module Yell #:nodoc:
       end
 
       @adapters << Yell::Adapters[ type, options, &block ]
-    rescue NameError => e
+    rescue NameError
       raise Yell::NoSuchAdapter, type
     end
 
