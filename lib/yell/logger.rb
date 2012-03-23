@@ -136,7 +136,7 @@ module Yell #:nodoc:
 
     # Cycles all the adapters and writes the message
     def write( event )
-      @adapters.each { |a| a.write(event) if a.write?(event.level) }
+      @adapters.each { |a| a.write(event) }
     end
 
   end

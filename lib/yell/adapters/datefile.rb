@@ -21,13 +21,6 @@ module Yell #:nodoc:
         super( options, &block )
       end
 
-      # @overload Close the file if date is expired
-      def write( event )
-        close if close?
-
-        super( event )
-      end
-
       # @overload Reset the file handle
       def close
         @filename = new_filename
@@ -37,6 +30,13 @@ module Yell #:nodoc:
 
 
       private
+
+      # @overload Close the file if date is expired
+      def write!( event )
+        close if close?
+
+        super( event )
+      end
 
       # Determines whether to close the file handle or not.
       #

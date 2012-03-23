@@ -25,28 +25,9 @@ module Yell
 
         level options.fetch(:level, nil)
         format options.fetch(:format, nil)
-        colorize! options.fetch(:colorize, false)
+        colorize options.fetch(:colorize, false)
 
         instance_eval &block if block
-      end
-
-      # Main method to calling the file adapter.
-      #
-      # The method formats the message and writes it to the file handle.
-      #
-      # @example
-      #   write( 'info', 'Hello World' )
-      def write( event )
-        message = @formatter.format( event )
-
-        # colorize if applicable
-        if colorize? and color = Colors[level]
-          message = color + message + Colors['DEFAULT']
-        end
-
-        message << "\n" unless message[-1] == ?\n # add new line if there is none
-
-        write!( message )
       end
 
       # Set the format for your message.
@@ -59,20 +40,29 @@ module Yell
       end
 
       # Enable colorizing the log output.
-      def colorize!( color = true )
+      def colorize( color = true )
         @colorize = color
       end
 
-      # Determie whether to colorize the log output or nor
-      #
-      # @return [Boolean] true or false
-      def colorize?; !!@colorize; end
+      def close
+        @stream.close if @stream.respond_to? :close
 
+        @stream = nil
+      end
 
       private
 
-      # TODO: Implement Buffer to not flush immediately.
-      def write!( message )
+      # The method formats the message and writes it to the file handle.
+      def write!( event )
+        message = @formatter.format( event )
+
+        # colorize if applicable
+        if colorize? and color = Colors[event.level]
+          message = color + message + Colors['DEFAULT']
+        end
+
+        message << "\n" unless message[-1] == ?\n # add new line if there is none
+
         stream.print( message )
         stream.flush
       rescue => e
@@ -81,6 +71,9 @@ module Yell
         # re-raise the exception
         raise( e, caller )
       end
+
+      # Determie whether to colorize the log output or nor
+      def colorize?; !!@colorize; end
 
     end
 
