@@ -6,7 +6,7 @@ module Yell #:nodoc:
     # This class provides the basic interface for all allowed 
     # operations on any adapter implementation.
     #
-    # Other adapters should include it for the base methods used 
+    # Other adapters should inherit from it for the methods used 
     # by the {Yell::Logger}.
     class Base
 
@@ -56,9 +56,9 @@ module Yell #:nodoc:
       # Determine whether to write at the given severity.
       #
       # @example
-      #   write? :error
+      #   write? Yell::Event.new( 'INFO', 'Hwllo Wold!' )
       #
-      # @param [String,Symbol,Integer] severity The severity to ask if to write or not.
+      # @param [Yell::Event] event The log event
       #
       # @return [Boolean] true or false
       def write?( event )

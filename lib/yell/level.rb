@@ -44,10 +44,10 @@ module Yell #:nodoc:
     #
     # @param [Integer,String,Symbol,Array,Range,nil] severity The severity for the level.
     def initialize( severity = nil )
-      @severities = Yell::Severities.map { true } # all levels allowed by default
+      @severities = Yell::Severities.map { nil } # all levels allowed by default
 
       case severity
-        when Array then severity.each { |s| at(s) }
+        when Array then at( *severity )
         when Range then gte(severity.first).lte(severity.last)
         when Integer, String, Symbol then gte(severity)
       end
@@ -64,8 +64,8 @@ module Yell #:nodoc:
       index.nil? ? false : @severities[index]
     end
 
-    def at( severity ) #:nodoc:
-      calculate! :==, severity
+    def at( *severities ) #:nodoc:
+      severities.each { |severity| calculate! :==, severity }
       self
     end
 
