@@ -1,8 +1,7 @@
 module Yell
   module Adapters
 
-    class Io
-      include Yell::Adapters::Base
+    class Io < Yell::Adapters::Base
 
       # The possible unix log colors
       Colors = {
@@ -15,19 +14,27 @@ module Yell
         'DEFAULT' => "\e[0m"      # NONE
       }
 
-      # Accessor to the io stream
-      attr_reader :stream
 
-
-      def initialize( stream, options = {}, &block )
-        @stream   = stream
-        @options  = options
-
-        level options.fetch(:level, nil)
-        format options.fetch(:format, nil)
+      def initialize( options = {}, &block )
+        format options[:format]
         colorize options.fetch(:colorize, false)
 
-        instance_eval( &block ) if block
+        super
+      end
+
+      # The IO stream
+      #
+      # Adapter classes should provide their own implementation 
+      # of this method.
+      def stream
+        raise 'Not implemented'
+      end
+
+      # Close the io stream
+      def close
+        @stream.close if @stream.respond_to? :close
+
+        @stream = nil
       end
 
       # Set the format for your message.
@@ -44,11 +51,6 @@ module Yell
         @colorize = color
       end
 
-      def close
-        @stream.close if @stream.respond_to? :close
-
-        @stream = nil
-      end
 
       private
 

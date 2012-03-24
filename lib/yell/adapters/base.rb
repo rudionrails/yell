@@ -8,7 +8,13 @@ module Yell #:nodoc:
     #
     # Other adapters should include it for the base methods used 
     # by the {Yell::Logger}.
-    module Base
+    class Base
+
+      def initialize( options = {}, &block )
+        level options[:level]
+
+        instance_eval( &block ) if block
+      end
 
       # The main method for calling the adapter.
       #
@@ -35,6 +41,7 @@ module Yell #:nodoc:
       def level( severity = nil )
         @level = Yell::Level.new( severity )
       end
+
 
       private
 

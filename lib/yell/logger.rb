@@ -82,8 +82,6 @@ module Yell #:nodoc:
       end
 
       @adapters << Yell::Adapters.new( type, options, &block )
-    rescue NameError
-      raise Yell::NoSuchAdapter, type
     end
 
     # Set the minimum log level.

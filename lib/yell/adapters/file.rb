@@ -8,7 +8,7 @@ module Yell #:nodoc:
     class File < Yell::Adapters::Io
 
       def initialize( options = {}, &block )
-        super( nil, options, &block )
+        super
 
         @filename = options.fetch(:filename, default_filename)
       end
@@ -26,6 +26,8 @@ module Yell #:nodoc:
       end
 
     end
+
+    register( :file, Yell::Adapters::File )
 
   end
 end

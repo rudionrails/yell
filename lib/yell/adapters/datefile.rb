@@ -18,7 +18,7 @@ module Yell #:nodoc:
 
         @date = nil # default; do not override --R
 
-        super( options, &block )
+        super
       end
 
       # @overload Reset the file handle
@@ -60,6 +60,8 @@ module Yell #:nodoc:
       end
 
     end
+
+    register( :datefile, Yell::Adapters::Datefile )
 
   end
 end

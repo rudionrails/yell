@@ -1,10 +1,5 @@
 # encoding: utf-8
 
-require 'yell/adapters/base'
-require 'yell/adapters/io'
-require 'yell/adapters/file'
-require 'yell/adapters/datefile'
-
 module Yell #:nodoc:
 
   # NoSuchAdapter is raised whenever you want to instantiate an 
@@ -15,44 +10,46 @@ module Yell #:nodoc:
   # the logger. You should not have to call the corresponding classes
   # directly.
   module Adapters
+    @@adapters = {}
 
     class << self
+
+      # Register your own adapter here
+      #
+      # @example
+      #   Yell::Adapters.register( :myadapter, MyAdapter )
+      def register( name, klass )
+        @@adapters[name] = klass
+      end
+
       # Returns an instance of the given processor type.
       #
       # @example A simple file adapter
       #   Yell::Adapters.new( :file )
-      def new( type, options = {}, &block )
-        # return type if type.instance_of?(Yell::Adapters::)
+      def new( name, options = {}, &block )
+        return name if name.is_a?( Yell::Adapters::Base )
 
-        if type.instance_of?( ::IO )
-          # should apply to STDOUT, STDERR, File, etc
-          Yell::Adapters::Io.new( type, options, &block )
-        else
-          # any other type
-          adapter = case type
-            when String, Symbol then self.const_get( camelize(type.to_s) )
-            else type
-          end
-
-          adapter.new( options, &block )
+        adapter = case name
+          when STDOUT then @@adapters[:stdout]
+          when STDERR then @@adapters[:stderr]
+          else @@adapters[name]
         end
+
+        raise NoSuchAdapter.new( name ) unless adapter
+
+        adapter.new( options, &block )
       end
 
-
-      private
-
-      # Simple camelcase converter.
-      #
-      # @example
-      #   camelize("file")
-      #   #=> "File"
-      #
-      #   camelize("date_file")
-      #   #=> "DateFile"
-      def camelize( str )
-        str.capitalize.gsub( /(_\w)/ ) { |match| match.reverse.chop.upcase }
-      end
     end
 
   end
 end
+
+require 'yell/adapters/base'
+
+# IO based adapters
+require 'yell/adapters/io'
+require 'yell/adapters/streams'
+require 'yell/adapters/file'
+require 'yell/adapters/datefile'
+
