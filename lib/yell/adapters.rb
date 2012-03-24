@@ -20,7 +20,7 @@ module Yell #:nodoc:
       # Returns an instance of the given processor type.
       #
       # @example A simple file adapter
-      #   Yell::Adapters[ :file ]
+      #   Yell::Adapters.new( :file )
       def new( type, options = {}, &block )
         # return type if type.instance_of?(Yell::Adapters::)
 
