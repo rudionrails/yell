@@ -52,7 +52,7 @@ module Yell #:nodoc:
 
     PatternTable = {
       "m" => "event.message",                 # Message
-      "l" => "event.level[0]",                # Level (short), e.g.'I', 'W'
+      "l" => "event.level[0,1]",              # Level (short), e.g.'I', 'W'
       "L" => "event.level",                   # Level, e.g. 'INFO', 'WARN'
       "d" => "date(event)",                   # ISO8601 Timestamp
       "p" => "Process.pid",                   # PID
