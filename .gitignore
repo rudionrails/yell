@@ -5,3 +5,7 @@ pkg/*
 
 # bundler
 Gemfile.lock
+
+# vim
+*.swp
+**/*.swp
