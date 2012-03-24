@@ -2,6 +2,16 @@ require 'spec_helper'
 
 describe Yell::Level do
 
+  context "default" do
+    let( :level ) { Yell::Level.new }
+
+    it { level.at?(:debug).should be_true }
+    it { level.at?(:info).should be_true }
+    it { level.at?(:warn).should be_true }
+    it { level.at?(:error).should be_true }
+    it { level.at?(:fatal).should be_true }
+  end
+
   context "given a Symbol" do
     let( :level ) { Yell::Level.new(subject) }
 

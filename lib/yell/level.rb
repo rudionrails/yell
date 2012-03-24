@@ -44,7 +44,7 @@ module Yell #:nodoc:
     #
     # @param [Integer,String,Symbol,Array,Range,nil] severity The severity for the level.
     def initialize( severity = nil )
-      @severities = Yell::Severities.map { nil } # all levels allowed by default
+      @severities = Yell::Severities.map { true } # all levels allowed by default
 
       case severity
         when Array then at( *severity )
