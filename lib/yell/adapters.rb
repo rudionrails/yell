@@ -45,6 +45,7 @@ module Yell #:nodoc:
   end
 end
 
+# Base for all adapters
 require 'yell/adapters/base'
 
 # IO based adapters

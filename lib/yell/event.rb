@@ -28,6 +28,13 @@ module Yell #:nodoc:
       @level    = level
       @message  = block ? block.call : message
 
+      _initialize_caller
+    end
+
+
+    private
+
+    def _initialize_caller
       if m = CallerRegexp.match( caller(4).first )
         @file, @line, @method = m[1..-1]
       else

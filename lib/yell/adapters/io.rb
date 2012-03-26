@@ -67,7 +67,7 @@ module Yell
 
         stream.print( message )
         stream.flush
-      rescue => e
+      rescue Exception => e
         close
 
         # re-raise the exception
