@@ -14,37 +14,31 @@ describe Yell::Formatter do
 
   context "%m" do
     subject { "%m" }
-
     it { format.should == "Hello World!" }
   end
 
   context "%l" do
     subject { "%l" }
-
     it { format.should == "I" }
   end
 
   context "%L" do
     subject { "%L" }
-
     it { format.should == "INFO" }
   end
 
   context "%d" do
     subject { "%d" }
-
     it { format.should == time.iso8601 }
   end
 
   context "%p" do
     subject { "%p" }
-
     it { format.should == Process.pid.to_s }
   end
 
   context "%h" do
     subject { "%h" }
-
     it { format.should == Socket.gethostname }
   end
 
@@ -59,44 +53,37 @@ describe Yell::Formatter do
 
     context "%F" do
       subject { "%F" }
-
       it { format.should == "/path/to/file.rb" }
     end
 
     context "%f" do
       subject { "%f" }
-
       it { format.should == "file.rb" }
     end
 
     context "%M" do
       subject { "%M" }
-
       it { format.should == "test_method" }
     end
 
     context "%n" do
       subject { "%n" }
-
       it { format.should == "123" }
     end
   end
 
   context "DefaultFormat" do
     subject { Yell::DefaultFormat }
-
     it { format.should == "#{time.iso8601} [ INFO] #{$$} : Hello World!"  }
   end
 
   context "BasicFormat" do
     subject { Yell::BasicFormat }
-
     it { format.should == "I, #{time.iso8601} : Hello World!"  }
   end
 
   context "ExtendedFormat" do
     subject { Yell::ExtendedFormat }
-
     it { format.should == "#{time.iso8601} [ INFO] #{$$} #{Socket.gethostname} : Hello World!" }
   end
 

@@ -51,16 +51,16 @@ module Yell #:nodoc:
   class Formatter
 
     PatternTable = {
-      "m" => "event.message",                 # Message
-      "l" => "event.level[0,1]",              # Level (short), e.g.'I', 'W'
-      "L" => "event.level",                   # Level, e.g. 'INFO', 'WARN'
-      "d" => "date(event)",                   # ISO8601 Timestamp
-      "p" => "Process.pid",                   # PID
-      "h" => "Socket.gethostname",            # Hostname
-      "F" => "event.file",                    # Path with filename where the logger was called
-      "f" => "File.basename(event.file)",     # Filename where the loger was called
-      "M" => "event.method",                  # Method name where the logger was called
-      "n" => "event.line"                     # Line where the logger was called
+      "m" => "event.message",              # Message
+      "l" => "event.level[0,1]",           # Level (short), e.g.'I', 'W'
+      "L" => "event.level",                # Level, e.g. 'INFO', 'WARN'
+      "d" => "date(event)",                # ISO8601 Timestamp
+      "p" => "event.pid",                  # PID
+      "h" => "event.hostname",             # Hostname
+      "F" => "event.file",                 # Path with filename where the logger was called
+      "f" => "File.basename(event.file)",  # Filename where the loger was called
+      "M" => "event.method",               # Method name where the logger was called
+      "n" => "event.line"                  # Line where the logger was called
     }
 
     PatternRegexp = /([^%]*)(%\d*)?([#{PatternTable.keys.join}])?(.*)/

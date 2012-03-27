@@ -4,14 +4,12 @@ describe Yell::Event do
   let(:event) { Yell::Event.new 'INFO', 'Hello World!' }
 
   context :level do
-    subject { event.level}
-
+    subject { event.level }
     it { should == 'INFO' }
   end
 
   context :message do
     subject { event.message }
-
     it { should == 'Hello World!' }
   end
 
@@ -27,6 +25,16 @@ describe Yell::Event do
     it { should == time }
   end
 
+  context :hostname do
+    subject { event.hostname }
+    it { should == Socket.gethostname }
+  end
+
+  context :pid do
+    subject { event.pid }
+    it { should == Process.pid }
+  end
+
   context :caller do
     let(:file) { "event.rb" }
     let(:line) { "123" }
@@ -40,19 +48,16 @@ describe Yell::Event do
 
     context :file do
       subject { event.file }
-
       it  { should == file }
     end
 
     context :line do
       subject { event.line }
-
       it { should == line }
     end
 
     context :method do
       subject { event.method }
-
       it { should == method }
     end
   end

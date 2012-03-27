@@ -34,8 +34,7 @@ module Yell #:nodoc:
       @options = args.last.is_a?(Hash) ? args.pop : {}
 
       # set the log level when given
-      # level @options[:level] if @options[:level]
-      level @options[:level] # default
+      level @options[:level]
 
       # check if filename was given as argument and put it into the @options
       if args.last.is_a?( String )
@@ -44,9 +43,6 @@ module Yell #:nodoc:
 
       # extract adapter
       adapter args.pop if args.any?
-
-      # set the log level when given
-      level @options[:level] if @options[:level]
 
       # eval the given block
       instance_eval( &block ) if block

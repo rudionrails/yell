@@ -21,12 +21,21 @@ module Yell #:nodoc:
     # Accessor to the method the log event occured
     attr_reader :method
 
+    # Accessor to the hostname
+    attr_reader :hostname
+
+    # Accessor to the pid
+    attr_reader :pid
+
 
     # Initialize a new log event
     def initialize( level, message = nil, &block )
       @time     = Time.now
       @level    = level
       @message  = block ? block.call : message
+
+      @hostname = Socket.gethostname rescue nil
+      @pid      = Process.pid
 
       _initialize_caller
     end
