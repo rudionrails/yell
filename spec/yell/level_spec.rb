@@ -67,9 +67,7 @@ describe Yell::Level do
   end
 
   context "given an Array" do
-    let( :level ) { Yell::Level.new(subject) }
-
-    subject { [:debug, :warn, :fatal] }
+    let( :level ) { Yell::Level.new( [:debug, :warn, :fatal] ) }
 
     it { level.at?(:debug).should be_true }
     it { level.at?(:info).should be_false }
@@ -79,9 +77,7 @@ describe Yell::Level do
   end
 
   context "given a Range" do
-    let( :level ) { Yell::Level.new(subject) }
-
-    subject { (1..3) }
+    let( :level ) { Yell::Level.new( (1..3) ) }
 
     it { level.at?(:debug).should be_false }
     it { level.at?(:info).should be_true }
@@ -90,4 +86,13 @@ describe Yell::Level do
     it { level.at?(:fatal).should be_false }
   end
 
+  context "given a Yell::Level instance" do
+    let( :level ) { Yell::Level.new( :warn ) }
+
+    it { level.at?(:debug).should be_false }
+    it { level.at?(:info).should be_false }
+    it { level.at?(:warn).should be_true }
+    it { level.at?(:error).should be_true }
+    it { level.at?(:fatal).should be_true }
+  end
 end

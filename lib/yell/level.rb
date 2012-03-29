@@ -28,6 +28,8 @@ module Yell #:nodoc:
   #   Yell::Level.new.at(:info)
   class Level
 
+    attr_reader :severities
+
     # Create a new level instance.
     #
     # @example Enable all severities
@@ -47,6 +49,7 @@ module Yell #:nodoc:
       @severities = Yell::Severities.map { true } # all levels allowed by default
 
       case severity
+        when Yell::Level then @severities = severity.severities
         when Array then at( *severity )
         when Range then gte(severity.first).lte(severity.last)
         when Integer, String, Symbol then gte(severity)
