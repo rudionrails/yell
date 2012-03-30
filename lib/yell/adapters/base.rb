@@ -10,7 +10,12 @@ module Yell #:nodoc:
     # by the {Yell::Logger}.
     class Base
 
+      # Accessor to the options
+      attr_reader :options
+
       def initialize( options = {}, &block )
+        @options = options
+
         level options[:level]
 
         instance_eval( &block ) if block
