@@ -7,10 +7,10 @@ Gem::Specification.new do |s|
   s.version     = Yell::VERSION
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Rudolf Schmidt"]
-  
+
   s.homepage    = "http://rubygems.org/gems/yell"
   s.summary     = %q{Yell - Your Extensible Logging Library }
-  s.description = %q{An easy to use logging library to log into files and any other self-defined adapters}
+  s.description = %q{Yell - Your Extensible Logging Library. Define multiple adapters, various log level combinations or message formatting options like you've never done before}
 
   s.rubyforge_project = "yell"
 
