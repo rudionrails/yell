@@ -49,6 +49,35 @@ Naturally, you can pass a `:filename` to Yell:
 logger = Yell.new "yell.log"
 ```
 
+### Levels
+
+Just like any other logging library, Yell allows you to define from which level 
+onwarns you want to write your log message. here are some examples to show how 
+you can combine those.
+
+##### Example: Write from `:info` onwards
+
+```ruby
+logger = Yell.new STDOUT, :level => :info # write on :info, :warn, :error, :fatal
+```
+
+##### Example: Write on `:info` and `:error` only
+
+```ruby
+logger - Yell.new STDOUT, :level => [:info, :error] # write on :info and :error only
+```
+
+##### Example: Write between :info and :error
+
+```ruby
+logger = Yell.new STDOUT, :level => (:info..:error)
+
+# NOTE: The Range might only work with 1.9 compatible rubies!
+```
+
+There are more ways to set your logging level, please consult the 
+[wiki](https://github.com/rudionrails/yell/wiki) on that.
+
 
 ### Adapters
 
@@ -59,15 +88,15 @@ there.
 
 The standard adapters are:
 
-* **:stdout** or **STDOUT**: Messages will be written to STDOUT
-* **:stderr** or **STDERR**: Messages will be written to STDERR
-* **:file**: Messages will be written to a file
-* **:datefile**: Messages will be written to a timestamped file
+**:stdout** or **STDOUT**: Messages will be written to STDOUT  
+**:stderr** or **STDERR**: Messages will be written to STDERR  
+**:file**: Messages will be written to a file  
+**:datefile**: Messages will be written to a timestamped file  
 
 
 Here are some short examples on how to combine them:
 
-#### Example: Notice messages go into `STDOUT` and error messages into `STDERR`
+##### Example: Notice messages go into `STDOUT` and error messages into `STDERR`
 
 ```ruby
 logger = Yell.new do
@@ -76,7 +105,7 @@ logger = Yell.new do
 end
 ```
 
-#### Example: Notice messages to into `application.log` and error messages into `error.log`
+##### Example: Notice messages to into `application.log` and error messages into `error.log`
 
 ```ruby
 logger = Yell.new do
@@ -85,7 +114,7 @@ logger = Yell.new do
 end
 ```
 
-#### Example: Every log severity is handled by a separate adapter and we ignore `:debug` and `:info` levels
+##### Example: Every log severity is handled by a separate adapter and we ignore `:debug` and `:info` levels
 
 ```ruby
 logger = Yell.new do
