@@ -88,10 +88,10 @@ there.
 
 The standard adapters are:
 
-**:stdout** or **STDOUT**: Messages will be written to STDOUT  
-**:stderr** or **STDERR**: Messages will be written to STDERR  
-**:file**: Messages will be written to a file  
-**:datefile**: Messages will be written to a timestamped file  
+`:stdout` : Messages will be written to STDOUT  
+`:stderr` : Messages will be written to STDERR  
+`:file` : Messages will be written to a file  
+`:datefile` : Messages will be written to a timestamped file  
 
 
 Here are some short examples on how to combine them:
