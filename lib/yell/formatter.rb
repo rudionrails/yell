@@ -42,11 +42,6 @@ module Yell #:nodoc:
   ExtendedFormat  = "%d [%5L] %p %h : %m"
 
 
-  def self.format( pattern, date_pattern = nil )
-    Yell::Formatter.new( pattern, date_pattern )
-  end
-
-
   # The +Formatter+ provides a handle to configure your log message style.
   class Formatter
 
@@ -55,15 +50,16 @@ module Yell #:nodoc:
       "l" => "event.level[0,1]",           # Level (short), e.g.'I', 'W'
       "L" => "event.level",                # Level, e.g. 'INFO', 'WARN'
       "d" => "date(event)",                # ISO8601 Timestamp
-      "p" => "event.pid",                  # PID
       "h" => "event.hostname",             # Hostname
+      "p" => "event.pid",                  # PID
+      "t" => "event.thread_id",            # Thread ID
       "F" => "event.file",                 # Path with filename where the logger was called
       "f" => "File.basename(event.file)",  # Filename where the loger was called
       "M" => "event.method",               # Method name where the logger was called
       "n" => "event.line"                  # Line where the logger was called
     }
 
-    PatternRegexp = /([^%]*)(%\d*)?([#{PatternTable.keys.join}])?(.*)/
+    PatternRegexp = /([^%]*)(%\d*)?(#{PatternTable.keys.join('|')})?(.*)/
 
 
     # Initializes a new +Yell::Formatter+.

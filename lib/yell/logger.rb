@@ -2,31 +2,34 @@
 
 module Yell #:nodoc:
 
-  # The +Logger+ is your entrypoint. Anything onwards is derived from here.
+  # The +Yell::Logger+ is your entrypoint. Anything onwards is derived from here.
+  #
+  # A +Yell::Logger+ instance holds all your adapters and sends the log events 
+  # to them if applicable. There are multiple ways of how to create a new logger.
+  #
+  # @example A standard file logger
+  #   Yell::Logger.new
+  #   Yell::Logger.new 'development.log'
+  #
+  # @example A standard datefile logger
+  #   Yell::Logger.new :datefile
+  #   Yell::Logger.new :datefile, 'development.log'
+  #
+  # @example Setting the log level
+  #   Yell::Logger.new :level => :warn
+  #
+  #   Yell::Logger.new do
+  #     level :warn
+  #   end
+  #
+  # @example Combined settings
+  #   Yell::Logger.new 'development.log', :level => :warn
+  #
+  #   Yell::Logger.new :datefile, 'development.log' do
+  #     level :info
+  #   end
   class Logger
-    # Creates a new Logger instance
-    #
-    # @example A standard file logger
-    #   Yell::Logger.new
-    #   Yell::Logger.new 'development.log'
-    #
-    # @example A standard datefile logger
-    #   Yell::Logger.new :datefile
-    #   Yell::Logger.new :datefile, 'development.log'
-    #
-    # @example Setting the log level
-    #   Yell::Logger.new :level => :warn
-    #
-    #   Yell::Logger.new do
-    #     level :warn
-    #   end
-    #
-    # @example Combined settings
-    #   Yell::Logger.new 'development.log', :level => :warn
-    #
-    #   Yell::Logger.new :datefile, 'development.log' do
-    #     level :info
-    #   end
+
     def initialize( *args, &block )
       @adapters = []
 

@@ -37,6 +37,11 @@ describe Yell::Formatter do
     it { format.should == Process.pid.to_s }
   end
 
+  context "%t" do
+    subject { "%t" }
+    it { format.should == Thread.current.object_id.to_s }
+  end
+
   context "%h" do
     subject { "%h" }
     it { format.should == Socket.gethostname }

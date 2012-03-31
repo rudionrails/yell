@@ -2,10 +2,6 @@
 
 module Yell #:nodoc:
 
-  def self.level( val = nil )
-    Yell::Level.new( val )
-  end
-
   # The +Level+ class handles the severities for you in order to determine 
   # if an adapter should log or not.
   #

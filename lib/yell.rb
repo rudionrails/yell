@@ -49,6 +49,15 @@ module Yell #:nodoc:
       Yell::Logger.new( *args, &block )
     end
 
+    def level( val = nil )
+      Yell::Level.new( val )
+    end
+
+    def format( pattern, date_pattern = nil )
+      Yell::Formatter.new( pattern, date_pattern )
+    end
+
+
     def env #:nodoc:
       ENV['YELL_ENV'] || ENV['RACK_ENV'] || 'development'
     end

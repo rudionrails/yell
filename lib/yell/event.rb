@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 module Yell #:nodoc:
 
   class Event
@@ -27,15 +29,18 @@ module Yell #:nodoc:
     # Accessor to the pid
     attr_reader :pid
 
+    # Accessor to the current tread_id
+    attr_reader :thread_id
 
-    # Initialize a new log event
+
     def initialize( level, message = nil, &block )
       @time     = Time.now
       @level    = level
       @message  = block ? block.call : message
 
-      @hostname = Socket.gethostname rescue nil
-      @pid      = Process.pid
+      @hostname   = Socket.gethostname rescue nil
+      @pid        = Process.pid
+      @thread_id  = Thread.current.object_id
 
       _initialize_caller
     end
