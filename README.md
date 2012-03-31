@@ -22,9 +22,8 @@ gem "yell"
 
 ## Usage
 
-On the basics, Yell works just like any other logging library. However, it 
-tries to make your log mesages  more readable. By default, it will format the given 
-message as follows:
+On the basics, you can use Yell just like any other logging library with a more 
+sophisticated message formatter.
 
 ```ruby
 logger = Yell.new STDOUT
@@ -35,56 +34,10 @@ logger.info "Hello World"
 #    ISO8601 Timestamp         Level   Pid     Message
 ```
 
-When no arguments are given, Yell will check for `ENV['RACK_ENV']` and 
-determine the filename from that.
-
-Alternatively, you may define `ENV['YELL_ENV']` to set the filename. If neither 
-`YELL_ENV` or `RACK_ENV` is defined, *'development'* will be the default. Also, if a 
-`log` directory exists, Yell will place the file there (only if you have not passed
-a filename explicitly.
-
-Naturally, you can pass a `:filename` to Yell:
-
-```ruby
-logger = Yell.new "yell.log"
-```
-
-### Levels
-
-Just like any other logging library, Yell allows you to define from which level 
-onwarns you want to write your log message. here are some examples to show how 
-you can combine those.
-
-##### Example: Write from `:info` onwards
-
-```ruby
-logger = Yell.new STDOUT, :level => :info # write on :info, :warn, :error, :fatal
-```
-
-##### Example: Write on `:info` and `:error` only
-
-```ruby
-logger - Yell.new STDOUT, :level => [:info, :error] # write on :info and :error only
-```
-
-##### Example: Write between :info and :error
-
-```ruby
-logger = Yell.new STDOUT, :level => (:info..:error)
-
-# NOTE: The Range might only work with 1.9 compatible rubies!
-```
-
-There are more ways to set your logging level, please consult the 
-[wiki](https://github.com/rudionrails/yell/wiki) on that.
-
-
-### Adapters
-
-Yell comes with various adapters already build-in. Those are the mainly IO-based 
-adapters for every day use. There are additional ones available as separate gems. Please 
-consult the [wiki](https://github.com/rudionrails/yell/wiki) on that - they are listed 
-there.
+The strength of Yell, however, comes when using multiple adapters. The already built-in 
+ones are IO-based and require no further configuration. Also, there are additional ones 
+available as separate gems. Please consult the [wiki](https://github.com/rudionrails/yell/wiki) 
+on that - they are listed there.
 
 The standard adapters are:
 
@@ -105,26 +58,21 @@ logger = Yell.new do
 end
 ```
 
-##### Example: Notice messages to into `application.log` and error messages into `error.log`
+##### Example: Typical production Logger
+
+We setup a logger that starts passing messages at the `:info` level. Severities 
+below `:error` go into the 'production.log', whereas anything higher is written 
+into the 'error.log'.
 
 ```ruby
 logger = Yell.new do
-  adapter :file, 'application.log', :level => [:debug, :info, :warn]
-  adapter :file, 'error.log', :level => [:error, :fatal]
+  level :info # will only pass :info and above to the adapters
+
+  adapter :datefile, 'production.log', :level => Yell.level.lte(:warn)
+  adapter :datefile, 'error.log', :level => Yell.level.gte(:error)
 end
 ```
 
-##### Example: Every log severity is handled by a separate adapter and we ignore `:debug` and `:info` levels
-
-```ruby
-logger = Yell.new do
-  level :warn # only start logging from :warn upwards
-
-  adapter :stdout, :level => [:warn]
-  adapter :datefile, 'error.log', :level => [:error]
-  adapter :datefile, 'fatal.log', :level => [:fatal]
-end
-```
 
 ## Further Readings
 
