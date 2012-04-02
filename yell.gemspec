@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Rudolf Schmidt"]
 
-  s.homepage    = "http://rubygems.org/gems/yell"
+  s.homepage    = "http://rudionrails.github.com/yell"
   s.summary     = %q{Yell - Your Extensible Logging Library }
   s.description = %q{Yell - Your Extensible Logging Library. Define multiple adapters, various log level combinations or message formatting options like you've never done before}
 
