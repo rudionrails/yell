@@ -49,10 +49,16 @@ module Yell #:nodoc:
       Yell::Logger.new( *args, &block )
     end
 
+    # Shortcut to Yell::Level.new
+    #
+    # @return [Yell::Level] A Yell::Level instance
     def level( val = nil )
       Yell::Level.new( val )
     end
 
+    # Shortcut to Yell::Fomatter.new
+    #
+    # @return [Yell::Formatter] A Yell::Formatter instance
     def format( pattern, date_pattern = nil )
       Yell::Formatter.new( pattern, date_pattern )
     end
