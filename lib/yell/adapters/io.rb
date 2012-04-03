@@ -62,7 +62,7 @@ module Yell #:nodoc:
 
       # The method formats the message and writes it to the file handle.
       def write!( event )
-        message = @formatter.format( event )
+        message = @format.format( event )
 
         # colorize if applicable
         if colorize? and color = Colors[event.level]
@@ -73,11 +73,11 @@ module Yell #:nodoc:
 
         stream.print( message )
         stream.flush
-      rescue Exception => e
-        close
+      # rescue Exception => e
+      #   close
 
-        # re-raise the exception
-        raise( e, caller )
+      #   # re-raise the exception
+      #   raise( e, caller )
       end
 
       # Determie whether to colorize the log output or nor
