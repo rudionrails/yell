@@ -24,7 +24,6 @@
 require 'time'
 require 'socket'
 
-require File.dirname(__FILE__) + '/yell/version'
 require File.dirname(__FILE__) + '/yell/event'
 require File.dirname(__FILE__) + '/yell/level'
 require File.dirname(__FILE__) + '/yell/formatter'
