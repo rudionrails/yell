@@ -3,6 +3,11 @@ $LOAD_PATH.unshift( 'lib' )
 require 'bundler'
 Bundler::GemHelper.install_tasks
 
+task :examples do
+  puts "**** Running Examples"
+  Dir[ File.dirname(__FILE__) + '/examples/*.rb' ].each { |file| require file }
+end
+
 # === RSpec
 begin
   require 'rspec/core/rake_task'

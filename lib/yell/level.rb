@@ -23,6 +23,23 @@ module Yell #:nodoc:
   # @example Set at :info only
   #   Yell::Level.new.at(:info)
   class Level
+    module Helpers
+      # Accessor to the log level
+      attr_reader :level
+
+      # Set the minimum log level.
+      #
+      # @example Set the level to :warn
+      #   level = :warn
+      #
+      # @param [String, Symbol, Integer] val The minimum log level
+      def level=( severity )
+        @level = case severity
+          when Yell::Level then severity
+          else Yell::Level.new( severity )
+        end
+      end
+    end
 
     attr_reader :severities
 
@@ -45,7 +62,6 @@ module Yell #:nodoc:
       @severities = Yell::Severities.map { true } # all levels allowed by default
 
       case severity
-        when Yell::Level then @severities = severity.severities
         when Array then at( *severity )
         when Range then gte(severity.first).lte(severity.last)
         when Integer, String, Symbol then gte(severity)

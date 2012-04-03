@@ -9,9 +9,7 @@ module Yell #:nodoc:
     # Other adapters should inherit from it for the methods used 
     # by the {Yell::Logger}.
     class Base
-
-      # Accessor to the level
-      attr_reader :level
+      include Yell::Level::Helpers
 
       # Accessor to the options
       attr_reader :options
@@ -38,16 +36,6 @@ module Yell #:nodoc:
       # of this method.
       def close
         raise 'Not implemented'
-      end
-
-      # Set the log level.
-      #
-      # @example Set minimum level to :info
-      #   level :info
-      #
-      # For more examples, refer to {Yell::Level}.
-      def level=( severity )
-        @level = Yell::Level.new( severity )
       end
 
 

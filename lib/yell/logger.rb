@@ -29,9 +29,7 @@ module Yell #:nodoc:
   #     l.level = :info
   #   end
   class Logger
-
-    # Accessor to the log level
-    attr_reader :level
+    include Yell::Level::Helpers
 
     def initialize( *args, &block )
       @adapters = []
@@ -85,16 +83,6 @@ module Yell #:nodoc:
       end
 
       @adapters << Yell::Adapters.new( type, options, &block )
-    end
-
-    # Set the minimum log level.
-    #
-    # @example Set the level to :warn
-    #   level = :warn
-    #
-    # @param [String, Symbol, Integer] val The minimum log level
-    def level=( severity )
-      @level = Yell::Level.new( severity )
     end
 
     # Deprecated: Use attr_reader in future

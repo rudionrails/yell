@@ -74,6 +74,7 @@ module Yell #:nodoc:
       define!
     end
 
+
     private
 
     # defines the format method

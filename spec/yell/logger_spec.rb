@@ -75,15 +75,15 @@ describe Yell::Logger do
     let( :level ) { Yell::Level.new :error }
     let( :adapter ) { Yell::Adapters::Stdout.new }
 
-    let( :logger ) do 
-      Yell::Logger.new do |l| 
+    let( :logger ) do
+      Yell::Logger.new do |l|
         l.level = level
         l.adapter adapter
       end
     end
 
     it "should set the level" do
-      logger.level.severities.should == level.severities
+      logger.level.should == level
     end
 
     it "should define adapter" do
