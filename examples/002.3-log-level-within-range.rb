@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require File.dirname(__FILE__) + '/../lib/yell'
+require_relative '../lib/yell'
 
 puts <<-EOS
 
