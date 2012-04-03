@@ -52,9 +52,9 @@ Here are some short examples on how to combine them:
 ##### Example: Notice messages go into `STDOUT` and error messages into `STDERR`
 
 ```ruby
-logger = Yell.new do
-  adapter STDOUT, :level => [:debug, :info, :warn]
-  adapter STDERR, :level => [:error, :fatal]
+logger = Yell.new do |l|
+  l.adapter STDOUT, :level => [:debug, :info, :warn]
+  l.adapter STDERR, :level => [:error, :fatal]
 end
 ```
 
@@ -65,11 +65,11 @@ below `:error` go into the 'production.log', whereas anything higher is written
 into the 'error.log'.
 
 ```ruby
-logger = Yell.new do
-  level :info # will only pass :info and above to the adapters
+logger = Yell.new do |l|
+  l.level = :info # will only pass :info and above to the adapters
 
-  adapter :datefile, 'production.log', :level => Yell.level.lte(:warn)
-  adapter :datefile, 'error.log', :level => Yell.level.gte(:error)
+  l.adapter :datefile, 'production.log', :level => Yell.level.lte(:warn)
+  l.adapter :datefile, 'error.log', :level => Yell.level.gte(:error)
 end
 ```
 

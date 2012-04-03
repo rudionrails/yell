@@ -18,17 +18,20 @@ module Yell #:nodoc:
   # @example Setting the log level
   #   Yell::Logger.new :level => :warn
   #
-  #   Yell::Logger.new do
-  #     level :warn
+  #   Yell::Logger.new do |l|
+  #     l.level = :warn
   #   end
   #
   # @example Combined settings
   #   Yell::Logger.new 'development.log', :level => :warn
   #
-  #   Yell::Logger.new :datefile, 'development.log' do
-  #     level :info
+  #   Yell::Logger.new :datefile, 'development.log' do |l|
+  #     l.level = :info
   #   end
   class Logger
+
+    # Accessor to the log level
+    attr_reader :level
 
     def initialize( *args, &block )
       @adapters = []
@@ -36,19 +39,20 @@ module Yell #:nodoc:
       # extract options
       @options = args.last.is_a?(Hash) ? args.pop : {}
 
-      # set the log level when given
-      level @options[:level]
-
       # check if filename was given as argument and put it into the @options
       if args.last.is_a?( String )
         @options[:filename] = args.pop unless @options[:filename]
       end
 
+      # set the log level when given
+      self.level = @options[:level]
+
       # extract adapter
-      adapter args.pop if args.any?
+      self.adapter args.pop if args.any?
 
       # eval the given block
-      instance_eval( &block ) if block
+      # block.call(self) if block
+      _call( &block ) if block
 
       define!
     end
@@ -86,22 +90,51 @@ module Yell #:nodoc:
     # Set the minimum log level.
     #
     # @example Set the level to :warn
-    #   level :warn
+    #   level = :warn
     #
     # @param [String, Symbol, Integer] val The minimum log level
+    def level=( severity )
+      @level = Yell::Level.new( severity )
+    end
+
+    # Deprecated: Use attr_reader in future
     def level( val = nil )
-      @level = Yell::Level.new( val )
+      if val.nil?
+        @level
+      else
+        # deprecated, but should still work
+        Yell._deprecate( "0.5.0", "Use :level= for setting the log level",
+          :before => "Yell::Logger.new { level :info }",
+          :after  => "Yell::Logger.new { |l| l.level = :info }"
+        )
+
+        @level = Yell::Level.new( val )
+      end
     end
 
     # Convenience method for resetting all adapters of the Logger.
     #
     # @param [Boolean] now Perform the reset immediately (default false)
-    def close( now = false )
+    def close
       @adapters.each(&:close)
     end
 
 
     private
+
+    def _call( &block )
+      if block.arity == 0
+        Yell._deprecate( "0.5.0", "Yell::Logger.new with block expects argument now",
+          :before => "Yell::Logger.new { adapter STDOUT }",
+          :after  => "Yell::Logger.new { |l| l.adapter STDOUT }"
+        )
+
+        # deprecated, but should still work
+        instance_eval( &block )
+      else
+        block.call(self)
+      end
+    end
 
     # Sets a default adapter if none was given explicitly and defines the log methods on
     # the logger instance.
@@ -114,11 +147,11 @@ module Yell #:nodoc:
     # Creates instance methods for every defined log level (debug, info, ...) depending
     # on whether anything should be logged upon, for instance, #info.
     def define_log_methods!
-      Yell::Severities.each do |s|
+      Yell::Severities.each_with_index do |s, index|
         name = s.downcase
 
         instance_eval %-
-          def #{name}?; #{@level.at?(name)}; end    # def info?; true; end
+          def #{name}?; @level.at?(#{index}); end   # def info?; @level.at?(1); end
                                                     #
           def #{name}( m = nil, &b )                # def info( m = nil, &b )
             return unless #{name}?                  #   return unless info?

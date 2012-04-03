@@ -5,7 +5,7 @@ describe Yell::Adapters::Base do
   context "initialize with :level" do
     before do
       any_instance_of( Yell::Adapters::Base ) do |base|
-        mock( base ).level( :info )
+        mock( base ).level= :info
       end
     end
 
@@ -18,7 +18,7 @@ describe Yell::Adapters::Base do
     context :level do
       before do
         any_instance_of( Yell::Adapters::Base ) do |base|
-          mock( base ).level( :info )
+          mock( base ).level= :info
         end
       end
 

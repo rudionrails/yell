@@ -24,17 +24,12 @@
 require 'time'
 require 'socket'
 
-begin
-  require 'yell/event'
-rescue LoadError
-  $: << File.dirname(__FILE__)
-  require 'yell/event'
-end
-
-require 'yell/level'
-require 'yell/formatter'
-require 'yell/adapters'
-require 'yell/logger'
+require File.dirname(__FILE__) + '/yell/version'
+require File.dirname(__FILE__) + '/yell/event'
+require File.dirname(__FILE__) + '/yell/level'
+require File.dirname(__FILE__) + '/yell/formatter'
+require File.dirname(__FILE__) + '/yell/adapters'
+require File.dirname(__FILE__) + '/yell/logger'
 
 module Yell #:nodoc:
   Severities = [ 'DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL', 'UNKNOWN' ]
@@ -63,10 +58,18 @@ module Yell #:nodoc:
       Yell::Formatter.new( pattern, date_pattern )
     end
 
-
     def env #:nodoc:
       ENV['YELL_ENV'] || ENV['RACK_ENV'] || 'development'
     end
+
+    def _deprecate( version, message, options = {} )
+      warning = ["Deprecation Warning (since v#{version}): #{message}" ]
+      warning << "  before: #{options[:before]}" if options[:before]
+      warning << "  after:  #{options[:after]}" if options[:after]
+
+      $stderr.puts warning.join( "\n" )
+    end
+
   end
 
 end

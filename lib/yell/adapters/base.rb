@@ -10,15 +10,18 @@ module Yell #:nodoc:
     # by the {Yell::Logger}.
     class Base
 
+      # Accessor to the level
+      attr_reader :level
+
       # Accessor to the options
       attr_reader :options
 
       def initialize( options = {}, &block )
         @options = options
 
-        level options[:level]
+        self.level = options[:level]
 
-        instance_eval( &block ) if block
+        block.call(self) if block
       end
 
       # The main method for calling the adapter.
@@ -43,7 +46,7 @@ module Yell #:nodoc:
       #   level :info
       #
       # For more examples, refer to {Yell::Level}.
-      def level( severity = nil )
+      def level=( severity )
         @level = Yell::Level.new( severity )
       end
 

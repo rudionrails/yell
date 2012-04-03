@@ -16,12 +16,15 @@ module Yell #:nodoc:
         'DEFAULT' => "\e[0m"      # NONE
       }
 
+      # Accessor to the formatter
+      attr_reader :format
 
       def initialize( options = {}, &block )
-        format options[:format]
         colorize options.fetch(:colorize, false)
 
-        super
+        self.format = options[:format]
+
+        super( options, &block )
       end
 
       # The IO stream
@@ -40,11 +43,11 @@ module Yell #:nodoc:
       end
 
       # Set the format for your message.
-      def format( pattern, date_pattern = nil )
-        @formatter = case pattern
+      def format=( pattern )
+        @format = case pattern
           when Yell::Formatter then pattern
           when false then Yell::Formatter.new( "%m" )
-          else Yell::Formatter.new( pattern, date_pattern )
+          else Yell::Formatter.new( *pattern )
         end
       end
 
@@ -52,6 +55,7 @@ module Yell #:nodoc:
       def colorize( color = true )
         @colorize = color
       end
+      alias :colorize! :colorize
 
 
       private

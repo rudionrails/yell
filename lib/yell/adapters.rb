@@ -46,11 +46,11 @@ module Yell #:nodoc:
 end
 
 # Base for all adapters
-require 'yell/adapters/base'
+require File.dirname(__FILE__) + '/adapters/base'
 
 # IO based adapters
-require 'yell/adapters/io'
-require 'yell/adapters/streams'
-require 'yell/adapters/file'
-require 'yell/adapters/datefile'
+require File.dirname(__FILE__) + '/adapters/io'
+require File.dirname(__FILE__) + '/adapters/streams'
+require File.dirname(__FILE__) + '/adapters/file'
+require File.dirname(__FILE__) + '/adapters/datefile'
 

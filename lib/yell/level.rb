@@ -63,6 +63,12 @@ module Yell #:nodoc:
       index.nil? ? false : @severities[index]
     end
 
+    # to_i implements backwards compatibility
+    def to_i
+      @severities.each_with_index { |s,i| return i if s == true }
+    end
+    alias :to_int :to_i
+
     def at( *severities ) #:nodoc:
       severities.each { |severity| calculate! :==, severity }
       self

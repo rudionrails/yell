@@ -95,4 +95,17 @@ describe Yell::Level do
     it { level.at?(:error).should be_true }
     it { level.at?(:fatal).should be_true }
   end
+
+  context "backwards compatibility" do
+    let( :level ) { Yell::Level.new :warn }
+
+    it { level.to_i.should == 2 }
+    it { Integer(level).should == 2 }
+
+    it "should be compatible when passing to array (https://github.com/rudionrails/yell/issues/1)" do
+      severities = %w(FINE INFO WARNING SEVERE SEVERE INFO)
+
+      severities[level].should == "WARNING"
+    end
+  end
 end
