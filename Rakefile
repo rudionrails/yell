@@ -4,8 +4,17 @@ require 'bundler'
 Bundler::GemHelper.install_tasks
 
 task :examples do
-  puts "**** Running Examples"
-  Dir[ File.dirname(__FILE__) + '/examples/*.rb' ].each { |file| require file }
+  Dir[ './examples/*.rb' ].each do |file|
+    begin
+      puts "**** Running #{file}"
+
+      require file
+    rescue Exception => e
+      puts "#{e.class}: #{e.message}:\n\t#{e.backtrace.join("\n\t")}"
+
+      exit 1
+    end
+  end
 end
 
 # === RSpec
