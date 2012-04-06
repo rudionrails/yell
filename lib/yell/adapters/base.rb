@@ -11,12 +11,7 @@ module Yell #:nodoc:
     class Base
       include Yell::Level::Helpers
 
-      # Accessor to the options
-      attr_reader :options
-
       def initialize( options = {}, &block )
-        @options = options
-
         self.level = options[:level]
 
         block.call(self) if block

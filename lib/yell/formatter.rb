@@ -44,6 +44,19 @@ module Yell #:nodoc:
 
   # The +Formatter+ provides a handle to configure your log message style.
   class Formatter
+    module Helpers
+      # Accessor to the format
+      attr_reader :format
+
+      # Set the format for your message.
+      def format=( pattern )
+        @format = case pattern
+          when Yell::Formatter then pattern
+          when false then Yell::Formatter.new( Yell::NoFormat )
+          else Yell::Formatter.new( *pattern )
+        end
+      end
+    end
 
     PatternTable = {
       "m" => "event.message",              # Message

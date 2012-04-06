@@ -4,6 +4,7 @@ module Yell #:nodoc:
   module Adapters #:nodoc:
 
     class Io < Yell::Adapters::Base
+      include Yell::Formatter::Helpers
 
       # The possible unix log colors
       Colors = {
@@ -16,12 +17,10 @@ module Yell #:nodoc:
         'DEFAULT' => "\e[0m"      # NONE
       }
 
-      # Accessor to the formatter
-      attr_reader :format
+      attr_accessor :colors
 
       def initialize( options = {}, &block )
-        colorize options.fetch(:colorize, false)
-
+        self.colors = options[:colors]
         self.format = options[:format]
 
         super( options, &block )
@@ -42,21 +41,8 @@ module Yell #:nodoc:
         @stream = nil
       end
 
-      # Set the format for your message.
-      def format=( pattern )
-        @format = case pattern
-          when Yell::Formatter then pattern
-          when false then Yell::Formatter.new( "%m" )
-          else Yell::Formatter.new( *pattern )
-        end
-      end
-
-      # Enable colorizing the log output.
-      def colorize( color = true )
-        @colorize = color
-      end
-      alias :colorize! :colorize
-
+      # Shortcut to enable colors
+      def colorize!; @colors = true; end
 
       private
 
@@ -65,7 +51,7 @@ module Yell #:nodoc:
         message = @format.format( event )
 
         # colorize if applicable
-        if colorize? and color = Colors[event.level]
+        if colors and color = Colors[event.level]
           message = color + message + Colors['DEFAULT']
         end
 
@@ -79,9 +65,6 @@ module Yell #:nodoc:
         # re-raise the exception
         raise( e, caller )
       end
-
-      # Determie whether to colorize the log output or nor
-      def colorize?; !!@colorize; end
 
     end
 
