@@ -24,12 +24,6 @@
 require 'time'
 require 'socket'
 
-require File.dirname(__FILE__) + '/yell/event'
-require File.dirname(__FILE__) + '/yell/level'
-require File.dirname(__FILE__) + '/yell/formatter'
-require File.dirname(__FILE__) + '/yell/adapters'
-require File.dirname(__FILE__) + '/yell/logger'
-
 module Yell #:nodoc:
   Severities = [ 'DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL', 'UNKNOWN' ]
 
@@ -72,4 +66,10 @@ module Yell #:nodoc:
   end
 
 end
+
+require File.dirname(__FILE__) + '/yell/event'
+require File.dirname(__FILE__) + '/yell/level'
+require File.dirname(__FILE__) + '/yell/formatter'
+require File.dirname(__FILE__) + '/yell/adapters'
+require File.dirname(__FILE__) + '/yell/logger'
 

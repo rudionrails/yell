@@ -49,10 +49,11 @@ module Yell #:nodoc:
       self.adapter args.pop if args.any?
 
       # eval the given block
-      # block.call(self) if block
-      _call( &block ) if block
+      block.call(self) if block
+      # _call( &block ) if block
 
-      define!
+      # default adapter when none defined
+      adapter :file if @adapters.empty?
     end
 
     # Define an adapter to be used for logging.
@@ -107,6 +108,28 @@ module Yell #:nodoc:
       @adapters.each(&:close)
     end
 
+    # Creates instance methods for every log level:
+    #   `debug` and `debug?`
+    #   `info` and `info?`
+    #   `warn` and `warn?`
+    #   `error` and `error?`
+    #   `unknown` and `unknown?`
+    Yell::Severities.each_with_index do |s, index|
+      name = s.downcase
+
+      class_eval <<-EOS, __FILE__, __LINE__
+        def #{name}?; @level.at?(#{index}); end   # def info?; @level.at?(1); end
+                                                  #
+        def #{name}( m = nil, &b )                # def info( m = nil, &b )
+          return unless #{name}?                  #   return unless info?
+                                                  #
+          write Yell::Event.new( '#{s}', m, &b )  #   write Yell::Event.new( "INFO", m, &b )
+                                                  #
+          true                                    #   true
+        end                                       # end
+      EOS
+    end
+
 
     private
 
@@ -121,34 +144,6 @@ module Yell #:nodoc:
         instance_eval( &block )
       else
         block.call(self)
-      end
-    end
-
-    # Sets a default adapter if none was given explicitly and defines the log methods on
-    # the logger instance.
-    def define!
-      adapter :file if @adapters.empty? # default adapter when none defined
-
-      define_log_methods!
-    end
-
-    # Creates instance methods for every defined log level (debug, info, ...) depending
-    # on whether anything should be logged upon, for instance, #info.
-    def define_log_methods!
-      Yell::Severities.each_with_index do |s, index|
-        name = s.downcase
-
-        instance_eval %-
-          def #{name}?; @level.at?(#{index}); end   # def info?; @level.at?(1); end
-                                                    #
-          def #{name}( m = nil, &b )                # def info( m = nil, &b )
-            return unless #{name}?                  #   return unless info?
-                                                    #
-            write Yell::Event.new( '#{s}', m, &b )  #   write Yell::Event.new( "INFO", m, &b )
-                                                    #
-            true                                    #   true
-          end                                       # end
-        -
       end
     end
 
