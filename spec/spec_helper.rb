@@ -12,5 +12,8 @@ require 'timecop'
 RSpec.configure do |config|
   config.mock_framework = :rr
 
+  config.after do
+    Dir[ "*.log" ].each { |f| File.delete f }
+  end
 end
 
