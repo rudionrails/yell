@@ -59,11 +59,11 @@ module Yell #:nodoc:
 
         stream.print( message )
         stream.flush
-      rescue Exception => e
-        close
+      # rescue Exception => e
+      #   close
 
-        # re-raise the exception
-        raise( e, caller )
+      #   # re-raise the exception
+      #   raise( e, caller )
       end
 
     end

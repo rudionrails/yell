@@ -8,9 +8,9 @@ module Yell #:nodoc:
     class File < Yell::Adapters::Io
 
       def initialize( options = {}, &block )
-        super
-
         @filename = options.fetch(:filename, default_filename)
+
+        super( options, &block )
       end
 
       # @overload Lazily open the file handle
