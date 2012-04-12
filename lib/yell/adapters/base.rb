@@ -3,16 +3,115 @@
 module Yell #:nodoc:
   module Adapters #:nodoc:
 
-    # This class provides the basic interface for all allowed 
-    # operations on any adapter implementation.
+    # This class provides the basic interface for all allowed operations on any 
+    # adapter implementation. Other adapters should inherit from it for the methods 
+    # used by the {Yell::Logger}.
     #
-    # Other adapters should inherit from it for the methods used 
-    # by the {Yell::Logger}.
+    # Writing your own adapter is really simple. Inherit from the base class and use 
+    # the `setup`, `write` and `close` methods. Yell requires the `write` method to be 
+    # specified (`setup` and `close` are optional).
+    #
+    #
+    # The following example shows how to define a basic Adapter to format and print 
+    # log events to STDOUT:
+    #
+    #   class PutsAdapter < Yell::Adapters::Base
+    #     include Yell::Formatter::Helpers
+    #
+    #     setup do |options|
+    #       self.format = options[:format]
+    #     end
+    #
+    #     write do |event|
+    #       message = format.format(event)
+    #
+    #       STDOUT.puts message
+    #     end
+    #   end
+    #
+    #
+    # After the Adapter has been written, we need to register it to Yell:
+    #
+    #   Yell::Adapters.register :puts, PutsAdapter
+    #
+    # Now, we can use it like so:
+    #
+    #   logger = Yell.new :puts
+    #   logger.info "Hello World!"
     class Base
       include Yell::Level::Helpers
 
+      class << self
+        # Setup your adapter with this helper method.
+        #
+        # @example
+        #   setup do |options|
+        #     @file_handle = File.new( '/dev/null', 'w' )
+        #   end
+        def setup( &block )
+          compile!( :setup!, &block )
+        end
+
+        # Define your write method with this helper.
+        #
+        # @example Printing messages to file
+        #   write do |event|
+        #     @file_handle.puts event.message
+        #   end
+        def write( &block )
+          compile!( :write!, &block )
+        end
+
+        # Define your close method with this helper.
+        #
+        # @example Closing a file handle
+        #   close do
+        #     @file_handle.close
+        #   end
+        def close( &block )
+          compile!( :close!, &block )
+        end
+
+
+        private
+
+        # Pretty funky code block, I know but here is what it basically does:
+        #
+        # @example
+        #   compile! :write! do |event|
+        #     puts event.message
+        #   end
+        #
+        #   # Is actually defining the `:write!` instance method with a call to super:
+        #
+        #   def write!( event )
+        #     puts event.method
+        #     super
+        #   end
+        def compile!( name, &block )
+          # Get the already defined method
+          m = instance_method name
+
+          # Create a new method with leading underscore
+          define_method "_#{name}", &block
+          _m = instance_method "_#{name}"
+          remove_method "_#{name}"
+
+          # Define instance method
+          if block.arity == 0
+            define_method(name) { _m.bind(self).call; m.bind(self).call }
+          else
+            define_method(name) { |*args| _m.bind(self).call(*args); m.bind(self).call(*args) }
+          end
+        end
+      end
+
+
+      # Initializes a new Adapter.
+      #
+      # You should not overload the constructor, use #setup instead.
       def initialize( options = {}, &block )
-        self.level = options[:level]
+        setup!(options)
 
         block.call(self) if block
       end
@@ -23,6 +122,11 @@ module Yell #:nodoc:
       # actually write or not.
       def write( event )
         write!( event ) if write?( event )
+      rescue Exception => e
+        # make sure the adapter is closed and re-raise the exception
+        close
+
+        raise( e )
       end
 
       # Close the adapter (stream, connection, etc).
@@ -30,18 +134,34 @@ module Yell #:nodoc:
       # Adapter classes should provide their own implementation 
       # of this method.
       def close
-        raise 'Not implemented'
+        close!
       end
 
 
       private
 
-      # The perform the actual write.
+      # Setup the adapter instance.
+      #
+      # Adapter classes should provide their own implementation 
+      # of this method (if applicable).
+      def setup!( options )
+        self.level = options[:level]
+      end
+
+      # Perform the actual write.
+      #
+      # Adapter classes must provide their own implementation 
+      # of this method.
+      def write!( event )
+        # Not implemented
+      end
+
+      # Perform the actual close.
       #
       # Adapter classes should provide their own implementation 
       # of this method.
-      def write!( event )
-        raise 'Not implemented'
+      def close!
+        # Not implemented
       end
 
       # Determine whether to write at the given severity.

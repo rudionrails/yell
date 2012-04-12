@@ -10,33 +10,25 @@ module Yell #:nodoc:
       # The default date pattern, e.g. "19820114" (14 Jan 1982)
       DefaultDatePattern = "%Y%m%d"
 
-      def initialize( options = {}, &block )
+      setup do |options|
         @date_pattern = options[:date_pattern] || DefaultDatePattern
 
         @file_basename = options[:filename] || default_filename
         options[:filename] = @file_basename
 
         @date = nil # default; do not override --R
-
-        super
       end
 
-      # @overload Reset the file handle
-      def close
-        @filename = new_filename
+      write do |event|
+        close if close?
+      end
 
-        super
+      close do
+        @filename = @file_basename.sub( /(\.\w+)?$/, ".#{@date}\\1" )
       end
 
 
       private
-
-      # @overload Close the file if date is expired
-      def write!( event )
-        close if close?
-
-        super( event )
-      end
 
       # Determines whether to close the file handle or not.
       #
@@ -52,11 +44,6 @@ module Yell #:nodoc:
         end
 
         false
-      end
-
-      # Sets the filename with the `:date_pattern` appended to it.
-      def new_filename
-        @file_basename.sub( /(\.\w+)?$/, ".#{@date}\\1" )
       end
 
     end

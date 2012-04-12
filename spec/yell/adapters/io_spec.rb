@@ -42,7 +42,7 @@ describe Yell::Adapters::Io do
 
   context :stream do
     it "should raise" do
-      lambda { Yell::Adapters::Io.new.stream }.should raise_error("Not implemented" )
+      lambda { Yell::Adapters::Io.new.send :stream }.should raise_error("Not implemented" )
     end
   end
 

@@ -55,13 +55,5 @@ describe Yell::Adapters::Base do
     end
   end
 
-  context :close do
-    subject { Yell::Adapters::Base.new.close }
-
-    it "should raise" do
-      lambda { subject }.should raise_error("Not implemented" )
-    end
-  end
-
 end
 

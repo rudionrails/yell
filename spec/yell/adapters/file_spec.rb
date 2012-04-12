@@ -10,7 +10,7 @@ describe Yell::Adapters::File do
   it { should be_kind_of Yell::Adapters::Io }
 
   context :stream do
-    subject { Yell::Adapters::File.new.stream }
+    subject { Yell::Adapters::File.new.send :stream }
 
     it { should be_kind_of File }
   end

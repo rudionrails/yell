@@ -5,6 +5,8 @@ module Yell #:nodoc:
 
     class Stdout < Yell::Adapters::Io
 
+      private
+
       # @overload Lazily open the STDOUT stream
       def stream
         @stream ||= $stdout.clone
@@ -12,6 +14,8 @@ module Yell #:nodoc:
     end
 
     class Stderr < Yell::Adapters::Io
+
+      private
 
       # @overload Lazily open the STDERR stream
       def stream

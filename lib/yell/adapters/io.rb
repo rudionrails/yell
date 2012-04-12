@@ -17,38 +17,13 @@ module Yell #:nodoc:
         'DEFAULT' => "\e[0m"      # NONE
       }
 
-      attr_accessor :colors
-
-      def initialize( options = {}, &block )
+      setup do |options|
         self.colors = options[:colors]
         self.format = options[:format]
-
-        super( options, &block )
       end
 
-      # The IO stream
-      #
-      # Adapter classes should provide their own implementation 
-      # of this method.
-      def stream
-        raise 'Not implemented'
-      end
-
-      # Close the io stream
-      def close
-        @stream.close if @stream.respond_to? :close
-
-        @stream = nil
-      end
-
-      # Shortcut to enable colors
-      def colorize!; @colors = true; end
-
-      private
-
-      # The method formats the message and writes it to the file handle.
-      def write!( event )
-        message = @format.format( event )
+      write do |event|
+        message = format.format(event)
 
         # colorize if applicable
         if colors and color = Colors[event.level]
@@ -59,11 +34,28 @@ module Yell #:nodoc:
 
         stream.print( message )
         stream.flush
-      # rescue Exception => e
-      #   close
+      end
 
-      #   # re-raise the exception
-      #   raise( e, caller )
+      close do
+        @stream.close if @stream.respond_to? :close
+        @stream = nil
+      end
+
+
+      attr_accessor :colors
+
+      # Shortcut to enable colors
+      def colorize!; @colors = true; end
+
+
+      private
+
+      # The IO stream
+      #
+      # Adapter classes should provide their own implementation 
+      # of this method.
+      def stream
+        raise 'Not implemented'
       end
 
     end

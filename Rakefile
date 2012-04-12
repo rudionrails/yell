@@ -4,20 +4,26 @@ require 'bundler'
 Bundler::GemHelper.install_tasks
 
 task :examples do
-  Dir[ './examples/*.rb' ].each do |file|
-    begin
-      puts "**** Running #{file}"
+  require 'benchmark'
 
-      require file
-    rescue Exception => e
-      puts "#{e.class}: #{e.message}:\n\t#{e.backtrace.join("\n\t")}"
+  seconds = Benchmark.realtime do
+    Dir[ './examples/*.rb' ].sort.each do |file|
+      begin
+        puts "\n*** Running #{file}"
 
-      exit 1
+        require file
+      rescue Exception => e
+        puts "#{e.class}: #{e.message}:\n\t#{e.backtrace.join("\n\t")}"
+
+        exit 1
+      end
     end
   end
+
+  puts "\n\t[ Examples took #{seconds} seconds to run ]"
 end
 
-# === RSpec
+# RSpec
 begin
   require 'rspec/core/rake_task'
 
