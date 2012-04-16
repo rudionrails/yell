@@ -83,6 +83,15 @@ end
 [How To: Different Adapters for Different Log Levels](https://github.com/rudionrails/yell/wiki/101-different-adapters-for-different-log-levels)  
 
 
+### Additional Adapters
+[Syslog](https://github.com/rudionrails/yell/wiki/additional-adapters-syslog)  
+[Graylog2 (GELF)](https://github.com/rudionrails/yell/wiki/additional-adapters-gelf)  
+
+
+### Development
+
+[How To: Writing Your Own Adapter](https://github.com/rudionrails/yell/wiki/Writing-your-own-adapter)  
+
 You can find further examples and additional adapters in the [wiki](https://github.com/rudionrails/yell/wiki).
 or have a look into the examples folder.
 
