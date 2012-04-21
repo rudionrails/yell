@@ -1,7 +1,13 @@
 # encoding: utf-8
 
+require 'monitor'
+
 module Yell #:nodoc:
   module Adapters #:nodoc:
+
+    class Mutex
+      include MonitorMixin
+    end
 
     # This class provides the basic interface for all allowed operations on any 
     # adapter implementation. Other adapters should inherit from it for the methods 
@@ -111,6 +117,8 @@ module Yell #:nodoc:
       #
       # You should not overload the constructor, use #setup instead.
       def initialize( options = {}, &block )
+        @mutex = Yell::Adapters::Mutex.new
+
         setup!(options)
 
         block.call(self) if block
@@ -121,10 +129,10 @@ module Yell #:nodoc:
       # The method receives the log `event` and determines whether to 
       # actually write or not.
       def write( event )
-        write!( event ) if write?( event )
+        synchronize { write!(event) } if write?(event)
       rescue Exception => e
         # make sure the adapter is closed and re-raise the exception
-        close
+        synchronize { close }
 
         raise( e )
       end
@@ -174,6 +182,10 @@ module Yell #:nodoc:
       # @return [Boolean] true or false
       def write?( event )
         @level.nil? || @level.at?( event.level )
+      end
+
+      def synchronize( &block )
+        @mutex.synchronize( &block )
       end
 
     end

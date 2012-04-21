@@ -16,7 +16,14 @@ module Yell #:nodoc:
 
       # @overload Lazily open the file handle
       def stream
-        @stream ||= ::File.open( @filename, ::File::WRONLY|::File::APPEND|::File::CREAT )
+        @stream or open!
+      end
+
+      def open!
+        @stream = ::File.open( @filename, ::File::WRONLY|::File::APPEND|::File::CREAT )
+        @stream.sync = true
+
+        @stream
       end
 
       def default_filename #:nodoc:

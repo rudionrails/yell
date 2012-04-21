@@ -63,9 +63,7 @@ describe Yell::Adapters::Io do
 
     it "should print formatted message to stream" do
       formatted = Yell::Formatter.new.format( event )
-
-      mock( stream ).print( formatted << "\n" )
-      mock( stream ).flush
+      mock( stream ).write( formatted << "\n" )
 
       adapter.write( event )
     end

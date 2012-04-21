@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+require 'monitor'
+
 module Yell #:nodoc:
   module Adapters #:nodoc:
 
@@ -18,6 +20,8 @@ module Yell #:nodoc:
       }
 
       setup do |options|
+        @stream = nil
+
         self.colors = options[:colors]
         self.format = options[:format]
       end
@@ -32,8 +36,7 @@ module Yell #:nodoc:
 
         message << "\n" unless message[-1] == ?\n # add new line if there is none
 
-        stream.print( message )
-        stream.flush
+        stream.write( message )
       end
 
       close do
@@ -57,7 +60,6 @@ module Yell #:nodoc:
       def stream
         raise 'Not implemented'
       end
-
     end
 
   end
