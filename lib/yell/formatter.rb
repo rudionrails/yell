@@ -59,7 +59,7 @@ module Yell #:nodoc:
     end
 
     PatternTable = {
-      "m" => "event.message",              # Message
+      "m" => "message(event)",             # Message
       "l" => "event.level[0,1]",           # Level (short), e.g.'I', 'W'
       "L" => "event.level",                # Level, e.g. 'INFO', 'WARN'
       "d" => "date(event)",                # ISO8601 Timestamp
@@ -100,7 +100,7 @@ module Yell #:nodoc:
         buff << match[1] unless match[1].empty?
         break if match[2].nil?
 
-        buff << match[2] + 's' # '%s'
+        buff << match[2] + 's'
         args << PatternTable[ match[3] ]
 
         _pattern = match[4]
@@ -111,6 +111,15 @@ module Yell #:nodoc:
           sprintf( "#{buff}", #{args.join(',')} )
         end
       -
+    end
+
+    def message( event )
+      return event.message unless event.message.is_a? Exception
+
+      exception = event.message
+      backtrace = exception.backtrace ? "\n\t#{exception.backtrace.join("\n\t")}" : ""
+
+      "%s: %s%s" % [exception.class, exception.message, backtrace]
     end
 
     def date( event )

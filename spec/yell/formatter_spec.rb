@@ -92,4 +92,17 @@ describe Yell::Formatter do
     it { format.should == "#{time.iso8601} [ INFO] #{$$} #{Socket.gethostname} : Hello World!" }
   end
 
+  context "Exceptions" do
+    let( :exception ) { StandardError.new( "message" ) }
+    let( :event ) { Yell::Event.new( "INFO", exception ) }
+
+    subject { "%m" }
+
+    before do
+      mock( exception ).backtrace.times(any_times) { ["backtrace"] }
+    end
+
+    it { format.should == "#{exception.class}: #{exception.message}\n\tbacktrace" }
+  end
+
 end
