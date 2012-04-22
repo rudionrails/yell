@@ -35,7 +35,7 @@ describe Yell::Logger do
     end
   end
 
-  context "a Logger instance with a given :filename" do
+  context "initialize with a :filename" do
     it "should call adapter with :file" do
       mock.proxy( Yell::Adapters::File ).new( :filename => 'test.log' )
 
@@ -43,7 +43,7 @@ describe Yell::Logger do
     end
   end
 
-  context "a Logger instance with a given :stdout adapter" do
+  context "initialize with a :stdout adapter" do
     before do
       mock.proxy( Yell::Adapters::Stdout ).new( anything )
     end
@@ -57,7 +57,7 @@ describe Yell::Logger do
     end
   end
 
-  context "a Logger instance with a given :stderr adapter" do
+  context "initialize with a :stderr adapter" do
     before do
       mock.proxy( Yell::Adapters::Stderr ).new( anything )
     end
@@ -71,7 +71,7 @@ describe Yell::Logger do
     end
   end
 
-  context "a Logger instance with a given block" do
+  context "initialize with a block" do
     let( :level ) { Yell::Level.new :error }
     let( :adapter ) { Yell::Adapters::Stdout.new }
 
