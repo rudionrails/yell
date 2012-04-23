@@ -4,7 +4,7 @@ describe Yell::Adapters::Datefile do
   let( :time ) { Time.now }
   let( :filename ) { 'filename.log' }
 
-  let( :event ) { Yell::Event.new("INFO", "Hello World") }
+  let( :event ) { Yell::Event.new(1, "Hello World") }
 
   describe :filename do
     let( :adapter ) { Yell::Adapters::Datefile.new(:filename => filename) }

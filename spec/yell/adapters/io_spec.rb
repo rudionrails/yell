@@ -47,7 +47,7 @@ describe Yell::Adapters::Io do
   end
 
   context :write do
-    let( :event ) { Yell::Event.new("INFO", "Hello World") }
+    let( :event ) { Yell::Event.new(1, "Hello World") }
     let( :adapter ) { Yell::Adapters::Io.new }
     let( :stream ) { File.new('/dev/null', 'w') }
 

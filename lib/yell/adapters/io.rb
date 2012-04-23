@@ -10,13 +10,13 @@ module Yell #:nodoc:
 
       # The possible unix log colors
       Colors = {
-        'DEBUG'   => "\e[32;1m",  # green;bold
-        # 'INFO'    => "\e[0m",     # white
-        'WARN'    => "\e[33;1m",  # yello;bold
-        'ERROR'   => "\e[31;1m",  # red;bold
-        'FATAL'   => "\e[35;1m",  # magenta;bold
-        'UNKNOWN' => "\e[36m",    # cyan
-        'DEFAULT' => "\e[0m"      # NONE
+        0   => "\e[32;1m",  # green;bold
+        # 1   => "\e[0m",     # white
+        2   => "\e[33;1m",  # yello;bold
+        3   => "\e[31;1m",  # red;bold
+        4   => "\e[35;1m",  # magenta;bold
+        5   => "\e[36m",    # cyan
+        -1  => "\e[0m"      # NONE
       }
 
       setup do |options|
@@ -31,7 +31,7 @@ module Yell #:nodoc:
 
         # colorize if applicable
         if colors and color = Colors[event.level]
-          message = color + message + Colors['DEFAULT']
+          message = color + message + Colors[-1]
         end
 
         message << "\n" unless message[-1] == ?\n # add new line if there is none

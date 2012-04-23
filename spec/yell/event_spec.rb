@@ -1,11 +1,11 @@
 require 'spec_helper'
 
 describe Yell::Event do
-  let(:event) { Yell::Event.new 'INFO', 'Hello World!' }
+  let(:event) { Yell::Event.new 1, 'Hello World!' }
 
   context :level do
     subject { event.level }
-    it { should == 'INFO' }
+    it { should == 1 }
   end
 
   context :message do
@@ -42,7 +42,7 @@ describe Yell::Event do
 
     before do
       any_instance_of( Yell::Event ) do |e|
-        mock( e ).caller(4) { ["#{file}:#{line}:in `#{method}'"] }
+        mock( e ).caller { [nil, nil, "#{file}:#{line}:in `#{method}'"] }
       end
     end
 

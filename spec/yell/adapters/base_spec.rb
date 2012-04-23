@@ -39,7 +39,7 @@ describe Yell::Adapters::Base do
     subject { Yell::Adapters::Base.new :level => :info }
 
     it "should delegate :event to :write!" do
-      event = Yell::Event.new( "INFO", "Hello World!" )
+      event = Yell::Event.new( 1, "Hello World!" )
 
       mock( subject ).write!( event )
 
@@ -47,7 +47,7 @@ describe Yell::Adapters::Base do
     end
 
     it "should not write when event does not have the right level" do
-      event = Yell::Event.new( "DEBUG", "Hello World!" )
+      event = Yell::Event.new( 0, "Hello World!" )
 
       dont_allow( subject ).write!( event )
 

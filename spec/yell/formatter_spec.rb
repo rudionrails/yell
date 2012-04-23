@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Yell::Formatter do
 
   let( :formatter ) { Yell::Formatter.new(subject) }
-  let( :event ) { Yell::Event.new 'INFO', 'Hello World!' }
+  let( :event ) { Yell::Event.new 1, 'Hello World!' }
   let( :time ) { Time.now }
 
   let( :format ) { formatter.format(event) }
@@ -48,11 +48,11 @@ describe Yell::Formatter do
   end
 
   context "caller" do
-    let( :_caller ) { ["/path/to/file.rb:123:in `test_method'"] }
+    let( :_caller ) { [nil, nil, "/path/to/file.rb:123:in `test_method'"] }
 
     before do
       any_instance_of( Yell::Event ) do |e|
-        mock(e).caller(4) { _caller }
+        mock(e).caller { _caller }
       end
     end
 
@@ -94,7 +94,7 @@ describe Yell::Formatter do
 
   context "Exceptions" do
     let( :exception ) { StandardError.new( "message" ) }
-    let( :event ) { Yell::Event.new( "INFO", exception ) }
+    let( :event ) { Yell::Event.new( 1, exception ) }
 
     subject { "%m" }
 

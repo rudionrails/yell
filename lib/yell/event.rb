@@ -1,9 +1,16 @@
 # encoding: utf-8
 
+require 'time'
+require 'socket'
+
 module Yell #:nodoc:
 
   class Event
     CallerRegexp = /^(.+?):(\d+)(?::in `(.+)')?/
+
+    # Prefetch those values (no need to do that on every new instance)
+    @@hostname  = Socket.gethostname rescue nil
+    @@pid       = Process.pid
 
     # Accessor to the log level
     attr_reader :level
@@ -14,21 +21,6 @@ module Yell #:nodoc:
     # Accessor to the time the log event occured
     attr_reader :time
 
-    # Accessor to filename the log event occured
-    attr_reader :file
-
-    # Accessor to the line the log event occured
-    attr_reader :line
-
-    # Accessor to the method the log event occured
-    attr_reader :method
-
-    # Accessor to the hostname
-    attr_reader :hostname
-
-    # Accessor to the pid
-    attr_reader :pid
-
     # Accessor to the current tread_id
     attr_reader :thread_id
 
@@ -38,18 +30,47 @@ module Yell #:nodoc:
       @level    = level
       @message  = block ? block.call : message
 
-      @hostname   = Socket.gethostname rescue nil
-      @pid        = Process.pid
       @thread_id  = Thread.current.object_id
 
-      _initialize_caller
+      @caller = caller[2]
+      @file   = nil
+      @line   = nil
+      @method = nil
+    end
+
+    # Accessor to the pid
+    def hostname
+      @@hostname
+    end
+
+    # Accessor to the hostname
+    def pid
+      @@pid
+    end
+
+    # Accessor to filename the log event occured
+    def file
+      _caller! if @file.nil?
+      @file
+    end
+
+    # Accessor to the line the log event occured
+    def line
+      _caller! if @line.nil?
+      @line
+    end
+
+    # Accessor to the method the log event occured
+    def method
+      _caller! if @method.nil?
+      @method
     end
 
 
     private
 
-    def _initialize_caller
-      if m = CallerRegexp.match( caller(4).first )
+    def _caller!
+      if m = CallerRegexp.match( @caller.to_s )
         @file, @line, @method = m[1..-1]
       else
         @file, @line, @method = ['', '', '']

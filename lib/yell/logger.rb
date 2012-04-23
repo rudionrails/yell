@@ -118,15 +118,15 @@ module Yell #:nodoc:
       name = s.downcase
 
       class_eval <<-EOS, __FILE__, __LINE__
-        def #{name}?; @level.at?(#{index}); end   # def info?; @level.at?(1); end
-                                                  #
-        def #{name}( m = nil, &b )                # def info( m = nil, &b )
-          return unless #{name}?                  #   return unless info?
-                                                  #
-          write Yell::Event.new( '#{s}', m, &b )  #   write Yell::Event.new( "INFO", m, &b )
-                                                  #
-          true                                    #   true
-        end                                       # end
+        def #{name}?; @level.at?(#{index}); end     # def info?; @level.at?(1); end
+                                                    #
+        def #{name}( m = nil, &b )                  # def info( m = nil, &b )
+          return unless #{name}?                    #   return unless info?
+                                                    #
+          write Yell::Event.new( #{index}, m, &b )  #   write Yell::Event.new( 1, m, &b )
+                                                    #
+          true                                      #   true
+        end                                         # end
       EOS
     end
 

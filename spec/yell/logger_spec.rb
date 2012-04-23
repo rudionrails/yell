@@ -1,5 +1,17 @@
 require 'spec_helper'
 
+class LoggerFactory
+  attr_accessor :logger
+
+  def foo
+    logger.info :foo
+  end
+
+  def bar
+    logger.info :bar
+  end
+end
+
 describe Yell::Logger do
 
   context "a Logger instance" do
@@ -94,5 +106,20 @@ describe Yell::Logger do
     end
   end
 
+  context "caller's :file, :line and :method" do
+    let( :adapter ) { Yell::Adapters::Stdout.new :format => "%F, %n: %M" }
+    let( :logger ) { Yell::Logger.new { |l| l.adapter adapter } }
+
+    it "should write correctly" do
+      factory = LoggerFactory.new
+      factory.logger = logger
+
+      mock( adapter.send(:stream) ).write( "#{__FILE__}, 7: foo\n" )
+      mock( adapter.send(:stream) ).write( "#{__FILE__}, 11: bar\n" )
+
+      factory.foo
+      factory.bar
+    end
+  end
 end
 

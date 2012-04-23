@@ -1,13 +1,9 @@
 # encoding: utf-8
 
-require 'monitor'
+require 'thread'
 
 module Yell #:nodoc:
   module Adapters #:nodoc:
-
-    class Mutex
-      include MonitorMixin
-    end
 
     # This class provides the basic interface for all allowed operations on any 
     # adapter implementation. Other adapters should inherit from it for the methods 
@@ -117,10 +113,9 @@ module Yell #:nodoc:
       #
       # You should not overload the constructor, use #setup instead.
       def initialize( options = {}, &block )
-        @mutex = Yell::Adapters::Mutex.new
+        @mutex = Mutex.new
 
         setup!(options)
-
         block.call(self) if block
       end
 

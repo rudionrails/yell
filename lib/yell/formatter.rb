@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+require 'time'
+
 module Yell #:nodoc:
 
   # No format on the log message
@@ -60,8 +62,8 @@ module Yell #:nodoc:
 
     PatternTable = {
       "m" => "message(event)",             # Message
-      "l" => "event.level[0,1]",           # Level (short), e.g.'I', 'W'
-      "L" => "event.level",                # Level, e.g. 'INFO', 'WARN'
+      "l" => "level(event)[0,1]",          # Level (short), e.g.'I', 'W'
+      "L" => "level(event)",               # Level, e.g. 'INFO', 'WARN'
       "d" => "date(event)",                # ISO8601 Timestamp
       "h" => "event.hostname",             # Hostname
       "p" => "event.pid",                  # PID
@@ -120,6 +122,10 @@ module Yell #:nodoc:
       backtrace = exception.backtrace ? "\n\t#{exception.backtrace.join("\n\t")}" : ""
 
       "%s: %s%s" % [exception.class, exception.message, backtrace]
+    end
+
+    def level( event )
+      Yell::Severities[ event.level ]
     end
 
     def date( event )

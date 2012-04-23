@@ -16,7 +16,7 @@ describe Yell::Adapters::File do
   end
 
   context :write do
-    let( :event ) { Yell::Event.new("INFO", "Hello World") }
+    let( :event ) { Yell::Event.new(1, "Hello World") }
 
     context "default filename" do
       let( :filename ) { "#{Yell.env}.log" }
