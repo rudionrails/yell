@@ -6,7 +6,14 @@ require 'socket'
 module Yell #:nodoc:
 
   class Event
-    CallerRegexp = /^(.+?):(\d+)(?::in `(.+)')?/
+    # regex to fetch caller attributes
+    @@caller_regexp = /^(.+?):(\d+)(?::in `(.+)')?/
+
+    # jruby and rubinius seemsto have a different caller
+    @@caller_index = 2
+    if defined?(RUBY_ENGINE) and ["rbx", "jruby"].include?(RUBY_ENGINE)
+      @@caller_index =1
+    end
 
     # Prefetch those values (no need to do that on every new instance)
     @@hostname  = Socket.gethostname rescue nil
@@ -32,7 +39,7 @@ module Yell #:nodoc:
 
       @thread_id  = Thread.current.object_id
 
-      @caller = caller[2]
+      @caller = caller[@@caller_index].to_s
       @file   = nil
       @line   = nil
       @method = nil
@@ -70,7 +77,7 @@ module Yell #:nodoc:
     private
 
     def _caller!
-      if m = CallerRegexp.match( @caller.to_s )
+      if m = @@caller_regexp.match( @caller )
         @file, @line, @method = m[1..-1]
       else
         @file, @line, @method = ['', '', '']

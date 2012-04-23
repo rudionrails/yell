@@ -52,7 +52,9 @@ describe Yell::Formatter do
 
     before do
       any_instance_of( Yell::Event ) do |e|
-        mock(e).caller { _caller }
+        stub(e).file { "/path/to/file.rb" }
+        stub(e).line { "123" }
+        stub(e).method { "test_method" }
       end
     end
 

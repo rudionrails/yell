@@ -49,8 +49,8 @@ module Yell #:nodoc:
       self.adapter args.pop if args.any?
 
       # eval the given block
-      block.call(self) if block
-      # _call( &block ) if block
+      # block.call(self) if block
+      _call( &block ) if block
 
       # default adapter when none defined
       adapter :file if @adapters.empty?

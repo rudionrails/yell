@@ -1,6 +1,41 @@
 require 'spec_helper'
 
+# Since Yell::Event.new is not called directly, but through
+# the logger methods, we need to divert here in order to get 
+# the correct caller.
+class EventFactory
+  def self.event( level, message )
+    self._event( level, message )
+  end
+
+  private
+
+  def self._event( level, message )
+    Yell::Event.new level, message
+  end
+
+end
+
 describe Yell::Event do
+  context :caller do
+    let( :event ) { EventFactory.event 1, "Hello World" }
+
+    context :file do
+      subject { event.file }
+      it  { should == __FILE__ }
+    end
+
+    context :line do
+      subject { event.line }
+      it { should == "8" }
+    end
+
+    context :method do
+      subject { event.method }
+      it { should == 'event' }
+    end
+  end
+
   let(:event) { Yell::Event.new 1, 'Hello World!' }
 
   context :level do
@@ -33,33 +68,6 @@ describe Yell::Event do
   context :pid do
     subject { event.pid }
     it { should == Process.pid }
-  end
-
-  context :caller do
-    let(:file) { "event.rb" }
-    let(:line) { "123" }
-    let(:method) { "test_method" }
-
-    before do
-      any_instance_of( Yell::Event ) do |e|
-        mock( e ).caller { [nil, nil, "#{file}:#{line}:in `#{method}'"] }
-      end
-    end
-
-    context :file do
-      subject { event.file }
-      it  { should == file }
-    end
-
-    context :line do
-      subject { event.line }
-      it { should == line }
-    end
-
-    context :method do
-      subject { event.method }
-      it { should == method }
-    end
   end
 
 end
