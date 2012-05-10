@@ -106,6 +106,29 @@ describe Yell::Logger do
     end
   end
 
+  context "initialize with :adapters option" do
+    let( :logger ) do
+      Yell::Logger.new :adapters => [ :stdout, :stderr => {:level => :error} ]
+    end
+
+    let( :adapters ) { logger.instance_variable_get :@adapters }
+    let( :stdout ) { adapters.first }
+    let( :stderr ) { adapters.last }
+
+    it "should define those adapters" do
+      adapters.size.should == 2
+
+      stdout.should be_kind_of Yell::Adapters::Stdout
+      stderr.should be_kind_of Yell::Adapters::Stderr
+    end
+
+    it "should pass :level to :stderr adapter" do
+      stderr.level.at?(:warn).should be_false
+      stderr.level.at?(:error).should be_true
+      stderr.level.at?(:fatal).should be_true
+    end
+  end
+
   context "caller's :file, :line and :method" do
     let( :adapter ) { Yell::Adapters::Stdout.new :format => "%F, %n: %M" }
     let( :logger ) { Yell::Logger.new { |l| l.adapter adapter } }

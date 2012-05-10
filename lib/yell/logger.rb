@@ -37,6 +37,9 @@ module Yell #:nodoc:
       # extract options
       @options = args.last.is_a?(Hash) ? args.pop : {}
 
+      # adapters may be passed in the options
+      _extract_adapters!( @options )
+
       # check if filename was given as argument and put it into the @options
       if args.last.is_a?( String )
         @options[:filename] = args.pop unless @options[:filename]
@@ -46,10 +49,9 @@ module Yell #:nodoc:
       self.level = @options[:level]
 
       # extract adapter
-      self.adapter args.pop if args.any?
+      adapter args.pop if args.any?
 
       # eval the given block
-      # block.call(self) if block
       _call( &block ) if block
 
       # default adapter when none defined
@@ -79,7 +81,7 @@ module Yell #:nodoc:
     #
     # @raise [Yell::NoSuchAdapter] Will be thrown when the adapter is not defined
     def adapter( type = :file, *args, &block )
-      options = [@options, *args].inject( Hash.new ) do |h,c| 
+      options = [@options, *args].inject( Hash.new ) do |h, c|
         h.merge( c.is_a?(String) ? {:filename => c} : c  )
       end
 
@@ -144,6 +146,23 @@ module Yell #:nodoc:
         instance_eval( &block )
       else
         block.call(self)
+      end
+    end
+
+    # The :adapters key may be passed to the options hash. It may appear in 
+    # multiple variations:
+    #
+    # @example
+    #   options = { :adapters => [:stdout, :stderr] }
+    #
+    # @example
+    #   options = { :adapters => [:stdout => {:level => :info}, :stderr => {:level => :error}]
+    def _extract_adapters!( opts )
+      ( opts.delete( :adapters ) || [] ).each do |a|
+        case a
+          when String, Symbol then adapter( a )
+          else a.each { |n, o| adapter( n, o || {} ) }
+        end
       end
     end
 
