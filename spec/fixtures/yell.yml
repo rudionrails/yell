@@ -1,0 +1,7 @@
+:level: info
+
+:adapters:
+  - :stdout:
+      :level: "lt.error"
+  - :stderr:
+      :level: "gte.error"

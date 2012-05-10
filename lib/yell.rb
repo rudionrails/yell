@@ -52,6 +52,10 @@ module Yell #:nodoc:
       ENV['YELL_ENV'] || ENV['RACK_ENV'] || 'development'
     end
 
+    def load!( file )
+      Yell.new Yell::Configuration.load!( file )
+    end
+
     def _deprecate( version, message, options = {} )
       warning = ["Deprecation Warning (since v#{version}): #{message}" ]
       warning << "  before: #{options[:before]}" if options[:before]
@@ -69,4 +73,6 @@ require File.dirname(__FILE__) + '/yell/level'
 require File.dirname(__FILE__) + '/yell/formatter'
 require File.dirname(__FILE__) + '/yell/adapters'
 require File.dirname(__FILE__) + '/yell/logger'
+
+require File.dirname(__FILE__) + '/yell/configuration'
 

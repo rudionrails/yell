@@ -21,4 +21,17 @@ describe Yell do
     it { should be_kind_of Yell::Formatter }
   end
 
+  context :load! do
+    subject { Yell.load!( File.dirname(__FILE__) + '/fixtures/yell.yml' ) }
+
+    let( :adapters ) { subject.instance_variable_get :@adapters }
+
+    it { should be_kind_of Yell::Logger }
+
+    it "should return a Yell instacne with the configuration for a file" do
+      adapters.first.should be_kind_of Yell::Adapters::Stdout
+      adapters.last.should be_kind_of Yell::Adapters::Stderr
+    end
+  end
+
 end
