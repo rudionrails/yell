@@ -108,7 +108,7 @@ describe Yell::Logger do
 
   context "initialize with :adapters option" do
     let( :logger ) do
-      Yell::Logger.new :adapters => [ :stdout, :stderr => {:level => :error} ]
+      Yell::Logger.new :adapters => [ :stdout, { :stderr => {:level => :error} } ]
     end
 
     let( :adapters ) { logger.instance_variable_get :@adapters }
