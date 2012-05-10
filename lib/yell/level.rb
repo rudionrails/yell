@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 module Yell #:nodoc:
+   InterpretRegexp = /(at|gt|gte|lt|lte)?\.?(#{Yell::Severities.join('|')}})/i
 
   # The +Level+ class handles the severities for you in order to determine 
   # if an adapter should log or not.
@@ -63,8 +64,9 @@ module Yell #:nodoc:
 
       case severity
         when Array then at( *severity )
-        when Range then gte(severity.first).lte(severity.last)
-        when Integer, String, Symbol then gte(severity)
+        when Range then gte( severity.first ).lte( severity.last )
+        when Integer, Symbol then gte( severity )
+        when String then interpret!( severity )
       end
     end
 
@@ -116,6 +118,14 @@ module Yell #:nodoc:
 
 
     private
+
+    def interpret!( severities )
+      severities.split( ' ' ).each do |severity|
+        if m = InterpretRegexp.match(severity)
+          m[1].nil? ? __send__( :gte, m[2] ) : __send__( m[1], m[2] )
+        end
+      end
+    end
 
     def calculate!( modifier, severity ) #:nodoc:
       index = index_from( severity )

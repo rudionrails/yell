@@ -66,6 +66,50 @@ describe Yell::Level do
     end
   end
 
+  context "given a String" do
+    let( :level ) { Yell::Level.new(subject) }
+
+    context "basic string" do
+      subject { 'error' }
+
+      it { level.at?(:debug).should be_false }
+      it { level.at?(:info).should be_false }
+      it { level.at?(:warn).should be_false }
+      it { level.at?(:error).should be_true }
+      it { level.at?(:fatal).should be_true }
+    end
+
+    context "complex string with outer boundaries" do
+      subject { 'gte.info lte.error' }
+
+      it { level.at?(:debug).should be_false }
+      it { level.at?(:info).should be_true }
+      it { level.at?(:warn).should be_true }
+      it { level.at?(:error).should be_true }
+      it { level.at?(:fatal).should be_false }
+    end
+
+    context "complex string with inner boundaries" do
+      subject { 'gt.info lt.error' }
+
+      it { level.at?(:debug).should be_false }
+      it { level.at?(:info).should be_false }
+      it { level.at?(:warn).should be_true }
+      it { level.at?(:error).should be_false }
+      it { level.at?(:fatal).should be_false }
+    end
+
+    context "complex string with precise boundaries" do
+      subject { 'at.info at.error' }
+
+      it { level.at?(:debug).should be_false }
+      it { level.at?(:info).should be_true }
+      it { level.at?(:warn).should be_false }
+      it { level.at?(:error).should be_true }
+      it { level.at?(:fatal).should be_false }
+    end
+  end
+
   context "given an Array" do
     let( :level ) { Yell::Level.new( [:debug, :warn, :fatal] ) }
 
