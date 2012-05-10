@@ -28,8 +28,8 @@ describe Yell::Adapters do
     end
 
     context "given an unregistered adapter" do
-      it "should raise NoSuchAdapter" do
-        lambda { Yell::Adapters.new :unknown }.should raise_error Yell::NoSuchAdapter
+      it "should raise UnregisteredAdapter" do
+        lambda { Yell::Adapters.new :unknown }.should raise_error Yell::UnregisteredAdapter
       end
     end
   end
