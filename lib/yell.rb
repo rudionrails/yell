@@ -68,11 +68,11 @@ module Yell #:nodoc:
 
 end
 
+require File.dirname(__FILE__) + '/yell/configuration'
+
 require File.dirname(__FILE__) + '/yell/event'
 require File.dirname(__FILE__) + '/yell/level'
 require File.dirname(__FILE__) + '/yell/formatter'
 require File.dirname(__FILE__) + '/yell/adapters'
 require File.dirname(__FILE__) + '/yell/logger'
-
-require File.dirname(__FILE__) + '/yell/configuration'
 

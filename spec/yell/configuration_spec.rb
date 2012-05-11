@@ -4,10 +4,31 @@ describe Yell::Configuration do
 
   describe ":load!" do
     let( :file ) { File.dirname(__FILE__) + '/../fixtures/yell.yml' }
-    let( :configuration ) { Yell::Configuration.load!( file ) }
+    let( :config ) { Yell::Configuration.load!( file ) }
 
-    it "should return the hash from the given file" do
-      YAML.load_file( file )['development'].should == configuration
+    subject { config }
+
+    it { should be_kind_of Hash }
+    it { should have_key :level }
+    it { should have_key :adapters }
+
+    context :level do
+      subject { config[:level] }
+
+      it { should == "info" }
+    end
+
+    context :adapters do
+      subject { config[:adapters] }
+
+      it { should be_kind_of Array }
+
+      # stdout
+      it { subject.first.should == :stdout }
+
+      # stderr
+      it { subject.last.should be_kind_of Hash }
+      it { subject.last.should == { :stderr => {:level => 'gte.error'} } }
     end
   end
 
