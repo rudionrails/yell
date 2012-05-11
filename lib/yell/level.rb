@@ -1,7 +1,6 @@
 # encoding: utf-8
 
 module Yell #:nodoc:
-   InterpretRegexp = /(at|gt|gte|lt|lte)?\.?(#{Yell::Severities.join('|')}})/i
 
   # The +Level+ class handles the severities for you in order to determine 
   # if an adapter should log or not.
@@ -41,6 +40,8 @@ module Yell #:nodoc:
         end
       end
     end
+
+    InterpretRegexp = /(at|gt|gte|lt|lte)?\.?(#{Yell::Severities.join('|')})/i
 
     attr_reader :severities
 
