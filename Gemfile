@@ -5,5 +5,9 @@ gemspec
 
 group :development, :test do
   gem "rake"
+
+  gem "rspec"
+  gem "rr"
+  gem "timecop"
 end
 
