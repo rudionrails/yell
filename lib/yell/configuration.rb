@@ -9,7 +9,7 @@ module Yell #:nodoc:
   class Configuration
 
     def self.load!( file )
-      YAML.load( ::File.read(file) )
+      YAML.load_file( file )[ Yell.env ] || {}
     end
 
   end

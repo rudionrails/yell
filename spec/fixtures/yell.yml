@@ -1,7 +1,9 @@
-:level: info
+development:
+  :level: info
 
-:adapters:
-  - :stdout:
-      :level: "lt.error"
-  - :stderr:
-      :level: "gte.error"
+  :adapters:
+    - :stdout:
+        :level: "lt.error"
+    - :stderr:
+        :level: "gte.error"
+

@@ -7,7 +7,7 @@ describe Yell::Configuration do
     let( :configuration ) { Yell::Configuration.load!( file ) }
 
     it "should return the hash from the given file" do
-      YAML.load( File.read(file) ).should == configuration
+      YAML.load( File.read(file) )['development'].should == configuration
     end
   end
 
