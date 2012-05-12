@@ -49,7 +49,7 @@ module Yell #:nodoc:
     end
 
     def env #:nodoc:
-      ENV['YELL_ENV'] || ENV['RACK_ENV'] || 'development'
+      ENV['YELL_ENV'] || ENV['RACK_ENV'] ||ENV['RAILS_ENV'] || 'development'
     end
 
     def load!( file )
