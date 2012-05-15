@@ -7,12 +7,13 @@ module Yell #:nodoc:
 
   class Event
     # regex to fetch caller attributes
-    @@caller_regexp = /^(.+?):(\d+)(?::in `(.+)')?/
+    CallerRegexp = /^(.+?):(\d+)(?::in `(.+)')?/
 
     # jruby and rubinius seemsto have a different caller
-    @@caller_index = 2
     if defined?(RUBY_ENGINE) and ["rbx", "jruby"].include?(RUBY_ENGINE)
-      @@caller_index =1
+      CallerIndex =1
+    else
+      CallerIndex = 2
     end
 
     # Prefetch those values (no need to do that on every new instance)
@@ -39,7 +40,7 @@ module Yell #:nodoc:
 
       @thread_id  = Thread.current.object_id
 
-      @caller = caller[@@caller_index].to_s
+      @caller = caller[CallerIndex].to_s
       @file   = nil
       @line   = nil
       @method = nil
@@ -77,7 +78,7 @@ module Yell #:nodoc:
     private
 
     def _caller!
-      if m = @@caller_regexp.match( @caller )
+      if m = CallerRegexp.match( @caller )
         @file, @line, @method = m[1..-1]
       else
         @file, @line, @method = ['', '', '']
