@@ -1,5 +1,7 @@
 **Yell - Your Extensible Logging Library**
 
+[![Build Status](https://secure.travis-ci.org/rudionrails/yell.png?branch=master)](http://travis-ci.org/rudionrails/yell)
+
 Yell works and is tested with ruby 1.8.7, 1.9.x, jruby 1.8 and 1.9 mode, rubinius 1.8 and 1.9 as well as ree.
 
 **If you want to use Yell with Rails, then head over to [yell-rails](https://github.com/rudionrails/yell-rails).**
