@@ -95,7 +95,7 @@ describe Yell::Formatter do
   end
 
   context "Exceptions" do
-    let( :exception ) { StandardError.new( "message" ) }
+    let( :exception ) { StandardError.new( "This is an Exception" ) }
     let( :event ) { Yell::Event.new( 1, exception ) }
 
     subject { "%m" }
@@ -104,7 +104,7 @@ describe Yell::Formatter do
       mock( exception ).backtrace.times(any_times) { ["backtrace"] }
     end
 
-    it { format.should == "#{exception.class}: #{exception.message}\n\tbacktrace" }
+    it { format.should == "StandardError: This is an Exception\n\tbacktrace" }
   end
 
 end

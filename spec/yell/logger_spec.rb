@@ -60,7 +60,7 @@ describe Yell::Logger do
       mock.proxy( Yell::Adapters::Stdout ).new( anything )
     end
 
-    it "should call adapter with :stdout" do
+    it "should call adapter with STDOUT" do
       Yell::Logger.new STDOUT
     end
 
@@ -74,7 +74,7 @@ describe Yell::Logger do
       mock.proxy( Yell::Adapters::Stderr ).new( anything )
     end
 
-    it "should call adapter with :stderr" do
+    it "should call adapter with STDERR" do
       Yell::Logger.new STDERR
     end
 
@@ -144,5 +144,6 @@ describe Yell::Logger do
       factory.bar
     end
   end
+
 end
 
