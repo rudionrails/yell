@@ -1,4 +1,4 @@
-development:
+test:
   :level: info
 
   :adapters:
