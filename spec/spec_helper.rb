@@ -5,8 +5,6 @@ ENV['YELL_ENV'] = 'test'
 
 require 'yell'
 
-require 'ostruct'
-
 require 'rspec'
 require 'rr'
 require 'timecop'
