@@ -30,7 +30,7 @@ begin
   desc "Run specs"
   RSpec::Core::RakeTask.new do |t|
     t.rspec_opts = %w(--color --format progress --order random)
-    t.ruby_opts = %w(-w)
+    # t.ruby_opts = %w(-w)
   end
 rescue LoadError
   task :spec do
