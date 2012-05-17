@@ -61,7 +61,7 @@ module Yell #:nodoc:
     end
 
     PatternTable = {
-      "m" => "message(event)",             # Message
+      "m" => "message(event.message)",     # Message
       "l" => "level(event)[0,1]",          # Level (short), e.g.'I', 'W'
       "L" => "level(event)",               # Level, e.g. 'INFO', 'WARN'
       "d" => "date(event)",                # ISO8601 Timestamp
@@ -115,13 +115,16 @@ module Yell #:nodoc:
       -
     end
 
-    def message( event )
-      return event.message unless event.message.is_a? Exception
+    def message( message )
+      case message
+        when Hash
+          message.map { |k,v| "#{k}: #{v}" }.join( ", " )
+        when Exception
+          backtrace = message.backtrace ? "\n\t#{message.backtrace.join("\n\t")}" : ""
 
-      exception = event.message
-      backtrace = exception.backtrace ? "\n\t#{exception.backtrace.join("\n\t")}" : ""
-
-      "%s: %s%s" % [exception.class, exception.message, backtrace]
+          "%s: %s%s" % [message.class, message.message, backtrace]
+        else message
+      end
     end
 
     def level( event )

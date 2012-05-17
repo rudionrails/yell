@@ -107,4 +107,13 @@ describe Yell::Formatter do
     it { format.should == "StandardError: This is an Exception\n\tbacktrace" }
   end
 
+  context "Hashes" do
+    let( :hash ) { { :test => 'message' } }
+    let( :event ) { Yell::Event.new( 1, hash ) }
+
+    subject { "%m" }
+
+    it { format.should == "test: message" }
+  end
+
 end
