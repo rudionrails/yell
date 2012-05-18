@@ -62,9 +62,10 @@ module Yell #:nodoc:
 
     PatternTable = {
       "m" => "message(event.message)",     # Message
-      "l" => "level(event)[0,1]",          # Level (short), e.g.'I', 'W'
-      "L" => "level(event)",               # Level, e.g. 'INFO', 'WARN'
-      "d" => "date(event)",                # ISO8601 Timestamp
+      "o" => "message(event.options)",     # Message options
+      "l" => "level(event.level)[0,1]",    # Level (short), e.g.'I', 'W'
+      "L" => "level(event.level)",         # Level, e.g. 'INFO', 'WARN'
+      "d" => "date(event.time)",           # ISO8601 Timestamp
       "h" => "event.hostname",             # Hostname
       "p" => "event.pid",                  # PID
       "t" => "event.thread_id",            # Thread ID
@@ -115,24 +116,24 @@ module Yell #:nodoc:
       -
     end
 
-    def message( message )
-      case message
+    def message( m )
+      case m
         when Hash
-          message.map { |k,v| "#{k}: #{v}" }.join( ", " )
+          m.map { |k,v| "#{k}: #{v}" }.join( ", " )
         when Exception
-          backtrace = message.backtrace ? "\n\t#{message.backtrace.join("\n\t")}" : ""
+          backtrace = m.backtrace ? "\n\t#{m.backtrace.join("\n\t")}" : ""
 
-          "%s: %s%s" % [message.class, message.message, backtrace]
-        else message
+          "%s: %s%s" % [m.class, m.message, backtrace]
+        else m
       end
     end
 
-    def level( event )
-      Yell::Severities[ event.level ]
+    def level( l )
+      Yell::Severities[ l ]
     end
 
-    def date( event )
-      @date_pattern ? event.time.strftime( @date_pattern ) : event.time.iso8601
+    def date( t )
+      @date_pattern ? t.strftime( @date_pattern ) : t.iso8601
     end
 
   end

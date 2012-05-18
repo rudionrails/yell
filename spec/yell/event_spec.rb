@@ -17,6 +17,8 @@ class EventFactory
 end
 
 describe Yell::Event do
+  let(:event) { Yell::Event.new 1, 'Hello World!', :test => :option }
+
   context :caller do
     let( :event ) { EventFactory.event 1, "Hello World" }
 
@@ -36,8 +38,6 @@ describe Yell::Event do
     end
   end
 
-  let(:event) { Yell::Event.new 1, 'Hello World!' }
-
   context :level do
     subject { event.level }
     it { should == 1 }
@@ -46,6 +46,11 @@ describe Yell::Event do
   context :message do
     subject { event.message }
     it { should == 'Hello World!' }
+  end
+
+  context :options do
+    subject { event.options }
+    it { should == { :test => :option } }
   end
 
   context :time do

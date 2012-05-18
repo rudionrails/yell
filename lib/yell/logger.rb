@@ -122,10 +122,9 @@ module Yell #:nodoc:
       class_eval <<-EOS, __FILE__, __LINE__
         def #{name}?; @level.at?(#{index}); end     # def info?; @level.at?(1); end
                                                     #
-        def #{name}( m = nil, &b )                  # def info( m = nil, &b )
+        def #{name}( m = nil, o = {}, &b )          # def info( m = nil, o = {}, &b )
           return unless #{name}?                    #   return unless info?
-                                                    #
-          write Yell::Event.new( #{index}, m, &b )  #   write Yell::Event.new( 1, m, &b )
+          write Yell::Event.new(#{index}, m, o, &b) #   write Yell::Event.new(1, m, o, &b)
                                                     #
           true                                      #   true
         end                                         # end

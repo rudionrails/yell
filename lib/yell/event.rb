@@ -5,6 +5,9 @@ require 'socket'
 
 module Yell #:nodoc:
 
+  #
+  # Yell::Event.new( :info, 'Hello World', { :scope => 'Application' } )
+  # #=> Hello World scope: Application
   class Event
     # regex to fetch caller attributes
     CallerRegexp = /^(.+?):(\d+)(?::in `(.+)')?/
@@ -26,6 +29,9 @@ module Yell #:nodoc:
     # Accessor to the log message
     attr_reader :message
 
+    # Accessor to additional options
+    attr_reader :options
+
     # Accessor to the time the log event occured
     attr_reader :time
 
@@ -33,10 +39,11 @@ module Yell #:nodoc:
     attr_reader :thread_id
 
 
-    def initialize( level, message = nil, &block )
+    def initialize( level, message = nil, options = {}, &block )
       @time     = Time.now
       @level    = level
       @message  = block ? block.call : message
+      @options  = options
 
       @thread_id  = Thread.current.object_id
 
