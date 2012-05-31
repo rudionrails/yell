@@ -21,8 +21,8 @@ module Yell #:nodoc:
         self.date_pattern = options.fetch( :date_pattern, DefaultDatePattern )
         self.keep         = options.fetch( :keep, 0 )
 
-        @file_basename    = options.fetch( :filename, default_filename )
-        options[:filename]  = @file_basename
+        @original_filename  = options.fetch( :filename, default_filename )
+        options[:filename]  = @original_filename
       end
 
       write do |event|
@@ -82,7 +82,7 @@ module Yell #:nodoc:
 
       # Cleanup old files
       def cleanup
-        files = Dir[ @file_basename.sub( /(\.\w+)?$/, ".*\\1" ) ].map do |f|
+        files = Dir[ @original_filename.sub( /(\.\w+)?$/, ".*\\1" ) ].map do |f|
           [ f, metadata_from(f).last ]
         end.select do |(_, p)|
           @date_pattern == p
@@ -97,7 +97,7 @@ module Yell #:nodoc:
 
       # Sets the filename with the `:date_pattern` appended to it.
       def filename_from( date )
-        @file_basename.sub( /(\.\w+)?$/, ".#{date.strftime(@date_pattern)}\\1" )
+        @original_filename.sub( /(\.\w+)?$/, ".#{date.strftime(@date_pattern)}\\1" )
       end
 
       def metadata_from( file )
