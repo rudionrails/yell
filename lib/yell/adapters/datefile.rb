@@ -10,6 +10,10 @@ module Yell #:nodoc:
       # The default date pattern, e.g. "19820114" (14 Jan 1982)
       DefaultDatePattern = "%Y%m%d"
 
+      # Metadata
+      Metadata = lambda { |date, pattern| "# -*- #{date.iso8601} (#{date.to_f}) [#{pattern}] -*-" }
+      MetadataRegexp = /^# -\*- (.+) \((\d+\.\d+)\) \[(.+)\] -\*-$/
+
 
       setup do |options|
         @date = nil # default; do not override --R
@@ -28,7 +32,7 @@ module Yell #:nodoc:
           unless ::File.exist?( @filename )
             cleanup if cleanup?
 
-            stream.print( "# -*- #{@date.iso8601} (#{@date.to_f}) [#{date_pattern}] -*-\n" )
+            stream.puts( Metadata.call(@date, @date_pattern) )
           end
         end
       end
@@ -97,7 +101,7 @@ module Yell #:nodoc:
       end
 
       def metadata_from( file )
-        if m = ::File.open( file, &:readline ).match( /^# -\*- (.+) \((\d+\.\d+)\) \[(.+)\] -\*-$/ )
+        if m = ::File.open( file, &:readline ).match( MetadataRegexp )
           [ Time.at( m[2].to_f ), m[3] ]
         else
           [ ::File.mtime( file ), "" ]
