@@ -10,14 +10,15 @@ module Yell #:nodoc:
       # The default date pattern, e.g. "19820114" (14 Jan 1982)
       DefaultDatePattern = "%Y%m%d"
 
+
       setup do |options|
-        self.date_pattern = options[:date_pattern] || DefaultDatePattern
-        self.keep         = options[:keep]
-
-        @file_basename = options[:filename] || default_filename
-        options[:filename] = @file_basename
-
         @date = nil # default; do not override --R
+
+        self.date_pattern = options.fetch( :date_pattern, DefaultDatePattern )
+        self.keep         = options.fetch( :keep, 0 )
+
+        @file_basename    = options.fetch( :filename, default_filename )
+        options[:filename]  = @file_basename
       end
 
       write do |event|
@@ -25,7 +26,7 @@ module Yell #:nodoc:
           close
 
           unless ::File.exist?( @filename )
-            cleanup if keep > 0
+            cleanup if cleanup?
 
             stream.print( "# -*- #{@date.iso8601} (#{@date.to_f}) [#{date_pattern}] -*-\n" )
           end
@@ -37,20 +38,24 @@ module Yell #:nodoc:
       end
 
 
-      # Accesor to the date_pattern
+      # The pattern to be used for the files
+      #
+      # @example
+      #   date_pattern = "%Y%m%d"       # default
+      #   date_pattern = "%Y-week-%V"
       attr_accessor :date_pattern
 
-      # Accessor to keep
-      attr_reader :keep
-
-      # Set the amount of logfiles to keep when rolling over
+      # Set the amount of logfiles to keep when rolling over.
+      # By default, no files will be cleaned up.
       #
       # @example Keep the last 5 logfiles
       #   keep = 5
       #   keep = '10'
-      def keep=( val )
-        @keep = val.to_i
-      end
+      #
+      # @example Do not clean up any files
+      #   keep = 0
+      attr_accessor :keep
+
 
       private
 
@@ -60,9 +65,6 @@ module Yell #:nodoc:
       # If the current time hits the pattern, it closes the file stream.
       #
       # @return [Boolean] true or false
-      #
-      # TODO: This method causes the datefile adapter to be twice as slow as the file.
-      # Let's refactor this.
       def close?
         _date = Time.now
 
@@ -86,7 +88,7 @@ module Yell #:nodoc:
       end
 
       def cleanup?
-       !keep
+        keep.to_i > 0
       end
 
       # Sets the filename with the `:date_pattern` appended to it.

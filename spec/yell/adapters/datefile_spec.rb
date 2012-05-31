@@ -28,7 +28,7 @@ describe Yell::Adapters::Datefile do
       let( :tomorrow ) { Time.now + 86400 }
       let( :tomorrow_datefile_filename ) { fixture_path + "/test.#{tomorrow.strftime(Yell::Adapters::Datefile::DefaultDatePattern)}.log" }
 
-      it "should rollover when date has passed" do
+      it "should rotate when date has passed" do
         mock( File ).open( datefile_filename, anything ) { File.new('/dev/null', 'w') }
         adapter.write( event )
 
