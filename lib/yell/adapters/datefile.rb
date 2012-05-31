@@ -85,10 +85,10 @@ module Yell #:nodoc:
         files = Dir[ @original_filename.sub( /(\.\w+)?$/, ".*\\1" ) ].map do |f|
           [ f, metadata_from(f).last ]
         end.select do |(_, p)|
-          @date_pattern == p
+          date_pattern == p
         end
 
-        ::File.unlink( *files.map(&:first)[0..-(@keep)] )
+        ::File.unlink( *files.map(&:first)[0..-keep] )
       end
 
       def cleanup?
@@ -97,7 +97,7 @@ module Yell #:nodoc:
 
       # Sets the filename with the `:date_pattern` appended to it.
       def filename_from( date )
-        @original_filename.sub( /(\.\w+)?$/, ".#{date.strftime(@date_pattern)}\\1" )
+        @original_filename.sub( /(\.\w+)?$/, ".#{date.strftime(date_pattern)}\\1" )
       end
 
       def metadata_from( file )
