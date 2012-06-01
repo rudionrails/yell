@@ -8,7 +8,7 @@ module Yell #:nodoc:
     class File < Yell::Adapters::Io
 
       setup do |options|
-        @filename = options.fetch(:filename, default_filename)
+        @filename = options.fetch( :filename, default_filename )
       end
 
 

@@ -41,9 +41,9 @@ describe Yell::Adapters::Datefile do
   end
 
   describe :keep do
-    let( :adapter ) { Yell::Adapters::Datefile.new(:keep => 2, :filename => filename, :date_pattern => "%M" ) }
+    let( :adapter ) { Yell::Adapters::Datefile.new(:keep => 2, :filename => filename, :date_pattern => "%M") }
 
-    it "should keep the specified number or files upon wollover" do
+    it "should keep the specified number or files upon rollover" do
       adapter.write( event )
       Dir[ fixture_path + '/*.log' ].size.should == 1
 
@@ -55,6 +55,27 @@ describe Yell::Adapters::Datefile do
       Timecop.freeze( Time.now + 120 ) do
         adapter.write( event )
         Dir[ fixture_path + '/*.log' ].size.should == 2
+      end
+    end
+  end
+
+  describe :symlink_original_filename do
+    let( :adapter ) { Yell::Adapters::Datefile.new(:symlink_original_filename => true, :filename => filename, :date_pattern => "%M") }
+    let( :time ) { Time.now }
+
+    it "should symlink to the orignal given :filename" do
+      Timecop.freeze( time ) do
+        adapter.write( event )
+
+        File.symlink?( filename ).should be_true
+        File.readlink( filename ).should == datefile_filename( adapter.date_pattern )
+      end
+
+      Timecop.freeze( time + 60 ) do
+        adapter.write( event )
+
+        File.symlink?( filename ).should be_true
+        File.readlink( filename ).should == datefile_filename( adapter.date_pattern )
       end
     end
   end

@@ -19,22 +19,27 @@ module Yell #:nodoc:
         @date = nil # default; do not override --R
 
         self.date_pattern = options.fetch( :date_pattern, DefaultDatePattern )
-        self.keep         = options.fetch( :keep, 0 )
+        self.symlink_original_filename = options.fetch( :symlink_original_filename, false )
+        self.keep = options.fetch( :keep, 0 )
 
         @original_filename  = options.fetch( :filename, default_filename )
         options[:filename]  = @original_filename
       end
 
       write do |event|
-        if close?
-          close
+        return unless close?
+        close
 
-          unless ::File.exist?( @filename )
-            cleanup if cleanup?
+        # stuff to do upon first time write - exit when file already present
+        return if ::File.exist?( @filename )
+        cleanup if cleanup?
 
-            stream.puts( Metadata.call(@date, @date_pattern) )
-          end
+        if symlink_original_filename
+          ::File.unlink( @original_filename ) if ::File.symlink?( @original_filename )
+          ::File.symlink( @filename, @original_filename )
         end
+
+        stream.puts( Metadata.call(@date, date_pattern) )
       end
 
       close do
@@ -48,6 +53,8 @@ module Yell #:nodoc:
       #   date_pattern = "%Y%m%d"       # default
       #   date_pattern = "%Y-week-%V"
       attr_accessor :date_pattern
+
+      attr_accessor :symlink_original_filename
 
       # Set the amount of logfiles to keep when rolling over.
       # By default, no files will be cleaned up.
