@@ -27,17 +27,13 @@ module Yell #:nodoc:
       end
 
       write do |event|
-        return unless close?
+        return unless close? # do nothing when not closing
         close
 
-        # stuff to do upon first time write - exit when file already present
-        return if ::File.exist?( @filename )
-        cleanup if cleanup?
+        return if ::File.exist?( @filename ) # do nothing when file ready present
 
-        if symlink_original_filename
-          ::File.unlink( @original_filename ) if ::File.symlink?( @original_filename )
-          ::File.symlink( @filename, @original_filename )
-        end
+        cleanup! if cleanup?
+        symlink_original_filename! if symlink_original_filename
 
         stream.puts( Metadata.call(@date, date_pattern) )
       end
@@ -54,6 +50,12 @@ module Yell #:nodoc:
       #   date_pattern = "%Y-week-%V"
       attr_accessor :date_pattern
 
+      # Tell the adapter to create a symlink onto the currently 
+      # active (timestamped) file. Upon rollover, the symlink is 
+      # set to the newly created file, and so on.
+      #
+      # @example
+      #   symlink_original_filename = true
       attr_accessor :symlink_original_filename
 
       # Set the amount of logfiles to keep when rolling over.
@@ -88,7 +90,7 @@ module Yell #:nodoc:
       end
 
       # Cleanup old files
-      def cleanup
+      def cleanup!
         files = Dir[ @original_filename.sub( /(\.\w+)?$/, ".*\\1" ) ].map do |f|
           [ f, metadata_from(f).last ]
         end.select do |(_, p)|
@@ -100,6 +102,11 @@ module Yell #:nodoc:
 
       def cleanup?
         keep.to_i > 0
+      end
+
+      def symlink_original_filename!
+        ::File.unlink( @original_filename ) if ::File.symlink?( @original_filename )
+        ::File.symlink( @filename, @original_filename )
       end
 
       # Sets the filename with the `:date_pattern` appended to it.
