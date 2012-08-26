@@ -92,18 +92,28 @@ module Yell #:nodoc:
         #   end
         def compile!( name, &block )
           # Get the already defined method
-          m = instance_method name
+          m = instance_method( name )
 
           # Create a new method with leading underscore
-          define_method "_#{name}", &block
-          _m = instance_method "_#{name}"
-          remove_method "_#{name}"
+          define_method( "_#{name}", &block )
+          _m = instance_method( "_#{name}" )
+          remove_method( "_#{name}" )
 
           # Define instance method
+          define!( name, _m, m, &block )
+        end
+
+        # Define instance method by given name and call the unbound
+        # methods in order with provided block.
+        def define!( name, *methods, &block )
           if block.arity == 0
-            define_method(name) { _m.bind(self).call; m.bind(self).call }
+            define_method( name ) do
+              methods.each { |m| m.bind(self).call }
+            end
           else
-            define_method(name) { |*args| _m.bind(self).call(*args); m.bind(self).call(*args) }
+            define_method( name ) do |*args| 
+              methods.each { |m| m.bind(self).call(*args) }
+            end
           end
         end
       end
