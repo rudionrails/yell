@@ -54,7 +54,7 @@ describe Yell::Event do
   end
 
   context :time do
-    subject { event.time }
+    subject { event.time.to_s }
 
     let(:time) { Time.now }
 
@@ -62,7 +62,7 @@ describe Yell::Event do
       Timecop.freeze( time )
     end
 
-    it { should == time }
+    it { should == time.to_s }
   end
 
   context :hostname do
