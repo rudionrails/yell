@@ -8,7 +8,7 @@ module Yell #:nodoc:
     class File < Yell::Adapters::Io
 
       setup do |options|
-        @filename = options.fetch( :filename, default_filename )
+        @filename = ::File.expand_path options.fetch(:filename, default_filename)
       end
 
 
@@ -27,7 +27,9 @@ module Yell #:nodoc:
       end
 
       def default_filename #:nodoc:
-        ::File.directory?("log") ? "log/#{Yell.env}.log" : "#{Yell.env}.log"
+        logdir = ::File.expand_path("log")
+
+        ::File.expand_path ::File.directory?(logdir) ? "#{logdir}/#{Yell.env}.log" : "#{Yell.env}.log"
       end
 
     end

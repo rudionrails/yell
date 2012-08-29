@@ -19,7 +19,7 @@ describe Yell::Adapters::File do
     let( :event ) { Yell::Event.new(1, "Hello World") }
 
     context "default filename" do
-      let( :filename ) { "#{Yell.env}.log" }
+      let( :filename ) { File.expand_path "#{Yell.env}.log" }
       let( :adapter ) { Yell::Adapters::File.new }
 
       it "should print to file" do
@@ -30,7 +30,7 @@ describe Yell::Adapters::File do
     end
 
     context "with given filename" do
-      let( :filename ) { 'filename.log' }
+      let( :filename ) { File.expand_path 'filename.log' }
       let( :adapter ) { Yell::Adapters::File.new( :filename => filename ) }
 
       it "should print to file" do

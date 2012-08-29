@@ -18,11 +18,11 @@ module Yell #:nodoc:
       setup do |options|
         @date = nil # default; do not override --R
 
-        self.date_pattern = options.fetch( :date_pattern, DefaultDatePattern )
-        self.symlink_original_filename = options.fetch( :symlink_original_filename, false )
-        self.keep = options.fetch( :keep, 0 )
+        self.date_pattern = options.fetch(:date_pattern, DefaultDatePattern)
+        self.symlink_original_filename = options.fetch(:symlink_original_filename, false)
+        self.keep = options.fetch(:keep, 0)
 
-        @original_filename  = options.fetch( :filename, default_filename )
+        @original_filename  = ::File.expand_path options.fetch(:filename, default_filename)
         options[:filename]  = @original_filename
       end
 
