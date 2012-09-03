@@ -52,11 +52,12 @@ module Yell #:nodoc:
       ENV['YELL_ENV'] || ENV['RACK_ENV'] ||ENV['RAILS_ENV'] || 'development'
     end
 
+    # Loads a config from a YAML file
     def load!( file )
       Yell.new Yell::Configuration.load!( file )
     end
 
-    def _deprecate( version, message, options = {} )
+    def _deprecate( version, message, options = {} ) #:nodoc:
       warning = ["Deprecation Warning (since v#{version}): #{message}" ]
       warning << "  before: #{options[:before]}" if options[:before]
       warning << "  after:  #{options[:after]}" if options[:after]
