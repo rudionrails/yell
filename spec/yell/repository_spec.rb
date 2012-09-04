@@ -37,5 +37,18 @@ describe Yell::Repository do
     it { should_not be_nil }
   end
 
+  context "[]= with a named logger of other name" do
+    let( :other ) { 'other' }
+    let( :logger ) { Yell.new :stdout, :name => other }
+
+    before do
+      Yell[ name ] = logger
+    end
+
+    it "should add logger to both repositories" do
+      Yell[name].should == logger
+      Yell[other].should == logger
+    end
+  end
 end
 
