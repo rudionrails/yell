@@ -34,6 +34,11 @@ module Yell #:nodoc:
       synchronize { instance.loggers[name] }
     end
 
+    # Clears all logger instances (handy for testing)
+    def self.clear
+      synchronize { instance.loggers.clear }
+    end
+
   end
 end
 

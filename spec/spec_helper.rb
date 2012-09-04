@@ -12,6 +12,10 @@ require 'timecop'
 RSpec.configure do |config|
   config.mock_framework = :rr
 
+  config.before do
+    Yell::Repository.clear
+  end
+
   config.after do
     Dir[ fixture_path + "/*.log" ].each { |f| File.delete f }
   end
