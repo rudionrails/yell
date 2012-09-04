@@ -12,7 +12,7 @@
 #
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
-#
+
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 # EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 # MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -22,6 +22,8 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 module Yell #:nodoc:
+
+  # Holds all Yell severities
   Severities = [ 'DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL', 'UNKNOWN' ]
 
   class << self
@@ -36,9 +38,23 @@ module Yell #:nodoc:
 
     # Shortcut to Yell::Level.new
     #
-    # @return [Yell::Level] A Yell::Level instance
+    # @return [Yell::Level] The level instance
     def level( val = nil )
       Yell::Level.new( val )
+    end
+
+    # Shortcut to Yell::Repository[]
+    #
+    # @return [Yell::Logger] The logger instance
+    def []( name )
+      Yell::Repository[ name ]
+    end
+
+    # Shortcut to Yell::Repository[]=
+    #
+    # @return [Yell::Logger] The logger instance
+    def []=( name, logger )
+      Yell::Repository[ name ] = logger
     end
 
     # Shortcut to Yell::Fomatter.new
@@ -48,29 +64,32 @@ module Yell #:nodoc:
       Yell::Formatter.new( pattern, date_pattern )
     end
 
-    def env #:nodoc:
-      ENV['YELL_ENV'] || ENV['RACK_ENV'] ||ENV['RAILS_ENV'] || 'development'
-    end
-
     # Loads a config from a YAML file
     def load!( file )
       Yell.new Yell::Configuration.load!( file )
     end
 
-    def _deprecate( version, message, options = {} ) #:nodoc:
-      warning = ["Deprecation Warning (since v#{version}): #{message}" ]
-      warning << "  before: #{options[:before]}" if options[:before]
-      warning << "  after:  #{options[:after]}" if options[:after]
-
-      $stderr.puts warning.join( "\n" )
+    def env #:nodoc:
+      ENV['YELL_ENV'] || ENV['RACK_ENV'] ||ENV['RAILS_ENV'] || 'development'
     end
 
+    def _deprecate( version, message, options = {} ) #:nodoc:
+      messages = ["Deprecation Warning (since v#{version}): #{message}" ]
+      messages << "  before: #{options[:before]}" if options[:before]
+      messages << "  after:  #{options[:after]}" if options[:after]
+
+      _warn( *messages )
+    end
+
+    def _warn( *messages )
+      $stderr.puts messages.join( "\n" )
+    end
   end
 
 end
 
 require File.dirname(__FILE__) + '/yell/configuration'
-
+require File.dirname(__FILE__) + '/yell/repository'
 require File.dirname(__FILE__) + '/yell/event'
 require File.dirname(__FILE__) + '/yell/level'
 require File.dirname(__FILE__) + '/yell/formatter'
