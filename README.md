@@ -97,13 +97,13 @@ With Yell you can do the same thing with less:
 require 'yell'
 
 # create a logger named 'mylog' that logs to stdout
-Yell['mylog'] = Yell.new :stdout
+Yell.new :stdout, :name => 'mylog'
 
 # later in the code, you can get the logger back
 Yell['mylog']
 ```
 
-There is no need to define outputters separately and you don't hane to taint 
+There is no need to define outputters separately and you don't have to taint 
 you global namespace with Yell's subclasses.
 
 
