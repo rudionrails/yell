@@ -32,7 +32,7 @@ module Yell #:nodoc:
       # @example Set the level to :warn
       #   level = :warn
       #
-      # @param [String, Symbol, Integer] val The minimum log level
+      # @param [String, Symbol, Integer] severity The minimum log level
       def level=( severity )
         @level = case severity
           when Yell::Level then severity

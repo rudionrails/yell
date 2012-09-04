@@ -1,7 +1,9 @@
 require 'spec_helper'
 
 describe Yell do
-  subject { Yell.new }
+  let( :logger ) { Yell.new }
+
+  subject { logger }
 
   it { should be_kind_of Yell::Logger }
 
@@ -29,6 +31,26 @@ describe Yell do
     end
 
     it { should be_kind_of Yell::Logger }
+  end
+
+  context :[] do
+    let( :name ) { 'test' }
+
+    it "should delegate to the repository" do
+      mock( Yell::Repository )[ name ]
+
+      Yell[ name ]
+    end
+  end
+
+  context :[]= do
+    let( :name ) { 'test' }
+
+    it "should delegate to the repository" do
+      mock.proxy( Yell::Repository )[name] = logger
+
+      Yell[ name ] = logger
+    end
   end
 
 end

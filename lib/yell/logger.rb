@@ -9,6 +9,9 @@ module Yell #:nodoc:
   class Logger
     include Yell::Level::Helpers
 
+    # The name of the logger instance
+    attr_reader :name
+
     # Initialize a new Logger
     #
     # @example A standard file logger
@@ -48,14 +51,17 @@ module Yell #:nodoc:
       # set the log level when given
       self.level = @options[:level]
 
+      # set the loggeer's name
+      self.name = @options[:name] if @options[:name]
+
       # extract adapter
-      adapter args.pop if args.any?
+      self.adapter args.pop if args.any?
 
       # eval the given block
       _call( &block ) if block
 
       # default adapter when none defined
-      adapter :file if @adapters.empty?
+      self.adapter :file if @adapters.empty?
     end
 
     # Define an adapter to be used for logging.
@@ -86,6 +92,10 @@ module Yell #:nodoc:
       end
 
       @adapters << Yell::Adapters.new( type, options, &block )
+    end
+
+    def name=( val )
+      Yell::Repository[val] = self
     end
 
     # Deprecated: Use attr_reader in future

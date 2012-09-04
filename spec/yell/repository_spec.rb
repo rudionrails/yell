@@ -29,5 +29,13 @@ describe Yell::Repository do
     it { should == logger }
   end
 
+  context "[]= with a named logger" do
+    before do
+      Yell[ name ] = Yell.new :stdout, :name => name
+    end
+
+    it { should_not be_nil }
+  end
+
 end
 

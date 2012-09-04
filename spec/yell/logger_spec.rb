@@ -47,6 +47,16 @@ describe Yell::Logger do
     end
   end
 
+  context "initialize with a :name" do
+    let( :name ) { 'test' }
+
+    it "should be added to the repository" do
+      logger = Yell.new :name => name
+
+      Yell::Repository[name].should == logger
+    end
+  end
+
   context "initialize with a :filename" do
     it "should call adapter with :file" do
       mock.proxy( Yell::Adapters::File ).new( :filename => 'test.log' )

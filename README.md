@@ -74,6 +74,38 @@ logger = Yell.new do |l|
 end
 ```
 
+### But I'm used to Log4r and I don't want to move on
+
+One of the really nice features of Log4r is its repository. The following example is 
+taken from the official Log4r [documentation](http://log4r.rubyforge.org/manual.html#outofbox).
+
+```ruby
+require 'log4r'
+include Log4r
+
+# create a logger named 'mylog' that logs to stdout
+mylog = Logger.new 'mylog'
+mylog.outputters = Outputter.stdout
+
+# later in the code, you can get the logger back
+Logger['mylog']
+```
+
+With Yell you can do the same thing with less:
+
+```ruby
+require 'yell'
+
+# create a logger named 'mylog' that logs to stdout
+Yell['mylog'] = Yell.new :stdout
+
+# later in the code, you can get the logger back
+Yell['mylog']
+```
+
+There is no need to define outputters separately and you don't hane to taint 
+you global namespace with Yell's subclasses.
+
 
 ## Further Readings
 
