@@ -57,6 +57,13 @@ module Yell #:nodoc:
       Yell::Repository[ name ] = logger
     end
 
+    # Shortcut to Yell::Repository.loggers
+    #
+    # @return [Hash] The map of loggers
+    def loggers
+      Yell::Repository.loggers
+    end
+
     # Shortcut to Yell::Fomatter.new
     #
     # @return [Yell::Formatter] A Yell::Formatter instance

@@ -34,6 +34,13 @@ module Yell #:nodoc:
       synchronize { instance.loggers[name] }
     end
 
+    # Get the list of all loggers in the repository
+    #
+    # @return [Hash] The map of loggers
+    def self.loggers
+      synchronize { instance.loggers }
+    end
+
     # Clears all logger instances (handy for testing)
     def self.clear
       synchronize { instance.loggers.clear }

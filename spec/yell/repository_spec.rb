@@ -4,7 +4,7 @@ describe Yell::Repository do
   let( :name ) { 'test' }
   let( :logger ) { Yell.new :stdout }
 
-  subject { Yell[name] }
+  subject { Yell::Repository[name] }
 
 
   context ".[]" do
@@ -14,7 +14,7 @@ describe Yell::Repository do
 
     context "when assigned" do
       before do
-        Yell[ name ] = logger
+        Yell::Repository[ name ] = logger
       end
 
       it { should == logger }
@@ -23,7 +23,7 @@ describe Yell::Repository do
 
   context ".[]=" do
     before do
-      Yell[ name ] = logger
+      Yell::Repository[ name ] = logger
     end
 
     it { should == logger }
@@ -31,7 +31,7 @@ describe Yell::Repository do
 
   context "[]= with a named logger" do
     before do
-      Yell[ name ] = Yell.new :stdout, :name => name
+      Yell::Repository[ name ] = Yell.new :stdout, :name => name
     end
 
     it { should_not be_nil }
@@ -42,13 +42,36 @@ describe Yell::Repository do
     let( :logger ) { Yell.new :stdout, :name => other }
 
     before do
-      Yell[ name ] = logger
+      Yell::Repository[ name ] = logger
     end
 
     it "should add logger to both repositories" do
-      Yell[name].should == logger
-      Yell[other].should == logger
+      Yell::Repository[name].should == logger
+      Yell::Repository[other].should == logger
     end
+  end
+
+  context "loggers" do
+    let( :loggers ) { { name => logger } }
+
+    subject { Yell::Repository.loggers }
+
+    before do
+      Yell::Repository[ name ] = logger
+    end
+
+    it { should == loggers }
+  end
+
+  context "clear" do
+    subject { Yell::Repository.loggers }
+
+    before do
+      Yell::Repository[ name ] = logger
+      Yell::Repository.clear
+    end
+
+    it { should be_empty }
   end
 end
 
