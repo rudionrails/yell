@@ -84,6 +84,11 @@ describe Yell::Formatter do
     end
   end
 
+  context "NoFormat" do
+    subject { Yell::NoFormat }
+    it { format.should == "Hello World!"  }
+  end
+
   context "DefaultFormat" do
     subject { Yell::DefaultFormat }
     it { format.should == "#{time.iso8601} [ INFO] #{$$} : Hello World!"  }
