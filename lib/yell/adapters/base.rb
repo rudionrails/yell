@@ -105,14 +105,16 @@ module Yell #:nodoc:
 
         # Define instance method by given name and call the unbound
         # methods in order with provided block.
-        def define!( name, *methods, &block )
+        def define!( name, _m, m, &block )
           if block.arity == 0
             define_method( name ) do
-              methods.each { |m| m.bind(self).call }
+              _m.bind(self).call
+              m.bind(self).call
             end
           else
-            define_method( name ) do |*args| 
-              methods.each { |m| m.bind(self).call(*args) }
+            define_method( name ) do |*args|
+              _m.bind(self).call(*args)
+              m.bind(self).call(*args)
             end
           end
         end
