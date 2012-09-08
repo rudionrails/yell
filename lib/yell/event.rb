@@ -12,12 +12,8 @@ module Yell #:nodoc:
     # regex to fetch caller attributes
     CallerRegexp = /^(.+?):(\d+)(?::in `(.+)')?/
 
-    # jruby and rubinius seemsto have a different caller
-    if defined?(RUBY_ENGINE) and ["rbx", "jruby"].include?(RUBY_ENGINE)
-      CallerIndex =1
-    else
-      CallerIndex = 2
-    end
+    # jruby and rubinius seem to have a different caller
+    CallerIndex = defined?(RUBY_ENGINE) && ["rbx", "jruby"].include?(RUBY_ENGINE) ? 1 : 2
 
     # Prefetch those values (no need to do that on every new instance)
     @@hostname  = Socket.gethostname rescue nil
