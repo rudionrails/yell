@@ -72,8 +72,10 @@ module Yell #:nodoc:
     end
 
     # Loads a config from a YAML file
+    #
+    # @return [Yell::Logger] The logger instance
     def load!( file )
-      Yell.new Yell::Configuration.load!( file )
+      Yell.new Yell::Configuration.load!(file)
     end
 
     def env #:nodoc:
@@ -92,7 +94,7 @@ module Yell #:nodoc:
       _warn( *messages )
     end
 
-    def _warn( *messages )
+    def _warn( *messages ) #:nodoc:
       $stderr.puts "[Yell] " + messages.join( "\n" )
     rescue
       # do nothing
