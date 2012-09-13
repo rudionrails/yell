@@ -61,5 +61,53 @@ describe Yell do
     end
   end
 
+  context :env do
+    subject { Yell.env }
+
+    it "should default to YELL_ENV" do
+      subject.should == 'test'
+    end
+
+    context "fallback to RACK_ENV" do
+      before do
+        stub( ENV ).key?( 'YELL_ENV' ) { false }
+        mock( ENV ).key?( 'RACK_ENV' ) { true }
+
+        ENV['RACK_ENV'] = 'rack'
+      end
+
+      after { ENV.delete 'RACK_ENV' }
+
+      it { should == 'rack' }
+    end
+
+    context "fallback to RAILS_ENV" do
+      before do
+        stub( ENV ).key?( 'YELL_ENV' ) { false }
+        stub( ENV ).key?( 'RACK_ENV' ) { false }
+        mock( ENV ).key?( 'RAILS_ENV' ) { true }
+
+        ENV['RAILS_ENV'] = 'rails'
+      end
+
+      after { ENV.delete 'RAILS_ENV' }
+
+      it { should == 'rails' }
+    end
+
+    it "should fallback to Rails.env" do
+    end
+
+    context "fallback to development" do
+      before do
+        stub( ENV ).key?( 'YELL_ENV' ) { false }
+        stub( ENV ).key?( 'RACK_ENV' ) { false }
+        stub( ENV ).key?( 'RAILS_ENV' ) { false }
+      end
+
+      it { should == 'development' }
+    end
+  end
+
 end
 

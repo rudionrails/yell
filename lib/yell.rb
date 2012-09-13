@@ -79,11 +79,15 @@ module Yell #:nodoc:
     end
 
     def env #:nodoc:
-      if defined?( Rails )
-        return Rails.env
-      end
+      return ENV['YELL_ENV']  if ENV.key? 'YELL_ENV'
+      return ENV['RACK_ENV']  if ENV.key? 'RACK_ENV'
+      return ENV['RAILS_ENV'] if ENV.key? 'RAILS_ENV'
 
-      ENV['YELL_ENV'] || ENV['RACK_ENV'] || ENV['RAILS_ENV'] || 'development'
+      if defined?( Rails )
+        Rails.env
+      else
+        'development'
+      end
     end
 
     def _deprecate( version, message, options = {} ) #:nodoc:
