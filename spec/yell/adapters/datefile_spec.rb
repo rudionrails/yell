@@ -59,8 +59,8 @@ describe Yell::Adapters::Datefile do
     end
   end
 
-  describe :symlink_original_filename do
-    let( :adapter ) { Yell::Adapters::Datefile.new(:symlink_original_filename => true, :filename => filename, :date_pattern => "%M") }
+  describe :symlink do
+    let( :adapter ) { Yell::Adapters::Datefile.new(:symlink => true, :filename => filename, :date_pattern => "%M") }
     let( :time ) { Time.now }
 
     it "should symlink to the orignal given :filename" do

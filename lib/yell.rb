@@ -93,7 +93,9 @@ module Yell #:nodoc:
     end
 
     def _warn( *messages )
-      $stderr.puts messages.join( "\n" )
+      $stderr.puts "[Yell] " + messages.join( "\n" )
+    rescue
+      # do nothing
     end
   end
 

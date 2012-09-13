@@ -19,8 +19,17 @@ module Yell #:nodoc:
         @date = nil # default; do not override --R
 
         self.date_pattern = options.fetch(:date_pattern, DefaultDatePattern)
-        self.symlink_original_filename = options.fetch(:symlink_original_filename, false)
         self.keep = options.fetch(:keep, 0)
+
+        self.symlink = if options.key?(:symlink_original_filename)
+          Yell._deprecate( "0.13.3", "Use :symlink for symlinking to oriinal filename",
+            :before => "Yell.new { |l| l.adapter :datefile, :symlink_original_filename => true }",
+            :after => "Yell.new { |l| l.adapter :datefile, :symlink => true }"
+          )
+          options.fetch(:symlink_original_filename, false)
+        else
+          options.fetch(:symlink, false)
+        end
 
         @original_filename  = ::File.expand_path options.fetch(:filename, default_filename)
         options[:filename]  = @original_filename
@@ -33,7 +42,7 @@ module Yell #:nodoc:
         return if ::File.exist?( @filename ) # do nothing when file ready present
 
         cleanup! if cleanup?
-        symlink_original_filename! if symlink_original_filename
+        symlink! if symlink?
 
         stream.puts( Metadata.call(@date, date_pattern) )
       end
@@ -55,8 +64,8 @@ module Yell #:nodoc:
       # set to the newly created file, and so on.
       #
       # @example
-      #   symlink_original_filename = true
-      attr_accessor :symlink_original_filename
+      #   symlink = true
+      attr_accessor :symlink
 
       # Set the amount of logfiles to keep when rolling over.
       # By default, no files will be cleaned up.
@@ -104,9 +113,14 @@ module Yell #:nodoc:
         keep.to_i > 0
       end
 
-      def symlink_original_filename!
+      def symlink!
         ::File.unlink( @original_filename ) if ::File.symlink?( @original_filename )
+
         ::File.symlink( @filename, @original_filename )
+      end
+
+      def symlink?
+        !!symlink
       end
 
       # Sets the filename with the `:date_pattern` appended to it.
