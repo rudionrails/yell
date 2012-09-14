@@ -21,7 +21,7 @@ describe Yell::Adapters::Datefile do
       mock( File ).open( datefile_filename, anything ) { File.new('/dev/null', 'w') }
 
       adapter.write( event )
-      adapter.write( event )
+      Timecop.freeze( Time.now + 10 ) { adapter.write( event ) }
     end
 
     context "rollover" do

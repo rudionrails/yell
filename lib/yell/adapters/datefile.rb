@@ -16,7 +16,7 @@ module Yell #:nodoc:
 
 
       setup do |options|
-        @date = nil # default; do not override --R
+        @date, @date_strftime = nil, nil # default; do not override --R
 
         self.date_pattern = options.fetch(:date_pattern, DefaultDatePattern)
         self.keep = options.fetch(:keep, 0)
@@ -39,11 +39,10 @@ module Yell #:nodoc:
         return unless close? # do nothing when not closing
         close
 
-        return if ::File.exist?( @filename ) # do nothing when file ready present
-
         cleanup! if cleanup?
         symlink! if symlink?
 
+        return if ::File.exist?( @filename ) # exit when file ready present
         stream.puts( Metadata.call(@date, date_pattern) )
       end
 
@@ -81,17 +80,18 @@ module Yell #:nodoc:
 
       private
 
-      # Determines whether to close the file handle or not.
+      # Determine whether to close the file handle or not.
       #
       # It is based on the `:date_pattern` (can be passed as option upon initialize). 
       # If the current time hits the pattern, it closes the file stream.
       #
       # @return [Boolean] true or false
       def close?
-        _date = Time.now
+        _date           = Time.now
+        _date_strftime  = _date.strftime(date_pattern)
 
-        if @stream.nil? or _date != @date
-          @date = _date
+        if @stream.nil? or _date_strftime != @date_strftime
+          @date, @date_strftime = _date, _date_strftime
           return true
         end
 
@@ -114,8 +114,9 @@ module Yell #:nodoc:
       end
 
       def symlink!
-        ::File.unlink( @original_filename ) if ::File.symlink?( @original_filename )
+        return if ::File.symlink?(@original_filename) && ::File.readlink(@original_filename) == @filename # do nothing, because symlink is already correct
 
+        ::File.unlink( @original_filename ) if ::File.exist?( @original_filename )
         ::File.symlink( @filename, @original_filename )
       end
 
