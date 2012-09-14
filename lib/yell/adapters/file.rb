@@ -23,7 +23,6 @@ module Yell #:nodoc:
         @stream = ::File.open( @filename, ::File::WRONLY|::File::APPEND|::File::CREAT )
         @stream.sync = true
 
-
         @stream
       end
 
