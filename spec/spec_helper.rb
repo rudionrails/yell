@@ -13,7 +13,7 @@ RSpec.configure do |config|
   config.mock_framework = :rr
 
   config.before do
-    Yell::Repository.clear
+    Yell::Repository.loggers.clear
   end
 
   config.after do

@@ -53,14 +53,6 @@ describe Yell do
     end
   end
 
-  context :loggers do
-    it "should delegate to the repository" do
-      mock.proxy( Yell::Repository ).loggers
-
-      Yell.loggers
-    end
-  end
-
   context :env do
     subject { Yell.env }
 

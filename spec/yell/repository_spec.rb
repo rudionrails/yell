@@ -8,16 +8,32 @@ describe Yell::Repository do
 
 
   context ".[]" do
-    context "when not set" do
-      it { should be_nil }
+    it "should raise when not set" do
+      lambda { subject }.should raise_error( Yell::LoggerNotFound )
     end
 
-    context "when assigned" do
+    it "should return the logger when set" do
+      Yell::Repository[ name ] = logger
+
+      subject.should == logger
+    end
+
+    context "given a Class" do
       before do
-        Yell::Repository[ name ] = logger
+        @logger = Yell.new :stdout, :name => "Numeric"
       end
 
-      it { should == logger }
+      it "should raise when not set" do
+        lambda { Yell::Repository[ String ] }.should raise_error( Yell::LoggerNotFound )
+      end
+
+      it "should return the logger" do
+        Yell::Repository[ Numeric ].should == @logger
+      end
+
+      it "should return the logger when superclass has it defined" do
+        Yell::Repository[ Integer ].should == @logger
+      end
     end
   end
 
@@ -63,15 +79,5 @@ describe Yell::Repository do
     it { should == loggers }
   end
 
-  context "clear" do
-    subject { Yell::Repository.loggers }
-
-    before do
-      Yell::Repository[ name ] = logger
-      Yell::Repository.clear
-    end
-
-    it { should be_empty }
-  end
 end
 

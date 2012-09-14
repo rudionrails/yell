@@ -57,13 +57,6 @@ module Yell #:nodoc:
       Yell::Repository[ name ] = logger
     end
 
-    # Shortcut to Yell::Repository.loggers
-    #
-    # @return [Hash] The map of loggers
-    def loggers
-      Yell::Repository.loggers
-    end
-
     # Shortcut to Yell::Fomatter.new
     #
     # @return [Yell::Formatter] A Yell::Formatter instance
@@ -107,6 +100,7 @@ module Yell #:nodoc:
 
 end
 
+# classes
 require File.dirname(__FILE__) + '/yell/configuration'
 require File.dirname(__FILE__) + '/yell/repository'
 require File.dirname(__FILE__) + '/yell/event'
@@ -114,4 +108,7 @@ require File.dirname(__FILE__) + '/yell/level'
 require File.dirname(__FILE__) + '/yell/formatter'
 require File.dirname(__FILE__) + '/yell/adapters'
 require File.dirname(__FILE__) + '/yell/logger'
+
+# modules
+require File.dirname(__FILE__) + '/yell/loggable'
 
