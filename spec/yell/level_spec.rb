@@ -72,41 +72,61 @@ describe Yell::Level do
     context "basic string" do
       subject { 'error' }
 
-      it { level.at?(:debug).should be_false }
-      it { level.at?(:info).should be_false }
-      it { level.at?(:warn).should be_false }
-      it { level.at?(:error).should be_true }
-      it { level.at?(:fatal).should be_true }
+      it "should be valid" do
+        level.at?(:debug).should be_false
+        level.at?(:info).should be_false
+        level.at?(:warn).should be_false
+        level.at?(:error).should be_true
+        level.at?(:fatal).should be_true
+      end
     end
 
     context "complex string with outer boundaries" do
       subject { 'gte.info lte.error' }
 
-      it { level.at?(:debug).should be_false }
-      it { level.at?(:info).should be_true }
-      it { level.at?(:warn).should be_true }
-      it { level.at?(:error).should be_true }
-      it { level.at?(:fatal).should be_false }
+      it "should be valid" do
+        level.at?(:debug).should be_false
+        level.at?(:info).should be_true
+        level.at?(:warn).should be_true
+        level.at?(:error).should be_true
+        level.at?(:fatal).should be_false
+      end
     end
 
     context "complex string with inner boundaries" do
       subject { 'gt.info lt.error' }
 
-      it { level.at?(:debug).should be_false }
-      it { level.at?(:info).should be_false }
-      it { level.at?(:warn).should be_true }
-      it { level.at?(:error).should be_false }
-      it { level.at?(:fatal).should be_false }
+      it "should be valid" do
+        level.at?(:debug).should be_false
+        level.at?(:info).should be_false
+        level.at?(:warn).should be_true
+        level.at?(:error).should be_false
+        level.at?(:fatal).should be_false
+      end
     end
 
     context "complex string with precise boundaries" do
       subject { 'at.info at.error' }
 
-      it { level.at?(:debug).should be_false }
-      it { level.at?(:info).should be_true }
-      it { level.at?(:warn).should be_false }
-      it { level.at?(:error).should be_true }
-      it { level.at?(:fatal).should be_false }
+      it "should be valid" do
+        level.at?(:debug).should be_false
+        level.at?(:info).should be_true
+        level.at?(:warn).should be_false
+        level.at?(:error).should be_true
+        level.at?(:fatal).should be_false
+      end
+    end
+
+    context "complex string with combined boundaries" do
+      subject { 'gte.error at.debug' }
+
+      it "should be valid" do
+        level.at?(:debug).should be_true
+        level.at?(:info).should be_false
+        level.at?(:warn).should be_false
+        level.at?(:error).should be_true
+        level.at?(:fatal).should be_true
+      end
     end
   end
 

@@ -80,10 +80,67 @@ module Yell #:nodoc:
     # @example
     #   at? :warn
     #   at? 0       # debug
+    #
+    # @return [Boolean] tru or false
     def at?( severity )
       index = index_from( severity )
 
       index.nil? ? false : @severities[index]
+    end
+
+    # Set the level at specific severities.
+    #
+    # @example Set at :debug and :error only
+    #   at :debug, :error
+    #
+    # @return [Yell::Level] the instance
+    def at( *severities )
+      severities.each { |severity| calculate! :==, severity }
+      self
+    end
+
+    # Set the level to greater than the given severity
+    #
+    # @example Set to :error and above
+    #   gt :warn
+    #
+    # @return [Yell::Level] the instance
+    def gt( severity )
+      calculate! :>, severity
+      self
+    end
+
+    # Set the level greater or equal to the given severity
+    #
+    # @example Set to :warn and above
+    #   gte :warn
+    #
+    # @return [Yell::Level] the instance
+    def gte( severity )
+      calculate! :>=, severity
+      self
+    end
+
+    # Set the level lower than given severity
+    #
+    # @example Set to lower than :warn
+    #   lt :warn
+    #
+    # @return [Yell::Level] the instance
+    def lt( severity )
+      calculate! :<, severity
+      self
+    end
+
+    # Set the level lower or equal than given severity
+    #
+    # @example Set to lower or equal than :warn
+    #   lte :warn
+    #
+    # @return [Yell::Level] the instance
+    def lte( severity )
+      calculate! :<=, severity
+      self
     end
 
     # to_i implements backwards compatibility
@@ -91,31 +148,6 @@ module Yell #:nodoc:
       @severities.each_with_index { |s,i| return i if s == true }
     end
     alias :to_int :to_i
-
-    def at( *severities ) #:nodoc:
-      severities.each { |severity| calculate! :==, severity }
-      self
-    end
-
-    def gt( severity ) #:nodoc:
-      calculate! :>, severity
-      self
-    end
-
-    def gte( severity ) #:nodoc:
-      calculate! :>=, severity
-      self
-    end
-
-    def lt( severity ) #:nodoc:
-      calculate! :<, severity
-      self
-    end
-
-    def lte( severity ) #:nodoc:
-      calculate! :<=, severity
-      self
-    end
 
 
     private
@@ -128,7 +160,7 @@ module Yell #:nodoc:
       end
     end
 
-    def calculate!( modifier, severity ) #:nodoc:
+    def calculate!( modifier, severity )
       index = index_from( severity )
       return if index.nil?
 
@@ -143,7 +175,7 @@ module Yell #:nodoc:
       taint unless tainted?
     end
 
-    def index_from( severity ) #:nodoc:
+    def index_from( severity )
       case severity
         when Integer        then severity
         when String, Symbol then Yell::Severities.index( severity.to_s.upcase )
@@ -151,28 +183,27 @@ module Yell #:nodoc:
       end
     end
 
-    def ascending!( index ) #:nodoc:
+    def ascending!( index )
+      each { |s, i| @severities[i] = i < index ? false : true }
+    end
+
+    def descending!( index )
+      each { |s, i| @severities[i] = index < i ? false : true }
+    end
+
+    def each( &block )
       @severities.each_with_index do |s, i|
         next if s == false # skip
 
-        @severities[i] = i < index ? false : true
+        yield(s, i)
       end
     end
 
-    def descending!( index ) #:nodoc:
-      @severities.each_with_index do |s, i|
-        next if s == false # skip
-
-        @severities[i] = index < i ? false : true
-      end
-    end
-
-    def set!( index ) #:nodoc:
+    def set!( index, val = true )
       @severities.map! { false } unless tainted?
 
-      @severities[index] = true
+      @severities[index] = val
     end
 
   end
-
 end
