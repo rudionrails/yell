@@ -22,3 +22,4 @@ EOS
 puts "=== actual example ==="
 logger = Yell.new STDOUT
 logger.info "Hello World!"
+
