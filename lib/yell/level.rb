@@ -191,7 +191,7 @@ module Yell #:nodoc:
       each { |s, i| @severities[i] = index < i ? false : true }
     end
 
-    def each( &block )
+    def each
       @severities.each_with_index do |s, i|
         next if s == false # skip
 
