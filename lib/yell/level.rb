@@ -61,18 +61,7 @@ module Yell #:nodoc:
     #
     # @param [Integer,String,Symbol,Array,Range,nil] severity The severity for the level.
     def initialize( severity = nil )
-      reset!
-
-      case severity
-        when Array then at( *severity )
-        when Range then gte( severity.first ).lte( severity.last )
-        when Integer, Symbol then gte( severity )
-        when String then interpret!( severity )
-      end
-    end
-
-    def reset!
-      @severities = Yell::Severities.map { true }
+      reset!( severity )
     end
 
     # Returns whether the level is allowed at the given severity
@@ -151,6 +140,17 @@ module Yell #:nodoc:
 
 
     private
+
+    def reset!( severity )
+      @severities = Yell::Severities.map { true }
+
+      case severity
+        when Array then at( *severity )
+        when Range then gte( severity.first ).lte( severity.last )
+        when Integer, Symbol then gte( severity )
+        when String then interpret!( severity )
+      end
+    end
 
     def interpret!( severities )
       severities.split( ' ' ).each do |severity|

@@ -114,8 +114,6 @@ module Yell #:nodoc:
     end
 
     # Convenience method for resetting all adapters of the Logger.
-    #
-    # @param [Boolean] now Perform the reset immediately (default false)
     def close
       @adapters.each(&:close)
     end
