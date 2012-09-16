@@ -7,8 +7,8 @@ describe Yell do
 
   it { should be_kind_of Yell::Logger }
 
-  it "should raise UnregisteredAdapter when adapter cant be loaded" do
-    lambda { Yell.new :unknownadapter }.should raise_error( Yell::UnregisteredAdapter )
+  it "should raise AdapterNotFound when adapter cant be loaded" do
+    lambda { Yell.new :unknownadapter }.should raise_error( Yell::AdapterNotFound )
   end
 
   context :level do

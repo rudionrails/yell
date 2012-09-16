@@ -2,9 +2,9 @@
 
 module Yell #:nodoc:
 
-  # NoSuchAdapter is raised whenever you want to instantiate an 
+  # AdapterNotFound is raised whenever you want to instantiate an 
   # adapter that does not exist.
-  class UnregisteredAdapter < StandardError; end
+  class AdapterNotFound < StandardError; end
 
   # This module provides the interface to attaching adapters to
   # the logger. You should not have to call the corresponding classes
@@ -35,7 +35,7 @@ module Yell #:nodoc:
           else @@adapters[name]
         end
 
-        raise UnregisteredAdapter.new( name ) unless adapter
+        raise AdapterNotFound.new( name ) unless adapter
 
         adapter.new( options, &block )
       end
