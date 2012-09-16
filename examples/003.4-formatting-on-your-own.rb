@@ -4,7 +4,7 @@ require_relative '../lib/yell'
 
 puts <<-EOS
 
-The extended formatting string looks like: %d [%5L] %p %h : %m.
+# The extended formatting string looks like: %d [%5L] %p %h : %m.
 
 logger = Yell.new STDOUT, :format => "[%f:%n in `%M'] %m"
 logger.info "Hello World!"
