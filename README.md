@@ -107,6 +107,35 @@ Yell['mylog']
 There is no need to define outputters separately and you don't have to taint 
 you global namespace with Yell's subclasses.
 
+### You want any class to have a logger?
+
+Yell comes with a simple module: +Yell::Loggable+. Simply include this in a class and 
+you are good to go.
+
+```ruby
+# Before you can use it, you will need to define a logger and 
+# provide it with the `:name` of your class.
+Yell.new :stdout, :name => 'Foo'
+
+class Foo
+  include Yell::Loggable
+end
+
+# Now you can log
+Foo.new.logger.info "Hello World"
+```
+
+It even works with class inheritance:
+
+```ruby
+# Given the above example, we inherit from Foo
+class Bar < Foo
+end
+
+# The logger will fallback to the Foo superclass
+Bar.new.logger.info "Hello World"
+```
+
 
 ## Further Readings
 
