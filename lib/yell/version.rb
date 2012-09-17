@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 module Yell #:nodoc:
-  VERSION = "0.13.4"
+  VERSION = "1.0.0"
 
 end
 
