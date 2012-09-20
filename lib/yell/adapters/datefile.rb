@@ -4,25 +4,32 @@ module Yell #:nodoc:
   module Adapters #:nodoc:
 
     # The +Datefile+ adapter is similar to the +File+ adapter. However, it
-    # rotates the file at midnight.
+    # rotates the file at midnight (by default).
     class Datefile < Yell::Adapters::File
 
       # The default date pattern, e.g. "19820114" (14 Jan 1982)
       DefaultDatePattern = "%Y%m%d"
 
       # Metadata
-      Metadata = lambda { |date, pattern| "# -*- #{date.iso8601} (#{date.to_f}) [#{pattern}] -*-" }
-      MetadataRegexp = /^# -\*- (.+) \((\d+\.\d+)\) \[(.+)\] -\*-$/
+      Header = lambda { |date, pattern| "# -*- #{date.iso8601} (#{date.to_f}) [#{pattern}] -*-" }
+      HeaderRegexp = /^# -\*- (.+) \((\d+\.\d+)\) \[(.+)\] -\*-$/
 
 
       setup do |options|
         @date, @date_strftime = nil, nil # default; do not override --R
 
-        self.date_pattern = options.fetch(:date_pattern, DefaultDatePattern)
-        self.keep = options.fetch(:keep, 0)
+        # check whether to write the log header (default true)
+        self.header = options.fetch(:header, true)
 
+        # check the date pattern on the filename (default "%Y%m%d")
+        self.date_pattern = options.fetch(:date_pattern, DefaultDatePattern)
+
+        # check whether to cleanup old files of the same pattern (default false)
+        self.keep = options.fetch(:keep, false)
+
+        # check whether to symlink the otiginal filename (default false)
         self.symlink = if options.key?(:symlink_original_filename)
-          Yell._deprecate( "0.13.3", "Use :symlink for symlinking to oriinal filename",
+          Yell._deprecate( "0.13.3", "Use :symlink for symlinking to original filename",
             :before => "Yell.new { |l| l.adapter :datefile, :symlink_original_filename => true }",
             :after => "Yell.new { |l| l.adapter :datefile, :symlink => true }"
           )
@@ -43,7 +50,7 @@ module Yell #:nodoc:
         symlink! if symlink?
 
         return if ::File.exist?( @filename ) # exit when file ready present
-        stream.puts( Metadata.call(@date, date_pattern) )
+        stream.puts( Header.call(@date, date_pattern) ) if header? # write the header if applicable
       end
 
       close do
@@ -77,6 +84,15 @@ module Yell #:nodoc:
       #   keep = 0
       attr_accessor :keep
 
+      # You can suppress the first line of the logfile that contains
+      # the metadata. This is important upon rollover, because on *nix 
+      # systems, it is not possible to determine the creation time of a file, 
+      # on the last access time. The header compensates this.
+      #
+      # @example
+      #   header = false
+      attr_accessor :header
+
 
       private
 
@@ -98,10 +114,15 @@ module Yell #:nodoc:
         false
       end
 
-      # Cleanup old files
+      # Removes old logfiles of the same date pattern.
+      #
+      # By reading the header of the files that match the date pattern, the
+      # adapter determines whether to remove them or not. If no header is present, 
+      # it makes the best guess by checking the last access time (which may result 
+      # in false cleanups).
       def cleanup!
         files = Dir[ @original_filename.sub( /(\.\w+)?$/, ".*\\1" ) ].map do |f|
-          [ f, metadata_from(f).last ]
+          [ f, header_from(f).last ]
         end.select do |(_, p)|
           date_pattern == p
         end
@@ -109,10 +130,14 @@ module Yell #:nodoc:
         ::File.unlink( *files.map(&:first)[0..-keep] )
       end
 
+      # Cleanup old logfiles?
+      #
+      # @return [Boolean] true or false
       def cleanup?
-        keep.to_i > 0
+        !!keep && keep.to_i > 0
       end
 
+      # Symlink the current filename to the original one.
       def symlink!
         # do nothing, because symlink is already correct
         return if ::File.symlink?(@original_filename) && ::File.readlink(@original_filename) == @filename
@@ -121,17 +146,24 @@ module Yell #:nodoc:
         ::File.symlink( @filename, @original_filename )
       end
 
-      def symlink?
-        !!symlink
-      end
+      # Symlink the original filename?
+      #
+      # @return [Boolean] true or false
+      def symlink?; !!symlink; end
+
+      # Write header into the file?
+      #
+      # @return [Boolean] true or false
+      def header?; !!header; end
 
       # Sets the filename with the `:date_pattern` appended to it.
       def filename_from( date )
         @original_filename.sub( /(\.\w+)?$/, ".#{date.strftime(date_pattern)}\\1" )
       end
 
-      def metadata_from( file )
-        if m = ::File.open( file, &:readline ).match( MetadataRegexp )
+      # Fetch the header form the file
+      def header_from( file )
+        if m = ::File.open( file, &:readline ).match( HeaderRegexp )
           [ Time.at( m[2].to_f ), m[3] ]
         else
           [ ::File.mtime( file ), "" ]

@@ -80,6 +80,28 @@ describe Yell::Adapters::Datefile do
     end
   end
 
+  describe :header do
+    let( :adapter ) { Yell::Adapters::Datefile.new(:filename => filename) }
+    let( :header ) { File.open(datefile_filename, &:readline) }
+
+    before do
+      adapter.format = "%m" # easier to parse
+    end
+
+    it "should be written by default" do
+      adapter.write( event )
+
+      header.should match(Yell::Adapters::Datefile::HeaderRegexp)
+    end
+
+    it "should not be written when false" do
+      adapter.header = false
+      adapter.write( event )
+
+      header.should == "Hello World\n"
+    end
+  end
+
 
   private
 
