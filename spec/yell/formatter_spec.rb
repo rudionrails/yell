@@ -91,7 +91,7 @@ describe Yell::Formatter do
 
   context "DefaultFormat" do
     subject { Yell::DefaultFormat }
-    it { format.should == "#{time.iso8601} [ INFO] #{$$} : Hello World!"  }
+    it { format.should == "#{time.iso8601} [   INFO] #{$$} : Hello World!"  }
   end
 
   context "BasicFormat" do
@@ -101,7 +101,7 @@ describe Yell::Formatter do
 
   context "ExtendedFormat" do
     subject { Yell::ExtendedFormat }
-    it { format.should == "#{time.iso8601} [ INFO] #{$$} #{Socket.gethostname} : Hello World!" }
+    it { format.should == "#{time.iso8601} [   INFO] #{$$} #{Socket.gethostname} : Hello World!" }
   end
 
   context "Exceptions" do
