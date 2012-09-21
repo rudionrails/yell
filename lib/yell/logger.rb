@@ -51,8 +51,13 @@ module Yell #:nodoc:
       # set the log level when given
       self.level = @options[:level]
 
-      # set the loggeer's name
-      self.name = @options[:name] if @options[:name]
+      # include this logger to any object if 'everywhere' is defined
+      if !!@options[:everywhere]
+        include_everywhere!
+      elsif @options[:name]
+        # set the logger's name
+        self.name = @options[:name]
+      end
 
       # extract adapter
       self.adapter args.pop if args.any?
@@ -82,8 +87,8 @@ module Yell #:nodoc:
     #   adapter( Yell::Adapter::File.new )
     #
     # @param [Symbol] type The type of the adapter, may be `:file` or `:datefile` (default `:file`)
-    #
     # @return [Yell::Adapter] The instance
+    #
     #
     # @raise [Yell::NoSuchAdapter] Will be thrown when the adapter is not defined
     def adapter( type = :file, *args, &block )
@@ -111,8 +116,8 @@ module Yell #:nodoc:
 
         @level = Yell::Level.new( val )
       end
-    end
 
+    end
     # Convenience method for resetting all adapters of the Logger.
     def close
       @adapters.each(&:close)
@@ -178,6 +183,15 @@ module Yell #:nodoc:
       @adapters.each { |a| a.write(event) }
     end
 
+    def include_everywhere!
+      self.name = 'General'
+
+      Kernel.module_eval do
+        def logger
+          Yell['General']
+        end
+      end
+    end
   end
 end
 
