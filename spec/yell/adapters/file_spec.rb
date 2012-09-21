@@ -30,11 +30,33 @@ describe Yell::Adapters::File do
     end
 
     context "with given filename" do
-      let( :filename ) { File.expand_path 'filename.log' }
+      let( :filename ) { fixture_path + '/filename.log' }
       let( :adapter ) { Yell::Adapters::File.new( :filename => filename ) }
 
       it "should print to file" do
         mock( File ).open( filename, File::WRONLY|File::APPEND|File::CREAT ) { devnull }
+
+        adapter.write( event )
+      end
+    end
+
+    context :sync do
+      let( :adapter ) { Yell::Adapters::File.new }
+
+      it "should sync by default" do
+        any_instance_of( File ) do |file|
+          mock( file ).sync=( true )
+        end
+
+        adapter.write( event )
+      end
+
+      it "pass the option to File" do
+        adapter.sync = false
+
+        any_instance_of( File ) do |file|
+          mock( file ).sync=( false )
+        end
 
         adapter.write( event )
       end

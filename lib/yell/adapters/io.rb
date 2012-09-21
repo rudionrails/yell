@@ -20,8 +20,8 @@ module Yell #:nodoc:
       setup do |options|
         @stream = nil
 
-        self.colors = options[:colors]
-        self.format = options[:format]
+        self.colors = options.fetch(:colors, false)
+        self.format = options.fetch(:format, nil)
       end
 
       write do |event|

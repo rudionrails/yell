@@ -9,7 +9,12 @@ module Yell #:nodoc:
 
       setup do |options|
         @filename = ::File.expand_path options.fetch(:filename, default_filename)
+
+        # sync immediately to IO (or not)
+        self.sync = options.fetch(:sync, true)
       end
+
+      attr_accessor :sync
 
 
       private
@@ -21,7 +26,7 @@ module Yell #:nodoc:
 
       def open!
         @stream = ::File.open( @filename, ::File::WRONLY|::File::APPEND|::File::CREAT )
-        @stream.sync = true
+        @stream.sync = sync
 
         @stream
       end
