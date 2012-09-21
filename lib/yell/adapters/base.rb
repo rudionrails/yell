@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require 'thread'
+require 'monitor'
 
 module Yell #:nodoc:
   module Adapters #:nodoc:
@@ -40,7 +40,7 @@ module Yell #:nodoc:
     #
     #   logger = Yell.new :puts
     #   logger.info "Hello World!"
-    class Base
+    class Base < Monitor
       include Yell::Level::Helpers
 
       class << self
@@ -125,7 +125,7 @@ module Yell #:nodoc:
       #
       # You should not overload the constructor, use #setup instead.
       def initialize( options = {}, &block )
-        @mutex = Mutex.new
+        super() # init the monitor superclass
 
         setup!(options)
         block.call(self) if block
@@ -189,10 +189,6 @@ module Yell #:nodoc:
       # @return [Boolean] true or false
       def write?( event )
         @level.nil? || @level.at?( event.level )
-      end
-
-      def synchronize( &block )
-        @mutex.synchronize( &block )
       end
 
     end

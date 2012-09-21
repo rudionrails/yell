@@ -14,6 +14,11 @@ module Yell #:nodoc:
         self.sync = options.fetch(:sync, true)
       end
 
+
+      # Sets the “sync mode” to true or false.
+      #
+      # When true (default), every log event is immediately written to the file. 
+      # When false, the log event is buffered internally.
       attr_accessor :sync
 
 
@@ -21,7 +26,7 @@ module Yell #:nodoc:
 
       # @overload Lazily open the file handle
       def stream
-        @stream or open!
+        synchronize { @stream or open! }
       end
 
       def open!

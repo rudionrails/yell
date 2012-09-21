@@ -44,9 +44,7 @@ describe Yell::Adapters::File do
       let( :adapter ) { Yell::Adapters::File.new }
 
       it "should sync by default" do
-        any_instance_of( File ) do |file|
-          mock( file ).sync=( true )
-        end
+        mock( devnull ).sync=( true )
 
         adapter.write( event )
       end
@@ -54,9 +52,7 @@ describe Yell::Adapters::File do
       it "pass the option to File" do
         adapter.sync = false
 
-        any_instance_of( File ) do |file|
-          mock( file ).sync=( false )
-        end
+        mock( devnull ).sync=( false )
 
         adapter.write( event )
       end
