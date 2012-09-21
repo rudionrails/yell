@@ -4,6 +4,8 @@ require 'time'
 
 module Yell #:nodoc:
 
+  LongestSeverityLength = Severities.map{ |s| s.length }.max
+
   # No format on the log message
   #
   # @example
@@ -20,7 +22,7 @@ module Yell #:nodoc:
   #   #=> "2012-02-29T09:30:00+01:00 [ INFO] 65784 : Hello World!"
   #   #    ^                         ^       ^       ^
   #   #    ISO8601 Timestamp         Level   Pid     Message
-  DefaultFormat = "%d [%5L] %p : %m"
+  DefaultFormat = "%d [%#{LongestSeverityLength}L] %p : %m"
 
   # Basic Format
   #
@@ -41,7 +43,7 @@ module Yell #:nodoc:
   #   #=> "2012-02-29T09:30:00+01:00 [ INFO] 65784 localhost : Hello World!"
   #   #    ^                          ^      ^     ^           ^
   #   #    ISO8601 Timestamp          Level  Pid   Hostname    Message
-  ExtendedFormat  = "%d [%5L] %p %h : %m"
+  ExtendedFormat  = "%d [%#{LongestSeverityLength}L] %p %h : %m"
 
 
   # The +Formatter+ provides a handle to configure your log message style.
