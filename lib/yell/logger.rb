@@ -34,7 +34,7 @@ module Yell #:nodoc:
     #   Yell::Logger.new :datefile, 'development.log' do |l|
     #     l.level = :info
     #   end
-    def initialize( *args, &block )
+    def initialize( *args )
       @adapters = []
 
       # extract options
@@ -58,7 +58,7 @@ module Yell #:nodoc:
       self.adapter args.pop if args.any?
 
       # eval the given block
-      _call( &block ) if block
+      yield(self) if block_given?
 
       # default adapter when none defined
       self.adapter :file if @adapters.empty?
@@ -98,21 +98,6 @@ module Yell #:nodoc:
       Yell::Repository[val] = self
     end
 
-    # Deprecated: Use attr_reader in future
-    def level( val = nil )
-      if val.nil?
-        @level
-      else
-        # deprecated, but should still work
-        Yell._deprecate( "0.5.0", "Use :level= for setting the log level",
-          :before => "Yell::Logger.new { level :info }",
-          :after  => "Yell::Logger.new { |l| l.level = :info }"
-        )
-
-        @level = Yell::Level.new( val )
-      end
-    end
-
     # Convenience method for resetting all adapters of the Logger.
     def close
       @adapters.each(&:close)
@@ -141,20 +126,6 @@ module Yell #:nodoc:
 
 
     private
-
-    def _call( &block )
-      if block.arity == 0
-        Yell._deprecate( "0.5.0", "Yell::Logger.new with block expects argument now",
-          :before => "Yell::Logger.new { adapter STDOUT }",
-          :after  => "Yell::Logger.new { |l| l.adapter STDOUT }"
-        )
-
-        # deprecated, but should still work
-        instance_eval( &block )
-      else
-        block.call(self)
-      end
-    end
 
     # The :adapters key may be passed to the options hash. It may appear in 
     # multiple variations:

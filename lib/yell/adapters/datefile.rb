@@ -28,15 +28,7 @@ module Yell #:nodoc:
         self.keep = options.fetch(:keep, false)
 
         # check whether to symlink the otiginal filename (default false)
-        self.symlink = if options.key?(:symlink_original_filename)
-          Yell._deprecate( "0.13.3", "Use :symlink for symlinking to original filename",
-            :before => "Yell.new { |l| l.adapter :datefile, :symlink_original_filename => true }",
-            :after => "Yell.new { |l| l.adapter :datefile, :symlink => true }"
-          )
-          options.fetch(:symlink_original_filename, false)
-        else
-          options.fetch(:symlink, false)
-        end
+        self.symlink = options.fetch(:symlink, false)
 
         @original_filename  = ::File.expand_path options.fetch(:filename, default_filename)
         options[:filename]  = @original_filename
