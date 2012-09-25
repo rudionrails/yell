@@ -54,7 +54,7 @@ module Yell #:nodoc:
       end
 
       close do
-        @filename = filename_from( @date )
+        @filename = filename_for( @date )
       end
 
 
@@ -121,13 +121,15 @@ module Yell #:nodoc:
       # it makes the best guess by checking the last access time (which may result 
       # in false cleanups).
       def cleanup!
-        files = Dir[ @original_filename.sub( /(\.\w+)?$/, ".*\\1" ) ].map do |f|
-          [ f, header_from(f).last ]
-        end.select do |(_, p)|
-          date_pattern == p
+        files = Dir[ @original_filename.sub( /(\.\w+)?$/, ".*\\1" ) ].select do |file|
+          created, pattern = header_from(file)
+
+          # Select if the date pattern is nil (no header info available within the file) or
+          # when the pattern matches.
+          pattern.nil? || pattern == self.date_pattern
         end
 
-        ::File.unlink( *files.map(&:first)[0..-keep] )
+        ::File.unlink( *files[0..-keep] )
       end
 
       # Cleanup old logfiles?
@@ -157,16 +159,21 @@ module Yell #:nodoc:
       def header?; !!header; end
 
       # Sets the filename with the `:date_pattern` appended to it.
-      def filename_from( date )
+      def filename_for( date )
         @original_filename.sub( /(\.\w+)?$/, ".#{date.strftime(date_pattern)}\\1" )
       end
 
       # Fetch the header form the file
       def header_from( file )
         if m = ::File.open( file, &:readline ).match( HeaderRegexp )
+          # in case there is a Header present, we can just read from it
           [ Time.at( m[2].to_f ), m[3] ]
         else
-          [ ::File.mtime( file ), "" ]
+          # In case there is no header: we need to take a good guess
+          #
+          # Since the pattern can not be determined, we will just return the Posix ctime. 
+          # That is NOT the creatint time, so the value will potentially be wrong!
+          [ ::File.ctime(file), nil ]
         end
       end
 
