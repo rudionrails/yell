@@ -124,7 +124,8 @@ module Yell #:nodoc:
           backtrace = m.backtrace ? "\n\t#{m.backtrace.join("\n\t")}" : ""
 
           "%s: %s%s" % [m.class, m.message, backtrace]
-        else m
+        else
+          m
       end
     end
 

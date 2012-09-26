@@ -18,9 +18,9 @@ describe "running Yell multi-threaded" do
 
   # it "should write all messages from multiple instances" do
   #   (1..threads).map do |count|
-  #     logger = Yell.new( filename )
-
   #     Thread.new do
+  #       logger = Yell.new( filename )
+
   #       10.times { logger.info count }
   #     end
   #   end.each(&:join)

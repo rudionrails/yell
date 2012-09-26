@@ -32,7 +32,8 @@ module Yell #:nodoc:
           message = color + message + Colors[-1]
         end
 
-        message << "\n" unless message[-1] == ?\n # add new line if there is none
+        # add new line if there is none
+        message << "\n" unless message[-1] == ?\n
 
         stream.write( message )
       end
@@ -43,9 +44,19 @@ module Yell #:nodoc:
       end
 
 
+      # Sets colored output on or off (default off)
+      #
+      # @example Enable colors
+      #   colors = true
+      #
+      # @example Disable colors
+      #   colors = false
       attr_accessor :colors
 
-      # Shortcut to enable colors
+      # Shortcut to enable colors.
+      #
+      # @example
+      #   colorize!
       def colorize!; @colors = true; end
 
 
