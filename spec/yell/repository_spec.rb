@@ -23,7 +23,9 @@ describe Yell::Repository do
         @logger = Yell.new :stdout, :name => "Numeric"
       end
 
-      it "should raise when not set" do
+      it "should raise with the correct :name when logger not found" do
+        mock.proxy( Yell::LoggerNotFound ).new( String )
+
         lambda { Yell::Repository[ String ] }.should raise_error( Yell::LoggerNotFound )
       end
 
