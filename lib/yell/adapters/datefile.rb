@@ -35,14 +35,18 @@ module Yell #:nodoc:
       end
 
       write do |event|
-        return unless close? # do nothing when not closing
+        # do nothing when not closing
+        return unless close?
         close
 
-        cleanup! if cleanup?
-        symlink! if symlink?
+        # exit when file ready present
+        return if ::File.exist?( @filename )
 
-        return if ::File.exist?( @filename ) # exit when file ready present
-        stream.puts( Header.call(@date, date_pattern) ) if header? # write the header if applicable
+        # write the header if applicable
+        stream.puts( Header.call(@date, date_pattern) ) if header?
+
+        symlink! if symlink?
+        cleanup! if cleanup?
       end
 
       close do
@@ -100,6 +104,7 @@ module Yell #:nodoc:
 
         if @stream.nil? or _date_strftime != @date_strftime
           @date, @date_strftime = _date, _date_strftime
+
           return true
         end
 
@@ -113,7 +118,7 @@ module Yell #:nodoc:
       # it makes the best guess by checking the last access time (which may result 
       # in false cleanups).
       def cleanup!
-        files = Dir[ @original_filename.sub( /(\.\w+)?$/, ".*\\1" ) ].select do |file|
+        files = Dir[ @original_filename.sub( /(\.\w+)?$/, ".*\\1" ) ].sort.select do |file|
           created, pattern = header_from(file)
 
           # Select if the date pattern is nil (no header info available within the file) or
@@ -121,7 +126,7 @@ module Yell #:nodoc:
           pattern.nil? || pattern == self.date_pattern
         end
 
-        ::File.unlink( *files[0..-keep] )
+        ::File.unlink( *files[0..-keep-1] )
       end
 
       # Cleanup old logfiles?
