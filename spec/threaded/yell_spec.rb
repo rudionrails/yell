@@ -2,65 +2,99 @@ require 'spec_helper'
 
 describe "running Yell multi-threaded" do
   let( :threads ) { 100 }
+  let( :range ) { (1..threads) }
 
   let( :filename ) { fixture_path + '/threaded.log' }
   let( :lines ) { `wc -l #{filename}`.to_i }
 
-  it "should write all messages from one instance" do
-    logger = Yell.new( filename )
+  context "one instance" do
+    before do
+      logger = Yell.new filename
 
-    (1..threads).map do |count|
-      Thread.new { 10.times { logger.info count } }
-    end.each(&:join)
+      range.map do |count|
+        Thread.new { 10.times { logger.info count } }
+      end.each(&:join)
 
-    lines.should == 10*threads
+      sleep 0.5
+    end
+
+    it "should write all messages" do
+      lines.should == 10*threads
+    end
   end
 
-  # it "should write all messages from multiple instances" do
-  #   (1..threads).map do |count|
-  #     Thread.new do
-  #       logger = Yell.new( filename )
+  # context "one instance per thread" do
+  #   before do
+  #     range.map do |count|
+  #       Thread.new do
+  #         logger = Yell.new( filename )
 
-  #       10.times { logger.info count }
-  #     end
-  #   end.each(&:join)
+  #         10.times { logger.info count }
+  #       end
+  #     end.each(&:join)
 
-  #   lines.should == 10*threads
+  #     sleep 0.5
+  #   end
+
+  #   it "should write all messages" do
+  #     lines.should == 10*threads
+  #   end
   # end
 
-  it "should write all messages from one repository" do
-    Yell[ 'threaded' ] = Yell.new( filename )
+  context "one instance in the repository" do
+    before do
+      Yell[ 'threaded' ] = Yell.new( filename )
+    end
 
-    (1..threads).map do |count|
-      Thread.new { 10.times { Yell['threaded'].info count } }
-    end.each(&:join)
+    it "should write all messages" do
+      range.map do |count|
+        Thread.new { 10.times { Yell['threaded'].info count } }
+      end.each(&:join)
 
-    lines.should == 10*threads
+      lines.should == 10*threads
+    end
   end
 
-  it "should safely rollover with multiple datefile instances" do
-    date = Time.now
-    Timecop.travel( date - 86400 )
+  context "multiple datefile instances" do
+    let( :threadlist ) { [] }
+    let( :date ) { Time.now }
 
-    t = (1..threads).map do |count|
-      Thread.new do
-        logger = Yell.new :datefile, :filename => filename, :keep => 2
-        loop { logger.info :info; sleep 0.1 }
+    before do
+      Timecop.freeze( date - 86400 )
+
+      range.each do |count|
+        threadlist << Thread.new do
+          logger = Yell.new :datefile, :filename => filename, :keep => 2
+          loop { logger.info :info; sleep 0.1 }
+        end
+      end
+
+      sleep 0.3 # sleep to get some messages into the file
+    end
+
+    after do
+      threadlist.each(&:kill)
+    end
+
+    it "should safely rollover" do
+      # now cycle the days
+      7.times do |count|
+        Timecop.freeze( date + 86400*count )
+        sleep 0.3
+
+        files = Dir[ fixture_path + '/*.log' ]
+        files.size.should == 2
+
+        # files.last.should match( datefile_pattern_for(Time.now) ) # today
+        # files.first.should match( datefile_pattern_for(Time.now-86400) ) # yesterday
       end
     end
-
-    sleep 0.3 # sleep to get some messages into the file
-
-    # now cycle the days
-    14.times do |count|
-      Timecop.travel( date + 86400*count )
-      sleep 0.3
-
-      Dir[ fixture_path + '/*.log' ].size.should == 2
-    end
-
-    t.each(&:kill)
   end
 
+  private
+
+  def datefile_pattern_for( time )
+    time.strftime(Yell::Adapters::Datefile::DefaultDatePattern)
+  end
 end
 
