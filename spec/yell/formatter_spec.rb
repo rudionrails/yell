@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Yell::Formatter do
 
   let( :formatter ) { Yell::Formatter.new(subject) }
-  let( :event ) { Yell::Event.new 1, 'Hello World!', :test => :option }
+  let( :event ) { Yell::Event.new 1, 'Hello World!' }
   let( :time ) { Time.now }
 
   let( :format ) { formatter.format(event) }
@@ -15,11 +15,6 @@ describe Yell::Formatter do
   context "%m" do
     subject { "%m" }
     it { format.should == "Hello World!" }
-  end
-
-  context "%o" do
-    subject { "%o" }
-    it { format.should == "test: option" }
   end
 
   context "%l" do

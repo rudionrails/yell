@@ -61,8 +61,7 @@ module Yell #:nodoc:
     end
 
     PatternTable = {
-      "m" => "message(event.message)",     # Message
-      "o" => "message(event.options)",     # Message options
+      "m" => "message(*event.messages)",   # Message
       "l" => "level(event.level)[0,1]",    # Level (short), e.g.'I', 'W'
       "L" => "level(event.level)",         # Level, e.g. 'INFO', 'WARN'
       "d" => "date(event.time)",           # ISO8601 Timestamp
@@ -116,7 +115,19 @@ module Yell #:nodoc:
       -
     end
 
-    def message( m )
+    def level( l )
+      Yell::Severities[ l ]
+    end
+
+    def date( t )
+      @date_pattern ? t.strftime( @date_pattern ) : t.iso8601
+    end
+
+    def message( *messages )
+      messages.map { |m| to_message(m) }.join(" ")
+    end
+
+    def to_message( m )
       case m
         when Hash
           m.map { |k,v| "#{k}: #{v}" }.join( ", " )
@@ -127,14 +138,6 @@ module Yell #:nodoc:
         else
           m
       end
-    end
-
-    def level( l )
-      Yell::Severities[ l ]
-    end
-
-    def date( t )
-      @date_pattern ? t.strftime( @date_pattern ) : t.iso8601
     end
 
   end

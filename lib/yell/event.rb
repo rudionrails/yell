@@ -22,11 +22,8 @@ module Yell #:nodoc:
     # Accessor to the log level
     attr_reader :level
 
-    # Accessor to the log message
-    attr_reader :message
-
-    # Accessor to additional options
-    attr_reader :options
+    # Accessor to the log messages
+    attr_reader :messages
 
     # Accessor to the time the log event occured
     attr_reader :time
@@ -35,11 +32,12 @@ module Yell #:nodoc:
     attr_reader :thread_id
 
 
-    def initialize( level, message = nil, options = {}, &block )
+    def initialize( level, *messages, &block )
       @time     = Time.now
       @level    = level
-      @message  = block ? block.call : message
-      @options  = options
+
+      @messages = messages
+      @messages << block.call if block
 
       @thread_id  = Thread.current.object_id
 

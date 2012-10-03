@@ -13,6 +13,7 @@ class LoggerFactory
 end
 
 describe Yell::Logger do
+  let( :filename ) { fixture_path + '/logger.log' }
 
   context "a Logger instance" do
     let( :logger ) { Yell::Logger.new }
@@ -152,6 +153,36 @@ describe Yell::Logger do
 
       factory.foo
       factory.bar
+    end
+  end
+
+  context "logging" do
+    let( :logger ) { Yell::Logger.new(filename, :format => "%m") }
+    let( :line ) { File.open(filename, &:readline) }
+
+    it "should output a single message" do
+      logger.info "Hello World"
+      line.should ==  "Hello World\n"
+    end
+
+    it "should output multiple messages" do
+      logger.info "Hello", "W", "o", "r", "l", "d"
+      line.should == "Hello W o r l d\n"
+    end
+
+    it "should output a hash and message" do
+      logger.info "Hello World", :test => :message
+      line.should == "Hello World test: message\n"
+    end
+
+    it "should output a hash and message" do
+      logger.info( {:test => :message}, "Hello World" )
+      line.should == "test: message Hello World\n"
+    end
+
+    it "should output a hash and block" do
+      logger.info(:test => :message) { "Hello World" }
+      line.should == "test: message Hello World\n"
     end
   end
 
