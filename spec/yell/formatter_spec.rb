@@ -14,37 +14,41 @@ describe Yell::Formatter do
 
   context "%m" do
     subject { "%m" }
-    it { format.should == "Hello World!" }
+    it { format.should == event.messages.join(' ') }
   end
 
   context "%l" do
     subject { "%l" }
-    it { format.should == "I" }
+    it { format.should == Yell::Severities[event.level][0,1] }
   end
 
   context "%L" do
     subject { "%L" }
-    it { format.should == "INFO" }
+    it { format.should == Yell::Severities[event.level] }
   end
 
   context "%d" do
     subject { "%d" }
-    it { format.should == time.iso8601 }
+    it { format.should == event.time.iso8601 }
   end
 
   context "%p" do
     subject { "%p" }
-    it { format.should == Process.pid.to_s }
+    it { format.should == event.pid.to_s }
   end
 
+  context "%P" do
+    subject { "%P" }
+    it { format.should == event.progname }
+  end
   context "%t" do
     subject { "%t" }
-    it { format.should == Thread.current.object_id.to_s }
+    it { format.should == event.thread_id.to_s }
   end
 
   context "%h" do
     subject { "%h" }
-    it { format.should == Socket.gethostname }
+    it { format.should == event.hostname }
   end
 
   context "caller" do

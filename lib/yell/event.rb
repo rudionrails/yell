@@ -18,6 +18,7 @@ module Yell #:nodoc:
     # Prefetch those values (no need to do that on every new instance)
     @@hostname  = Socket.gethostname rescue nil
     @@pid       = Process.pid
+    @@progname  = $0
 
     # Accessor to the log level
     attr_reader :level
@@ -47,14 +48,19 @@ module Yell #:nodoc:
       @method = nil
     end
 
-    # Accessor to the pid
+    # Accessor to the hostname
     def hostname
       @@hostname
     end
 
-    # Accessor to the hostname
+    # Accessor to the pid
     def pid
       @@pid
+    end
+
+    # Accessor to the progname
+    def progname
+      @@progname
     end
 
     # Accessor to filename the log event occured

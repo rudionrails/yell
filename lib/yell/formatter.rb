@@ -67,6 +67,7 @@ module Yell #:nodoc:
       "d" => "date(event.time)",           # ISO8601 Timestamp
       "h" => "event.hostname",             # Hostname
       "p" => "event.pid",                  # PID
+      "P" => "event.progname",             # Progname
       "t" => "event.thread_id",            # Thread ID
       "F" => "event.file",                 # Path with filename where the logger was called
       "f" => "File.basename(event.file)",  # Filename where the loger was called

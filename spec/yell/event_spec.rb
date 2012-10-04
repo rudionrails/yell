@@ -70,4 +70,8 @@ describe Yell::Event do
     it { should == Process.pid }
   end
 
+  context :progname do
+    subject { event.progname }
+    it { should == $0 }
+  end
 end
