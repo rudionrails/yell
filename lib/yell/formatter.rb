@@ -130,14 +130,14 @@ module Yell #:nodoc:
 
     def to_message( m )
       case m
-        when Hash
-          m.map { |k,v| "#{k}: #{v}" }.join( ", " )
-        when Exception
-          backtrace = m.backtrace ? "\n\t#{m.backtrace.join("\n\t")}" : ""
+      when Hash
+        m.map { |k,v| "#{k}: #{v}" }.join( ", " )
+      when Exception
+        backtrace = m.backtrace ? "\n\t#{m.backtrace.join("\n\t")}" : ""
 
-          "%s: %s%s" % [m.class, m.message, backtrace]
-        else
-          m
+        "%s: %s%s" % [m.class, m.message, backtrace]
+      else
+        m
       end
     end
 

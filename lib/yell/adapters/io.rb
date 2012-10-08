@@ -20,8 +20,14 @@ module Yell #:nodoc:
       setup do |options|
         @stream = nil
 
+        # colorize the log output (default: false)
         self.colors = options.fetch(:colors, false)
+
+        # format the log message (default: nil)
         self.format = options.fetch(:format, nil)
+
+        # sync immediately to IO (default: true)
+        self.sync = options.fetch(:sync, true)
       end
 
       write do |event|
@@ -35,7 +41,12 @@ module Yell #:nodoc:
         # add new line if there is none
         message << "\n" unless message[-1] == ?\n
 
-        stream.write( message )
+        stream.syswrite( message )
+      end
+
+      open do
+        @stream.sync = self.sync if @stream.respond_to? :sync
+        @stream.flush            if @stream.respond_to? :flush
       end
 
       close do
@@ -43,6 +54,12 @@ module Yell #:nodoc:
         @stream = nil
       end
 
+
+      # Sets the “sync mode” to true or false.
+      #
+      # When true (default), every log event is immediately written to the file. 
+      # When false, the log event is buffered internally.
+      attr_accessor :sync
 
       # Sets colored output on or off (default off)
       #
@@ -67,8 +84,9 @@ module Yell #:nodoc:
       # Adapter classes should provide their own implementation 
       # of this method.
       def stream
-        raise 'Not implemented'
+        synchronize { open! if @stream.nil?; @stream }
       end
+
     end
 
   end

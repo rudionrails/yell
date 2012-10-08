@@ -40,12 +40,6 @@ describe Yell::Adapters::Io do
     end
   end
 
-  context :stream do
-    it "should raise" do
-      lambda { Yell::Adapters::Io.new.send :stream }.should raise_error("Not implemented" )
-    end
-  end
-
   context :write do
     let( :event ) { Yell::Event.new(1, "Hello World") }
     let( :adapter ) { Yell::Adapters::Io.new }
@@ -63,7 +57,7 @@ describe Yell::Adapters::Io do
 
     it "should print formatted message to stream" do
       formatted = Yell::Formatter.new.format( event )
-      mock( stream ).write( formatted << "\n" )
+      mock( stream ).syswrite( formatted << "\n" )
 
       adapter.write( event )
     end

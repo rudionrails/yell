@@ -14,10 +14,10 @@ RSpec.configure do |config|
 
   config.before do
     Yell::Repository.loggers.clear
+    Dir[ fixture_path + "/*.log" ].each { |f| File.delete f }
   end
 
   config.after do
-    Dir[ fixture_path + "/*.log" ].each { |f| File.delete f }
   end
 
   private

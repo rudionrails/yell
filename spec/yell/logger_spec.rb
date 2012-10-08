@@ -148,8 +148,8 @@ describe Yell::Logger do
       factory = LoggerFactory.new
       factory.logger = logger
 
-      mock( adapter.send(:stream) ).write( "#{__FILE__}, 7: foo\n" )
-      mock( adapter.send(:stream) ).write( "#{__FILE__}, 11: bar\n" )
+      mock( adapter.send(:stream) ).syswrite( "#{__FILE__}, 7: foo\n" )
+      mock( adapter.send(:stream) ).syswrite( "#{__FILE__}, 11: bar\n" )
 
       factory.foo
       factory.bar

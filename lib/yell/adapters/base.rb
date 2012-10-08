@@ -64,11 +64,21 @@ module Yell #:nodoc:
           compile!( :write!, &block )
         end
 
+        # Define your open method with this helper.
+        #
+        # @example Open a file handle
+        #   open do
+        #     @stream = ::File.open( 'test.log', ::File::WRONLY|::File::APPEND|::File::CREAT )
+        #   end
+        def open( &block )
+          compile!( :open!, &block )
+        end
+
         # Define your close method with this helper.
         #
         # @example Closing a file handle
         #   close do
-        #     @file_handle.close
+        #     @stream.close
         #   end
         def close( &block )
           compile!( :close!, &block )
@@ -168,6 +178,14 @@ module Yell #:nodoc:
       # Adapter classes must provide their own implementation 
       # of this method.
       def write!( event )
+        # Not implemented
+      end
+
+      # Perform the actual open.
+      #
+      # Adapter classes should provide their own implementation 
+      # of this method.
+      def open!
         # Not implemented
       end
 

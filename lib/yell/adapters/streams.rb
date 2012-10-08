@@ -5,22 +5,18 @@ module Yell #:nodoc:
 
     class Stdout < Yell::Adapters::Io
 
-      private
-
-      # @overload Lazily open the STDOUT stream
-      def stream
-        @stream ||= $stdout.clone
+      open do
+        @stream = $stdout.clone
       end
+
     end
 
     class Stderr < Yell::Adapters::Io
 
-      private
-
-      # @overload Lazily open the STDERR stream
-      def stream
-        @stream ||= $stderr.clone
+      open do
+        @stream = $stderr.clone
       end
+
     end
 
     register( :stdout, Yell::Adapters::Stdout )
