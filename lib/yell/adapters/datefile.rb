@@ -174,6 +174,11 @@ module Yell #:nodoc:
         end
       end
 
+      # @override
+      def inspectables
+        super.concat [:date_pattern, :header, :keep, :symlink ]
+      end
+
     end
 
     register( :datefile, Yell::Adapters::Datefile )

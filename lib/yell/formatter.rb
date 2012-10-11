@@ -85,11 +85,21 @@ module Yell #:nodoc:
     # message formatting.
     def initialize( pattern = nil, date_pattern = nil )
       @pattern      = pattern || Yell::DefaultFormat
-      @date_pattern = date_pattern
+      @date_pattern = date_pattern || :iso8601
 
       define!
     end
 
+    # Get a pretty string representation of the formatter, including
+    # the pattern and date pattern.
+    #
+    # @example Inspect the formatter.
+    #   formatter.inspect
+    #
+    # @return [String] The inspection string.
+    def inspect
+      "#<#{self.class.name} pattern: #{@pattern.inspect}, date_pattern: #{@date_pattern.inspect}>"
+    end
 
     private
 
@@ -121,7 +131,10 @@ module Yell #:nodoc:
     end
 
     def date( t )
-      @date_pattern ? t.strftime( @date_pattern ) : t.iso8601
+      case @date_pattern
+      when String then t.strftime( @date_pattern )
+      else t.iso8601
+      end
     end
 
     def message( *messages )

@@ -138,6 +138,22 @@ module Yell #:nodoc:
     end
     alias :to_int :to_i
 
+    # Get a pretty string representation of the level, including the
+    # severities.
+    #
+    # @example Inspect the level.
+    #   level.inspect
+    #
+    # @return [String] The inspection string.
+    def inspect
+      severities = Yell::Severities.each.with_index.inject( [] ) do |r, (l, i)|
+        r << l if @severities[i]
+        r
+      end
+
+      "#<#{self.class.name} severities: #{severities * ', '}>"
+    end
+
 
     private
 

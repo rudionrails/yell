@@ -162,6 +162,17 @@ module Yell #:nodoc:
         close!
       end
 
+      # Get a pretty string representation of the adapter, including
+      # the inspectable attributes.
+      #
+      # @example Inspect the formatter.
+      #   adapter.inspect
+      #
+      # @return [String] The inspection string.
+      def inspect
+        inspection = inspectables.inject( [] ) { |r, c| r << "#{c}: #{send(c).inspect}" }
+        "#<#{self.class.name} #{inspection * ', '}>"
+      end
 
       private
 
@@ -207,6 +218,13 @@ module Yell #:nodoc:
       # @return [Boolean] true or false
       def write?( event )
         @level.nil? || @level.at?( event.level )
+      end
+
+      # Get an array of inspected attributes for the adapter.
+      #
+      # @return [ String ] An array of pretty printed field values.
+      def inspectables
+        [ :level ]
       end
 
     end

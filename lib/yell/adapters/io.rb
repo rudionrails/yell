@@ -87,6 +87,11 @@ module Yell #:nodoc:
         synchronize { open! if @stream.nil?; @stream }
       end
 
+      # @override
+      def inspectables
+        super.concat [:format, :colors, :sync]
+      end
+
     end
 
   end

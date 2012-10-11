@@ -124,6 +124,16 @@ module Yell #:nodoc:
       EOS
     end
 
+    # Get a pretty string representation of the logger.
+    #
+    # @example Inspect the logger
+    #   logger.inspect
+    #
+    # @return [String] The inspection string.
+    def inspect
+      inspection = inspectables.inject( [] ) { |r, c| r << "#{c}: #{send(c).inspect}" }
+      "#<#{self.class.name} #{inspection * ', '}, adapters: #{@adapters.map(&:inspect) * ', '}>"
+    end
 
     private
 
@@ -147,6 +157,13 @@ module Yell #:nodoc:
     # Cycles all the adapters and writes the message
     def write( event )
       @adapters.each { |a| a.write(event) }
+    end
+
+    # Get an array of inspected attributes for the adapter.
+    #
+    # @return [ String ] An array of pretty printed field values.
+    def inspectables
+      [ :name, :level ]
     end
 
   end
