@@ -9,7 +9,7 @@ describe Yell::Adapters::Datefile do
   end
 
   describe :filename do
-    let( :adapter ) { Yell::Adapters::Datefile.new(:filename => filename) }
+    let( :adapter ) { Yell::Adapters::Datefile.new(:filename => filename, :symlink => false) }
 
     it "should be replaced with date_pattern" do
       adapter.write( event )
@@ -41,7 +41,7 @@ describe Yell::Adapters::Datefile do
   end
 
   describe :keep do
-    let( :adapter ) { Yell::Adapters::Datefile.new(:keep => 2, :filename => filename, :date_pattern => "%M") }
+    let( :adapter ) { Yell::Adapters::Datefile.new(:keep => 2, :filename => filename, :symlink => false, :date_pattern => "%M") }
 
     it "should keep the specified number or files upon rollover" do
       adapter.write( event )
@@ -60,22 +60,38 @@ describe Yell::Adapters::Datefile do
   end
 
   describe :symlink do
-    let( :adapter ) { Yell::Adapters::Datefile.new(:symlink => true, :filename => filename, :date_pattern => "%M") }
     let( :time ) { Time.now }
+    before { Timecop.freeze(time) }
 
-    it "should symlink to the orignal given :filename" do
-      Timecop.freeze( time ) do
+    context "default (true)" do
+      let( :adapter ) { Yell::Adapters::Datefile.new(:filename => filename, :date_pattern => "%M") }
+
+      it "should create the sylink the original filename" do
         adapter.write( event )
 
         File.symlink?( filename ).should be_true
         File.readlink( filename ).should == datefile_filename( adapter.date_pattern )
       end
 
-      Timecop.freeze( time + 60 ) do
+      it "should symlink upon rollover" do
         adapter.write( event )
 
-        File.symlink?( filename ).should be_true
-        File.readlink( filename ).should == datefile_filename( adapter.date_pattern )
+        Timecop.freeze( time + 120 ) do
+          adapter.write( event )
+
+          File.symlink?( filename ).should be_true
+          File.readlink( filename ).should == datefile_filename( adapter.date_pattern )
+        end
+      end
+    end
+
+    context "when set to false" do
+      let( :adapter ) { Yell::Adapters::Datefile.new(:symlink => false, :filename => filename, :date_pattern => "%M") }
+
+      it "should not create the sylink the original filename" do
+        adapter.write( event )
+
+        File.symlink?( filename ).should be_false
       end
     end
   end
@@ -102,10 +118,5 @@ describe Yell::Adapters::Datefile do
     end
   end
 
-
-  private
-
-  def datefile_filename( pattern = Yell::Adapters::Datefile::DefaultDatePattern )
-    fixture_path + "/test.#{Time.now.strftime(pattern)}.log"
-  end
 end
+

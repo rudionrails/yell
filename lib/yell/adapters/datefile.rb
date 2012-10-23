@@ -27,8 +27,8 @@ module Yell #:nodoc:
         # check whether to cleanup old files of the same pattern (default false)
         self.keep = options.fetch(:keep, false)
 
-        # check whether to symlink the otiginal filename (default false)
-        self.symlink = options.fetch(:symlink, false)
+        # check whether to symlink the otiginal filename (default true)
+        self.symlink = options.fetch(:symlink, true)
 
         @original_filename  = ::File.expand_path options.fetch(:filename, default_filename)
         options[:filename]  = @original_filename
