@@ -10,11 +10,14 @@ module Yell #:nodoc:
   class Configuration
 
     def self.load!( file )
-      # parse through ERB
-      yaml = ERB.new(File.read(file)).result
+      yaml = YAML.load( ERB.new(File.read(file)).result )
 
-      # parse through YAML
-      YAML.load(yaml)[Yell.env] || {}
+      # in case we have ActiveSupport
+      if yaml.respond_to?( :with_indifference_access )
+        yaml = yaml.with_indifferent_access
+      end
+
+      yaml[Yell.env] || {}
     end
 
   end
