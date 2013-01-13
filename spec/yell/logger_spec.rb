@@ -66,6 +66,14 @@ describe Yell::Logger do
     end
   end
 
+  context "initialize with a :filename of Pathname type" do
+    it "should call adapter with :file" do
+      mock.proxy( Yell::Adapters::File ).new( :filename => Pathname.new('test.log') )
+
+      Yell::Logger.new Pathname.new('test.log')
+    end
+  end
+
   context "initialize with a :stdout adapter" do
     before do
       mock.proxy( Yell::Adapters::Stdout ).new( anything )
