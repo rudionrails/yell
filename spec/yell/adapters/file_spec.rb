@@ -29,12 +29,23 @@ describe Yell::Adapters::File do
       end
     end
 
-    context "with given filename" do
+    context "with given :filename" do
       let( :filename ) { fixture_path + '/filename.log' }
       let( :adapter ) { Yell::Adapters::File.new( :filename => filename ) }
 
       it "should print to file" do
         mock( File ).open( filename, File::WRONLY|File::APPEND|File::CREAT ) { devnull }
+
+        adapter.write( event )
+      end
+    end
+
+    context "with given :pathname" do
+      let( :pathname ) { Pathname.new(fixture_path).join('filename.log') }
+      let( :adapter ) { Yell::Adapters::File.new( :filename => pathname ) }
+
+      it "should accept pathanme as filename" do
+        mock( File ).open( pathname.to_s, File::WRONLY|File::APPEND|File::CREAT ) { devnull }
 
         adapter.write( event )
       end
