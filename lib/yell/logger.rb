@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+require 'pathname'
+
 module Yell #:nodoc:
 
   # The +Yell::Logger+ is your entrypoint. Anything onwards is derived from here.
