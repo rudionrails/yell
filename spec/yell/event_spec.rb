@@ -70,8 +70,30 @@ describe Yell::Event do
     it { should == Process.pid }
   end
 
+  context "pid when forked", :pending => RUBY_PLATFORM == 'java' do # no forking with jruby
+    subject { @pid }
+
+    before do
+      read, write = IO.pipe
+
+      @pid = Process.fork do
+        event = Yell::Event.new 1, 'Hello World!'
+        write.puts event.pid
+      end
+      Process.wait
+      write.close
+
+      @child_pid = read.read.to_i
+      read.close
+    end
+
+    it { should_not == Process.pid }
+    it { should == @child_pid }
+  end
+
   context :progname do
     subject { event.progname }
     it { should == $0 }
   end
+
 end
