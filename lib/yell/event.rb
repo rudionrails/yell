@@ -17,8 +17,10 @@ module Yell #:nodoc:
 
     # Prefetch those values (no need to do that on every new instance)
     @@hostname  = Socket.gethostname rescue nil
-    @@pid       = Process.pid
     @@progname  = $0
+
+    # Accessor to the pid
+    attr_reader :pid
 
     # Accessor to the log level
     attr_reader :level
@@ -34,6 +36,7 @@ module Yell #:nodoc:
 
 
     def initialize( level, *messages, &block )
+      @pid      = Process.pid
       @time     = Time.now
       @level    = level
 
@@ -51,11 +54,6 @@ module Yell #:nodoc:
     # Accessor to the hostname
     def hostname
       @@hostname
-    end
-
-    # Accessor to the pid
-    def pid
-      @@pid
     end
 
     # Accessor to the progname

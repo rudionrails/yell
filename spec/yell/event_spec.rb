@@ -67,7 +67,21 @@ describe Yell::Event do
 
   context :pid do
     subject { event.pid }
-    it { should == Process.pid }
+    it do
+      should == Process.pid
+
+      read, write = IO.pipe
+      pid = Process.fork do
+        event = Yell::Event.new 1, 'Hello World!'
+        write.puts event.pid
+      end
+      Process.wait
+      write.close
+      child_pid = read.read.to_i
+      pid.should == child_pid
+      should_not == child_pid
+      read.close
+    end
   end
 
   context :progname do
