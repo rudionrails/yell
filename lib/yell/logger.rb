@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+require 'pathname'
+
 module Yell #:nodoc:
 
   # The +Yell::Logger+ is your entrypoint. Anything onwards is derived from here.
@@ -44,7 +46,7 @@ module Yell #:nodoc:
       _extract_adapters!( @options )
 
       # check if filename was given as argument and put it into the @options
-      if args.last.is_a?( String )
+      if [String, Pathname].include?(args.last.class)
         @options[:filename] = args.pop unless @options[:filename]
       end
 
@@ -88,7 +90,7 @@ module Yell #:nodoc:
     # @raise [Yell::NoSuchAdapter] Will be thrown when the adapter is not defined
     def adapter( type = :file, *args, &block )
       options = [@options, *args].inject( Hash.new ) do |h, c|
-        h.merge( c.is_a?(String) ? {:filename => c} : c  )
+        h.merge( [String, Pathname].include?(c.class) ? {:filename => c} : c  )
       end
 
       @adapters << Yell::Adapters.new( type, options, &block )
