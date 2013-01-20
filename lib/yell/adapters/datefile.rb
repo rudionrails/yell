@@ -117,7 +117,7 @@ module Yell #:nodoc:
       # in false cleanups).
       def cleanup!
         files = Dir[ @original_filename.sub( /(\.\w+)?$/, ".*\\1" ) ].sort.select do |file|
-          created, pattern = header_from(file)
+          _, pattern = header_from(file)
 
           # Select if the date pattern is nil (no header info available within the file) or
           # when the pattern matches.
