@@ -81,9 +81,6 @@ module Yell #:nodoc:
 
     private
 
-    def trace?
-    end
-
     def _caller!
       if m = CallerRegexp.match(@caller)
         @file, @line, @method = m[1..-1]
