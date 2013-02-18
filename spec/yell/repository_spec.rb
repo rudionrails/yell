@@ -1,8 +1,8 @@
 require 'spec_helper'
 
 describe Yell::Repository do
-  let( :name ) { 'test' }
-  let( :logger ) { Yell.new :stdout }
+  let(:name) { 'test' }
+  let(:logger) { Yell.new :stdout }
 
   subject { Yell::Repository[name] }
 
@@ -56,8 +56,8 @@ describe Yell::Repository do
   end
 
   context "[]= with a named logger of other name" do
-    let( :other ) { 'other' }
-    let( :logger ) { Yell.new :stdout, :name => other }
+    let(:other) { 'other' }
+    let(:logger) { Yell.new :stdout, :name => other }
 
     before do
       Yell::Repository[ name ] = logger
@@ -70,7 +70,7 @@ describe Yell::Repository do
   end
 
   context "loggers" do
-    let( :loggers ) { { name => logger } }
+    let(:loggers) { { name => logger } }
 
     subject { Yell::Repository.loggers }
 

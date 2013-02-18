@@ -8,14 +8,14 @@ describe Yell::Adapters::Io do
     it "should set default :format" do
       adapter = Yell::Adapters::Io.new
 
-      adapter.format.should be_kind_of Yell::Formatter
+      adapter.format.should be_kind_of(Yell::Formatter)
     end
 
     context :level do
-      let( :level ) { Yell::Level.new(:warn) }
+      let(:level) { Yell::Level.new(:warn) }
 
       it "should set the level" do
-        adapter = Yell::Adapters::Io.new :level => level
+        adapter = Yell::Adapters::Io.new(:level => level)
         adapter.level.should == level
       end
 
@@ -26,10 +26,10 @@ describe Yell::Adapters::Io do
     end
 
     context :format do
-      let( :format ) { Yell::Formatter.new }
+      let(:format) { Yell::Formatter.new }
 
       it "should set the level" do
-        adapter = Yell::Adapters::Io.new :format => format
+        adapter = Yell::Adapters::Io.new(:format => format)
         adapter.format.should == format
       end
 
@@ -41,9 +41,10 @@ describe Yell::Adapters::Io do
   end
 
   context :write do
-    let( :event ) { Yell::Event.new(1, "Hello World") }
-    let( :adapter ) { Yell::Adapters::Io.new }
-    let( :stream ) { File.new('/dev/null', 'w') }
+    let(:logger) { Yell::Logger.new }
+    let(:event) { Yell::Event.new(logger, 1, "Hello World") }
+    let(:adapter) { Yell::Adapters::Io.new }
+    let(:stream) { File.new('/dev/null', 'w') }
 
     before do
       stub( adapter ).stream { stream }

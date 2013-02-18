@@ -2,11 +2,12 @@ require 'spec_helper'
 
 describe Yell::Formatter do
 
-  let( :formatter ) { Yell::Formatter.new(subject) }
-  let( :event ) { Yell::Event.new 1, 'Hello World!' }
-  let( :time ) { Time.now }
+  let(:logger) { Yell::Logger.new }
+  let(:formatter) { Yell::Formatter.new(subject) }
+  let(:event) { Yell::Event.new(logger, 1, 'Hello World!') }
+  let(:time) { Time.now }
 
-  let( :format ) { formatter.format(event) }
+  let(:format) { formatter.format(event) }
 
   before do
     Timecop.freeze( time )
@@ -52,7 +53,7 @@ describe Yell::Formatter do
   end
 
   context "caller" do
-    let( :_caller ) { [nil, nil, "/path/to/file.rb:123:in `test_method'"] }
+    let(:_caller) { [nil, nil, "/path/to/file.rb:123:in `test_method'"] }
 
     before do
       any_instance_of( Yell::Event ) do |e|
@@ -104,8 +105,8 @@ describe Yell::Formatter do
   end
 
   context "Exceptions" do
-    let( :exception ) { StandardError.new( "This is an Exception" ) }
-    let( :event ) { Yell::Event.new( 1, exception ) }
+    let(:exception) { StandardError.new( "This is an Exception" ) }
+    let(:event) { Yell::Event.new(logger, 1, exception) }
 
     subject { "%m" }
 
@@ -117,8 +118,8 @@ describe Yell::Formatter do
   end
 
   context "Hashes" do
-    let( :hash ) { { :test => 'message' } }
-    let( :event ) { Yell::Event.new( 1, hash ) }
+    let(:hash) { { :test => 'message' } }
+    let(:event) { Yell::Event.new(logger, 1, hash) }
 
     subject { "%m" }
 

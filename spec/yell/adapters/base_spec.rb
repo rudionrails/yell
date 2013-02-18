@@ -10,7 +10,7 @@ describe Yell::Adapters::Base do
     end
 
     it "should set the level" do
-      Yell::Adapters::Base.new :level => :info
+      Yell::Adapters::Base.new(:level => :info)
     end
   end
 
@@ -23,23 +23,24 @@ describe Yell::Adapters::Base do
       end
 
       it "should set the level" do
-        Yell::Adapters::Base.new :level => :info
+        Yell::Adapters::Base.new(:level => :info)
       end
     end
   end
 
   context :options do
-    let( :options ) { { :my => :options } }
-    let( :adapter ) { Yell::Adapters::Base.new( options ) }
+    let(:options) { {:my => :options} }
+    let(:adapter) { Yell::Adapters::Base.new(options) }
 
     it { options.should == options }
   end
 
   context :write do
-    subject { Yell::Adapters::Base.new :level => :info }
+    let(:logger) { Yell::Logger.new }
+    subject { Yell::Adapters::Base.new(:level => 1) }
 
     it "should delegate :event to :write!" do
-      event = Yell::Event.new( 1, "Hello World!" )
+      event = Yell::Event.new( logger, 1, "Hello World!" )
 
       mock( subject ).write!( event )
 
@@ -47,7 +48,7 @@ describe Yell::Adapters::Base do
     end
 
     it "should not write when event does not have the right level" do
-      event = Yell::Event.new( 0, "Hello World!" )
+      event = Yell::Event.new( logger, 0, "Hello World!" )
 
       dont_allow( subject ).write!( event )
 

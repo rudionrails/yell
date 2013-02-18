@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Yell::Level do
 
   context "default" do
-    let( :level ) { Yell::Level.new }
+    let(:level) { Yell::Level.new }
 
     it { level.at?(:debug).should be_true }
     it { level.at?(:info).should be_true }
@@ -13,7 +13,7 @@ describe Yell::Level do
   end
 
   context "given a Symbol" do
-    let( :level ) { Yell::Level.new(subject) }
+    let(:level) { Yell::Level.new(subject) }
 
     context :debug do
       subject { :debug }
@@ -67,7 +67,7 @@ describe Yell::Level do
   end
 
   context "given a String" do
-    let( :level ) { Yell::Level.new(subject) }
+    let(:level) { Yell::Level.new(subject) }
 
     context "basic string" do
       subject { 'error' }
@@ -131,7 +131,7 @@ describe Yell::Level do
   end
 
   context "given an Array" do
-    let( :level ) { Yell::Level.new( [:debug, :warn, :fatal] ) }
+    let(:level) { Yell::Level.new( [:debug, :warn, :fatal] ) }
 
     it { level.at?(:debug).should be_true }
     it { level.at?(:info).should be_false }
@@ -141,7 +141,7 @@ describe Yell::Level do
   end
 
   context "given a Range" do
-    let( :level ) { Yell::Level.new( (1..3) ) }
+    let(:level) { Yell::Level.new( (1..3) ) }
 
     it { level.at?(:debug).should be_false }
     it { level.at?(:info).should be_true }
@@ -151,7 +151,7 @@ describe Yell::Level do
   end
 
   context "given a Yell::Level instance" do
-    let( :level ) { Yell::Level.new( :warn ) }
+    let(:level) { Yell::Level.new(:warn) }
 
     it { level.at?(:debug).should be_false }
     it { level.at?(:info).should be_false }
@@ -161,7 +161,7 @@ describe Yell::Level do
   end
 
   context "backwards compatibility" do
-    let( :level ) { Yell::Level.new :warn }
+    let(:level) { Yell::Level.new :warn }
 
     it { level.to_i.should == 2 }
     it { Integer(level).should == 2 }

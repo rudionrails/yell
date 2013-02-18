@@ -14,6 +14,9 @@ module Yell #:nodoc:
     # The name of the logger instance
     attr_reader :name
 
+    # Stacktrace or not
+    attr_reader :trace
+
     # Initialize a new Logger
     #
     # @example A standard file logger
@@ -43,27 +46,60 @@ module Yell #:nodoc:
       @options = args.last.is_a?(Hash) ? args.pop : {}
 
       # adapters may be passed in the options
-      _extract_adapters!( @options )
+      extract!(@options)
 
       # check if filename was given as argument and put it into the @options
       if [String, Pathname].include?(args.last.class)
         @options[:filename] = args.pop unless @options[:filename]
       end
 
-      # set the log level when given
-      self.level = @options[:level]
-
-      # set the loggeer's name
-      self.name = @options[:name] if @options[:name]
+      self.level = @options.fetch(:level, 0) # debug by defauly
+      self.name = @options.fetch(:name, nil) # no name by default
+      self.trace = @options.fetch(:trace, false) # do not trace by default
 
       # extract adapter
-      self.adapter args.pop if args.any?
+      self.adapter(args.pop) if args.any?
 
       # eval the given block
       yield(self) if block_given?
 
       # default adapter when none defined
-      self.adapter :file if @adapters.empty?
+      self.adapter(:file) if @adapters.empty?
+    end
+
+
+    # Set the name of a logger. When providing a name, the logger will
+    # automatically be added to the Yell::Repository.
+    #
+    # @return [String] The logger's name
+    def name=( val )
+      @name = val
+      Yell::Repository[@name] = self if @name
+
+      @name
+    end
+
+    # Set whether the logger should allow tracing or not. The trace option
+    # will tell the logger when to provider caller information.
+    #
+    # @example No tracing at all
+    #   trace = false
+    #
+    # @example Trace every time
+    #   race = true
+    #
+    # @example Trace from the error level onwards
+    #   trace = :error
+    #   trace = 'gte.error'
+    #
+    # @return [Yell::Level] a level representation of the tracer
+    def trace=( severity )
+      @trace = case severity
+        when true then Yell::Level.new
+        when false then Yell::Level.new( "gt.#{Yell::Severities.last}" )
+        when Yell::Level then severity
+        else Yell::Level.new( severity )
+      end
     end
 
     # Define an adapter to be used for logging.
@@ -84,9 +120,7 @@ module Yell #:nodoc:
     #   adapter( Yell::Adapter::File.new )
     #
     # @param [Symbol] type The type of the adapter, may be `:file` or `:datefile` (default `:file`)
-    #
     # @return [Yell::Adapter] The instance
-    #
     # @raise [Yell::NoSuchAdapter] Will be thrown when the adapter is not defined
     def adapter( type = :file, *args, &block )
       options = [@options, *args].inject( Hash.new ) do |h, c|
@@ -94,10 +128,6 @@ module Yell #:nodoc:
       end
 
       @adapters << Yell::Adapters.new( type, options, &block )
-    end
-
-    def name=( val )
-      Yell::Repository[val] = self
     end
 
     # Convenience method for resetting all adapters of the Logger.
@@ -115,14 +145,14 @@ module Yell #:nodoc:
       name = s.downcase
 
       class_eval <<-EOS, __FILE__, __LINE__
-        def #{name}?; @level.at?(#{index}); end   # def info?; @level.at?(1); end
-                                                  #
-        def #{name}( *m, &b )                     # def info( *m, &b )
-          return false unless #{name}?            #   return false unless info?
-          write Yell::Event.new(#{index}, *m, &b) #   write Yell::Event.new(1, *m, &b)
-                                                  #
-          true                                    #   true
-        end                                       # end
+        def #{name}?; @level.at?(#{index}); end         # def info?; @level.at?(1); end
+                                                        #
+        def #{name}( *m, &b )                           # def info( *m, &b )
+          return false unless #{name}?                  #   return false unless info?
+          write Yell::Event.new(self, #{index}, *m, &b) #   write Yell::Event.new(self, 1, *m, &b)
+                                                        #
+          true                                          #   true
+        end                                             # end
       EOS
     end
 
@@ -139,7 +169,7 @@ module Yell #:nodoc:
 
     private
 
-    # The :adapters key may be passed to the options hash. It may appear in 
+    # The :adapters key may be passed to the options hash. It may appear in
     # multiple variations:
     #
     # @example
@@ -147,11 +177,11 @@ module Yell #:nodoc:
     #
     # @example
     #   options = { :adapters => [:stdout => {:level => :info}, :stderr => {:level => :error}]
-    def _extract_adapters!( opts )
-      ( opts.delete( :adapters ) || [] ).each do |a|
+    def extract!( opts )
+      ( opts.delete(:adapters) || [] ).each do |a|
         case a
-          when String, Symbol then adapter( a )
-          else a.each { |n, o| adapter( n, o || {} ) }
+        when String, Symbol then adapter( a )
+        else a.each { |n, o| adapter( n, o || {} ) }
         end
       end
     end
@@ -165,7 +195,7 @@ module Yell #:nodoc:
     #
     # @return [ String ] An array of pretty printed field values.
     def inspectables
-      [ :name, :level ]
+      [ :name, :level, :trace ]
     end
 
   end

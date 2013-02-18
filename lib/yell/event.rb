@@ -5,7 +5,6 @@ require 'socket'
 
 module Yell #:nodoc:
 
-  #
   # Yell::Event.new( :info, 'Hello World', { :scope => 'Application' } )
   # #=> Hello World scope: Application
   class Event
@@ -35,7 +34,7 @@ module Yell #:nodoc:
     attr_reader :thread_id
 
 
-    def initialize( level, *messages, &block )
+    def initialize(logger, level, *messages, &block)
       @pid      = Process.pid
       @time     = Time.now
       @level    = level
@@ -45,7 +44,7 @@ module Yell #:nodoc:
 
       @thread_id  = Thread.current.object_id
 
-      @caller = caller[CallerIndex].to_s
+      @caller = logger.trace.at?(level) ? caller[CallerIndex].to_s : ''
       @file   = nil
       @line   = nil
       @method = nil
@@ -82,8 +81,11 @@ module Yell #:nodoc:
 
     private
 
+    def trace?
+    end
+
     def _caller!
-      if m = CallerRegexp.match( @caller )
+      if m = CallerRegexp.match(@caller)
         @file, @line, @method = m[1..-1]
       else
         @file, @line, @method = ['', '', '']

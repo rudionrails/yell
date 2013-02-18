@@ -1,15 +1,18 @@
 require 'spec_helper'
 
 describe Yell::Adapters::Datefile do
-  let( :filename ) { fixture_path + '/test.log' }
-  let( :event ) { Yell::Event.new(1, "Hello World") }
+  let(:logger) { Yell::Logger.new }
+  let(:filename) { fixture_path + '/test.log' }
+  let(:event) { Yell::Event.new(logger, 1, "Hello World") }
 
   before do
     Timecop.freeze( Time.now )
   end
 
+  it { should be_kind_of Yell::Adapters::File }
+
   describe :filename do
-    let( :adapter ) { Yell::Adapters::Datefile.new(:filename => filename, :symlink => false) }
+    let(:adapter) { Yell::Adapters::Datefile.new(:filename => filename, :symlink => false) }
 
     it "should be replaced with date_pattern" do
       adapter.write( event )
@@ -21,12 +24,12 @@ describe Yell::Adapters::Datefile do
       mock( File ).open( datefile_filename, anything ) { File.new('/dev/null', 'w') }
 
       adapter.write( event )
-      Timecop.freeze( Time.now + 10 ) { adapter.write( event ) }
+      Timecop.freeze( Time.now + 10 ) { adapter.write(event) }
     end
 
     context "rollover" do
-      let( :tomorrow ) { Time.now + 86400 }
-      let( :tomorrow_datefile_filename ) { fixture_path + "/test.#{tomorrow.strftime(Yell::Adapters::Datefile::DefaultDatePattern)}.log" }
+      let(:tomorrow) { Time.now + 86400 }
+      let(:tomorrow_datefile_filename) { fixture_path + "/test.#{tomorrow.strftime(Yell::Adapters::Datefile::DefaultDatePattern)}.log" }
 
       it "should rotate when date has passed" do
         mock( File ).open( datefile_filename, anything ) { File.new('/dev/null', 'w') }
@@ -41,7 +44,7 @@ describe Yell::Adapters::Datefile do
   end
 
   describe :keep do
-    let( :adapter ) { Yell::Adapters::Datefile.new(:keep => 2, :filename => filename, :symlink => false, :date_pattern => "%M") }
+    let(:adapter) { Yell::Adapters::Datefile.new(:keep => 2, :filename => filename, :symlink => false, :date_pattern => "%M") }
 
     it "should keep the specified number or files upon rollover" do
       adapter.write( event )
@@ -60,17 +63,17 @@ describe Yell::Adapters::Datefile do
   end
 
   describe :symlink do
-    let( :time ) { Time.now }
+    let(:time) { Time.now }
     before { Timecop.freeze(time) }
 
     context "default (true)" do
-      let( :adapter ) { Yell::Adapters::Datefile.new(:filename => filename, :date_pattern => "%M") }
+      let(:adapter) { Yell::Adapters::Datefile.new(:filename => filename, :date_pattern => "%M") }
 
       it "should create the sylink the original filename" do
         adapter.write( event )
 
         File.symlink?( filename ).should be_true
-        File.readlink( filename ).should == datefile_filename( adapter.date_pattern )
+        File.readlink( filename ).should == datefile_filename(adapter.date_pattern)
       end
 
       it "should symlink upon rollover" do
@@ -80,13 +83,13 @@ describe Yell::Adapters::Datefile do
           adapter.write( event )
 
           File.symlink?( filename ).should be_true
-          File.readlink( filename ).should == datefile_filename( adapter.date_pattern )
+          File.readlink( filename ).should == datefile_filename(adapter.date_pattern)
         end
       end
     end
 
     context "when set to false" do
-      let( :adapter ) { Yell::Adapters::Datefile.new(:symlink => false, :filename => filename, :date_pattern => "%M") }
+      let(:adapter) { Yell::Adapters::Datefile.new(:symlink => false, :filename => filename, :date_pattern => "%M") }
 
       it "should not create the sylink the original filename" do
         adapter.write( event )
@@ -97,8 +100,8 @@ describe Yell::Adapters::Datefile do
   end
 
   describe :header do
-    let( :adapter ) { Yell::Adapters::Datefile.new(:filename => filename) }
-    let( :header ) { File.open(datefile_filename, &:readline) }
+    let(:adapter) { Yell::Adapters::Datefile.new(:filename => filename) }
+    let(:header) { File.open(datefile_filename, &:readline) }
 
     before do
       adapter.format = "%m" # easier to parse

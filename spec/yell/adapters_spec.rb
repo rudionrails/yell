@@ -4,7 +4,7 @@ describe Yell::Adapters do
 
   context :new do
     context "given a Yell::Adapters::Base ancestor" do
-      let( :stdout ) { Yell::Adapters::Stdout.new }
+      let(:stdout) { Yell::Adapters::Stdout.new }
 
       it "should return the instance" do
         Yell::Adapters.new( stdout ).should == stdout
@@ -35,8 +35,8 @@ describe Yell::Adapters do
   end
 
   context :register do
-    let( :name ) { :test }
-    let( :klass ) { mock }
+    let(:name) { :test }
+    let(:klass) { mock }
 
     before { Yell::Adapters.register( name, klass ) }
 

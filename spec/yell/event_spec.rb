@@ -4,39 +4,21 @@ require 'spec_helper'
 # the logger methods, we need to divert here in order to get 
 # the correct caller.
 class EventFactory
-  def self.event( level, message )
-    self._event( level, message )
+  def self.event(logger, level, message)
+    self._event(logger, level, message)
   end
 
   private
 
-  def self._event( level, message )
-    Yell::Event.new level, message
+  def self._event(logger, level, message)
+    Yell::Event.new(logger, level, message)
   end
 
 end
 
 describe Yell::Event do
-  let(:event) { Yell::Event.new 1, 'Hello World!' }
-
-  context :caller do
-    let( :event ) { EventFactory.event 1, "Hello World" }
-
-    context :file do
-      subject { event.file }
-      it  { should == __FILE__ }
-    end
-
-    context :line do
-      subject { event.line }
-      it { should == "8" }
-    end
-
-    context :method do
-      subject { event.method }
-      it { should == 'event' }
-    end
-  end
+  let(:logger) { Yell::Logger.new(:trace => true) }
+  let(:event) { Yell::Event.new(logger, 1, 'Hello World!') }
 
   context :level do
     subject { event.level }
@@ -77,7 +59,7 @@ describe Yell::Event do
       read, write = IO.pipe
 
       @pid = Process.fork do
-        event = Yell::Event.new 1, 'Hello World!'
+        event = Yell::Event.new(logger, 1, 'Hello World!')
         write.puts event.pid
       end
       Process.wait
@@ -94,6 +76,24 @@ describe Yell::Event do
   context :progname do
     subject { event.progname }
     it { should == $0 }
+  end
+
+  context :caller do
+    subject { EventFactory.event(logger, 1, "Hello World") }
+
+    context "with trace" do
+      its(:file) { should == __FILE__ }
+      its(:line) { should == "8" }
+      its(:method) { should == "event" }
+    end
+
+    context "without trace" do
+      before { logger.trace = false }
+
+      its(:file) { should == "" }
+      its(:line) { should == "" }
+      its(:method) { should == "" }
+    end
   end
 
 end

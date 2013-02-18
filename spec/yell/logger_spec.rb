@@ -13,10 +13,10 @@ class LoggerFactory
 end
 
 describe Yell::Logger do
-  let( :filename ) { fixture_path + '/logger.log' }
+  let(:filename) { fixture_path + '/logger.log' }
 
   context "a Logger instance" do
-    let( :logger ) { Yell::Logger.new }
+    let(:logger) { Yell::Logger.new }
 
     context "log methods" do
       subject { logger }
@@ -41,21 +41,28 @@ describe Yell::Logger do
     end
 
     context "default adapter" do
-      let( :adapters ) { logger.instance_variable_get :@adapters }
+      let(:adapters) { logger.instance_variable_get(:@adapters) }
 
       it { adapters.size.should == 1 }
-      it { adapters.first.should be_kind_of Yell::Adapters::File }
+      it { adapters.first.should be_kind_of(Yell::Adapters::File) }
     end
   end
 
   context "initialize with a :name" do
-    let( :name ) { 'test' }
+    let(:name) { 'test' }
+    let!(:logger) { Yell.new(:name => name) }
+
+    it "should set the logger's name" do
+      logger.name.should == name
+    end
 
     it "should be added to the repository" do
-      logger = Yell.new :name => name
-
       Yell::Repository[name].should == logger
     end
+  end
+
+  context "initialize with :trace" do
+    it "should be tested"
   end
 
   context "initialize with a :filename" do
@@ -103,10 +110,10 @@ describe Yell::Logger do
   end
 
   context "initialize with a block" do
-    let( :level ) { Yell::Level.new :error }
-    let( :adapter ) { Yell::Adapters::Stdout.new }
+    let(:level) { Yell::Level.new :error }
+    let(:adapter) { Yell::Adapters::Stdout.new }
 
-    let( :logger ) do
+    let(:logger) do
       Yell::Logger.new do |l|
         l.level = level
         l.adapter adapter
@@ -126,13 +133,13 @@ describe Yell::Logger do
   end
 
   context "initialize with :adapters option" do
-    let( :logger ) do
+    let(:logger) do
       Yell::Logger.new :adapters => [ :stdout, { :stderr => {:level => :error} } ]
     end
 
-    let( :adapters ) { logger.instance_variable_get :@adapters }
-    let( :stdout ) { adapters.first }
-    let( :stderr ) { adapters.last }
+    let(:adapters) { logger.instance_variable_get :@adapters }
+    let(:stdout) { adapters.first }
+    let(:stderr) { adapters.last }
 
     it "should define those adapters" do
       adapters.size.should == 2
@@ -149,8 +156,8 @@ describe Yell::Logger do
   end
 
   context "caller's :file, :line and :method" do
-    let( :adapter ) { Yell::Adapters::Stdout.new :format => "%F, %n: %M" }
-    let( :logger ) { Yell::Logger.new { |l| l.adapter adapter } }
+    let(:adapter) { Yell::Adapters::Stdout.new(:format => "%F, %n: %M") }
+    let(:logger) { Yell::Logger.new(:trace => true) { |l| l.adapter(adapter) } }
 
     it "should write correctly" do
       factory = LoggerFactory.new
@@ -164,9 +171,9 @@ describe Yell::Logger do
     end
   end
 
-  context "logging" do
-    let( :logger ) { Yell::Logger.new(filename, :format => "%m") }
-    let( :line ) { File.open(filename, &:readline) }
+  context "logging in general" do
+    let(:logger) { Yell::Logger.new(filename, :format => "%m") }
+    let(:line) { File.open(filename, &:readline) }
 
     it "should output a single message" do
       logger.info "Hello World"
