@@ -87,7 +87,8 @@ module Yell #:nodoc:
       @pattern      = pattern || Yell::DefaultFormat
       @date_pattern = date_pattern || :iso8601
 
-      define!
+      define_date_method!
+      define_format_method!
     end
 
     # Get a pretty string representation of the formatter, including
@@ -101,10 +102,24 @@ module Yell #:nodoc:
       "#<#{self.class.name} pattern: #{@pattern.inspect}, date_pattern: #{@date_pattern.inspect}>"
     end
 
+
     private
 
-    # defines the format method
-    def define!
+    def define_date_method!
+      buf = case @date_pattern
+      when String then "t.strftime(@date_pattern)"
+      when Symbol then "t.send(@date_pattern)"
+      else "t.iso8601"
+      end
+
+      instance_eval %-
+        def date( t )
+          #{buf}
+        end
+      -
+    end
+
+    def define_format_method!
       buff, args, _pattern = "", [], @pattern.dup
 
       while true
@@ -128,13 +143,6 @@ module Yell #:nodoc:
 
     def level( l )
       Yell::Severities[ l ]
-    end
-
-    def date( t )
-      case @date_pattern
-      when String then t.strftime( @date_pattern )
-      else t.iso8601
-      end
     end
 
     def message( *messages )
