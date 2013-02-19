@@ -111,24 +111,27 @@ describe Yell::Logger do
 
   context "initialize with a block" do
     let(:level) { Yell::Level.new :error }
-    let(:adapter) { Yell::Adapters::Stdout.new }
+    let(:stdout) { Yell::Adapters::Stdout.new }
+    let(:adapters) { loggr.instance_variable_get(:@adapters) }
 
-    let(:logger) do
-      Yell::Logger.new do |l|
-        l.level = level
-        l.adapter adapter
+    context "with arity" do
+      subject do
+        Yell::Logger.new(:level => level) { |l| l.adapter(:stdout) }
       end
+
+      its(:level) { should == level }
+      its('adapters.size') { should == 1 }
+      its('adapters.first') { should be_instance_of(Yell::Adapters::Stdout) }
     end
 
-    it "should set the level" do
-      logger.level.should == level
-    end
+    context "without arity" do
+      subject do
+        Yell::Logger.new(:level => level) { adapter(:stdout) }
+      end
 
-    it "should define adapter" do
-      adapters = logger.instance_variable_get :@adapters
-
-      adapters.size.should == 1
-      adapters.first.should == adapter
+      its(:level) { should == level }
+      its('adapters.size') { should == 1 }
+      its('adapters.first') { should be_instance_of(Yell::Adapters::Stdout) }
     end
   end
 

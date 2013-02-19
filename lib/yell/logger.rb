@@ -39,7 +39,7 @@ module Yell #:nodoc:
     #   Yell::Logger.new :datefile, 'development.log' do |l|
     #     l.level = :info
     #   end
-    def initialize( *args )
+    def initialize( *args, &block )
       @adapters = []
 
       # extract options
@@ -61,7 +61,7 @@ module Yell #:nodoc:
       self.adapter(args.pop) if args.any?
 
       # eval the given block
-      yield(self) if block_given?
+      block.arity.zero? ? instance_eval(&block) : block.call(self) if block_given?
 
       # default adapter when none defined
       self.adapter(:file) if @adapters.empty?
@@ -130,11 +130,6 @@ module Yell #:nodoc:
       @adapters << Yell::Adapters.new( type, options, &block )
     end
 
-    # Convenience method for resetting all adapters of the Logger.
-    def close
-      @adapters.each(&:close)
-    end
-
     # Creates instance methods for every log level:
     #   `debug` and `debug?`
     #   `info` and `info?`
@@ -157,14 +152,19 @@ module Yell #:nodoc:
     end
 
     # Get a pretty string representation of the logger.
-    #
-    # @example Inspect the logger
-    #   logger.inspect
-    #
-    # @return [String] The inspection string.
     def inspect
       inspection = inspectables.inject( [] ) { |r, c| r << "#{c}: #{send(c).inspect}" }
       "#<#{self.class.name} #{inspection * ', '}, adapters: #{@adapters.map(&:inspect) * ', '}>"
+    end
+
+    # @private
+    def close
+      @adapters.each(&:close)
+    end
+
+    # @private
+    def adapters
+      @adapters
     end
 
     private
@@ -192,8 +192,6 @@ module Yell #:nodoc:
     end
 
     # Get an array of inspected attributes for the adapter.
-    #
-    # @return [ String ] An array of pretty printed field values.
     def inspectables
       [ :name, :level, :trace ]
     end

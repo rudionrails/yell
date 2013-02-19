@@ -91,13 +91,7 @@ module Yell #:nodoc:
       define_format_method!
     end
 
-    # Get a pretty string representation of the formatter, including
-    # the pattern and date pattern.
-    #
-    # @example Inspect the formatter.
-    #   formatter.inspect
-    #
-    # @return [String] The inspection string.
+    # Get a pretty string representation of the formatter, including the pattern and date pattern.
     def inspect
       "#<#{self.class.name} pattern: #{@pattern.inspect}, date_pattern: #{@date_pattern.inspect}>"
     end

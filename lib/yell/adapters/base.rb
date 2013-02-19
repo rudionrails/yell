@@ -138,7 +138,9 @@ module Yell #:nodoc:
         super() # init the monitor superclass
 
         setup!(options)
-        block.call(self) if block
+
+        # eval the block
+        block.arity.zero? ? instance_eval(&block) : block.call(self) if block_given?
       end
 
       # The main method for calling the adapter.
@@ -163,12 +165,6 @@ module Yell #:nodoc:
       end
 
       # Get a pretty string representation of the adapter, including
-      # the inspectable attributes.
-      #
-      # @example Inspect the formatter.
-      #   adapter.inspect
-      #
-      # @return [String] The inspection string.
       def inspect
         inspection = inspectables.inject( [] ) { |r, c| r << "#{c}: #{send(c).inspect}" }
         "#<#{self.class.name} #{inspection * ', '}>"
@@ -221,8 +217,6 @@ module Yell #:nodoc:
       end
 
       # Get an array of inspected attributes for the adapter.
-      #
-      # @return [ String ] An array of pretty printed field values.
       def inspectables
         [ :level ]
       end

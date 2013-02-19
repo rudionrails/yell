@@ -71,7 +71,8 @@ module Yell #:nodoc:
       Yell.new Yell::Configuration.load!(file)
     end
 
-    def env #:nodoc:
+    # @private
+    def env
       return ENV['YELL_ENV']  if ENV.key? 'YELL_ENV'
       return ENV['RACK_ENV']  if ENV.key? 'RACK_ENV'
       return ENV['RAILS_ENV'] if ENV.key? 'RAILS_ENV'
@@ -83,7 +84,8 @@ module Yell #:nodoc:
       end
     end
 
-    def _deprecate( version, message, options = {} ) #:nodoc:
+    # @private
+    def _deprecate( version, message, options = {} )
       messages = ["Deprecation Warning (since v#{version}): #{message}" ]
       messages << "  before: #{options[:before]}" if options[:before]
       messages << "  after:  #{options[:after]}" if options[:after]
@@ -91,9 +93,10 @@ module Yell #:nodoc:
       _warn( *messages )
     end
 
-    def _warn( *messages ) #:nodoc:
+    # @private
+    def _warn( *messages )
       $stderr.puts "[Yell] " + messages.join( "\n" )
-    rescue
+    rescue Exception
       # do nothing
     end
   end
