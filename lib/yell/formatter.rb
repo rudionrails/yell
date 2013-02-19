@@ -102,8 +102,8 @@ module Yell #:nodoc:
     def define_date_method!
       buf = case @date_pattern
       when String then "t.strftime(@date_pattern)"
-      when Symbol then "t.send(@date_pattern)"
-      else "t.iso8601"
+      when Symbol then respond_to?(@date_pattern, true) ? "#{@date_pattern}(t)" : "t.#{@date_pattern}"
+      else "iso8601(t)"
       end
 
       instance_eval %-
@@ -133,6 +133,20 @@ module Yell #:nodoc:
           sprintf( "#{buff}", #{args.join(',')} )
         end
       -
+    end
+
+    # The iso8601 implementation of the standard Time library is more than
+    # twice as slow than using strftime. So, we just implement it ourselves.
+    def iso8601( t )
+      zone = if t.utc?
+        "-00:00"
+      else
+        offset = t.utc_offset
+        sign = offset < 0 ? '-' : '+'
+        sprintf('%s%02d:%02d', sign, *(offset.abs/60).divmod(60))
+      end
+
+      t.strftime("%Y-%m-%dT%H:%M:%S#{zone}")
     end
 
     def level( l )
