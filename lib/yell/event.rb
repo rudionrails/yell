@@ -18,9 +18,6 @@ module Yell #:nodoc:
     @@hostname  = Socket.gethostname rescue nil
     @@progname  = $0
 
-    # Accessor to the pid
-    attr_reader :pid
-
     # Accessor to the log level
     attr_reader :level
 
@@ -30,24 +27,20 @@ module Yell #:nodoc:
     # Accessor to the time the log event occured
     attr_reader :time
 
-    # Accessor to the current tread_id
-    attr_reader :thread_id
-
 
     def initialize(logger, level, *messages, &block)
-      @pid      = Process.pid
       @time     = Time.now
       @level    = level
 
       @messages = messages
       @messages << block.call if block
 
-      @thread_id  = Thread.current.object_id
-
       @caller = logger.trace.at?(level) ? caller[CallerIndex].to_s : ''
       @file   = nil
       @line   = nil
       @method = nil
+
+      @pid = nil
     end
 
     # Accessor to the hostname
@@ -60,22 +53,29 @@ module Yell #:nodoc:
       @@progname
     end
 
+    # Accessor to the PID
+    def pid
+      Process.pid
+    end
+
+    # Accessor to the thread's id
+    def thread_id
+      Thread.current.object_id
+    end
+
     # Accessor to filename the log event occured
     def file
-      _caller! if @file.nil?
-      @file
+      @file || (_caller!; @file)
     end
 
     # Accessor to the line the log event occured
     def line
-      _caller! if @line.nil?
-      @line
+      @line || (_caller!; @line)
     end
 
     # Accessor to the method the log event occured
     def method
-      _caller! if @method.nil?
-      @method
+      @method || (_caller!; @method)
     end
 
 
