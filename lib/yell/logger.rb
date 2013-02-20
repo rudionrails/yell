@@ -55,7 +55,7 @@ module Yell #:nodoc:
 
       self.level = @options.fetch(:level, 0) # debug by defauly
       self.name = @options.fetch(:name, nil) # no name by default
-      self.trace = @options.fetch(:trace, false) # do not trace by default
+      self.trace = @options.fetch(:trace, :error) # trace from :error level onwards
 
       # extract adapter
       self.adapter(args.pop) if args.any?

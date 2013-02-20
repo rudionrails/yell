@@ -18,6 +18,8 @@ describe Yell::Logger do
   context "a Logger instance" do
     let(:logger) { Yell::Logger.new }
 
+    its(:name) { should be_nil }
+
     context "log methods" do
       subject { logger }
 
@@ -46,6 +48,20 @@ describe Yell::Logger do
       it { adapters.size.should == 1 }
       it { adapters.first.should be_kind_of(Yell::Adapters::File) }
     end
+
+    context "default :level" do
+      subject { logger.level }
+
+      it { should be_instance_of(Yell::Level) }
+      its(:severities) { should == [true, true, true, true, true, true] }
+    end
+
+    context "default :trace" do
+      subject { logger.trace }
+
+      it { should be_instance_of(Yell::Level) }
+      its(:severities) { should == [false, false, false, true, true, true] } # from error onwards
+    end
   end
 
   context "initialize with a :name" do
@@ -62,7 +78,6 @@ describe Yell::Logger do
   end
 
   context "initialize with :trace" do
-    it "should be tested"
   end
 
   context "initialize with a :filename" do
@@ -159,15 +174,15 @@ describe Yell::Logger do
   end
 
   context "caller's :file, :line and :method" do
-    let(:adapter) { Yell::Adapters::Stdout.new(:format => "%F, %n: %M") }
-    let(:logger) { Yell::Logger.new(:trace => true) { |l| l.adapter(adapter) } }
+    let(:stdout) { Yell::Adapters::Stdout.new(:format => "%F, %n: %M") }
+    let(:logger) { Yell::Logger.new(:trace => true) { |l| l.adapter(stdout) } }
 
     it "should write correctly" do
       factory = LoggerFactory.new
       factory.logger = logger
 
-      mock( adapter.send(:stream) ).syswrite( "#{__FILE__}, 7: foo\n" )
-      mock( adapter.send(:stream) ).syswrite( "#{__FILE__}, 11: bar\n" )
+      mock( stdout.send(:stream) ).syswrite( "#{__FILE__}, 7: foo\n" )
+      mock( stdout.send(:stream) ).syswrite( "#{__FILE__}, 11: bar\n" )
 
       factory.foo
       factory.bar
