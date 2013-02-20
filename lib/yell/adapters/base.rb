@@ -139,8 +139,8 @@ module Yell #:nodoc:
 
         setup!(options)
 
-        # eval the block
-        block.arity.zero? ? instance_eval(&block) : block.call(self) if block_given?
+        # eval the given block
+        block.arity > 0 ? block.call(self) : instance_eval(&block) if block_given?
       end
 
       # The main method for calling the adapter.

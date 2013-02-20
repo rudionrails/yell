@@ -61,7 +61,7 @@ module Yell #:nodoc:
       self.adapter(args.pop) if args.any?
 
       # eval the given block
-      block.arity.zero? ? instance_eval(&block) : block.call(self) if block_given?
+      block.arity > 0 ? block.call(self) : instance_eval(&block) if block_given?
 
       # default adapter when none defined
       self.adapter(:file) if @adapters.empty?
