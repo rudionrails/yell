@@ -52,7 +52,7 @@ describe Yell::Event do
     it { should == Process.pid }
   end
 
-  context "pid when forked", :pending => RUBY_PLATFORM == 'java' do # no forking with jruby
+  context "pid when forked", :pending => RUBY_PLATFORM == 'java' ? "No forking with jruby" : false do
     subject { @pid }
 
     before do
