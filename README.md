@@ -1,7 +1,7 @@
 **Yell - Your Extensible Logging Library**
 
 [![Build Status](https://secure.travis-ci.org/rudionrails/yell.png?branch=master)](http://travis-ci.org/rudionrails/yell) 
-[![Code Climate](https://codeclimate.com/badge.png)](https://codeclimate.com/github/rudionrails/yell)
+[![Code Climate](https://codeclimate.com/github/rudionrails/yell.png)](https://codeclimate.com/github/rudionrails/yell)
 
 Yell works and is tested with ruby 1.8.7, 1.9.x, jruby 1.8 and 1.9 mode, rubinius 1.8 and 1.9 as well as ree.
 
