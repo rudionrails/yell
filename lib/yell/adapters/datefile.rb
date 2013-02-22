@@ -174,7 +174,7 @@ module Yell #:nodoc:
         end
       end
 
-      # @override
+      # @overload inspectables
       def inspectables
         super.concat [:date_pattern, :header, :keep, :symlink ]
       end
