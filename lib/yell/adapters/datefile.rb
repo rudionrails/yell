@@ -14,46 +14,6 @@ module Yell #:nodoc:
       Header = lambda { |date, pattern| "# -*- #{date.iso8601} (#{date.to_f}) [#{pattern}] -*-" }
       HeaderRegexp = /^# -\*- (.+) \((\d+\.\d+)\) \[(.+)\] -\*-$/
 
-
-      setup do |options|
-        @date, @date_strftime = nil, nil # default; do not override --R
-
-        # check whether to write the log header (default true)
-        self.header = options.fetch(:header, true)
-
-        # check the date pattern on the filename (default "%Y%m%d")
-        self.date_pattern = options.fetch(:date_pattern, DefaultDatePattern)
-
-        # check whether to cleanup old files of the same pattern (default false)
-        self.keep = options.fetch(:keep, false)
-
-        # check whether to symlink the otiginal filename (default true)
-        self.symlink = options.fetch(:symlink, true)
-
-        @original_filename  = ::File.expand_path options.fetch(:filename, default_filename)
-        options[:filename]  = @original_filename
-      end
-
-      write do |event|
-        # do nothing when not closing
-        return unless close?
-        close
-
-        # exit when file ready present
-        return if ::File.exist?( @filename )
-
-        # write the header if applicable
-        stream.puts( Header.call(@date, date_pattern) ) if header?
-
-        symlink! if symlink?
-        cleanup! if cleanup?
-      end
-
-      close do
-        @filename = filename_for( @date )
-      end
-
-
       # The pattern to be used for the files
       #
       # @example
@@ -91,6 +51,46 @@ module Yell #:nodoc:
 
 
       private
+
+      # @overload setup!( options )
+      def setup!( options )
+        @date, @date_strftime = nil, nil # default; do not override --R
+
+        self.header = options.fetch(:header, true)
+        self.date_pattern = options.fetch(:date_pattern, DefaultDatePattern)
+        self.keep = options.fetch(:keep, false)
+        self.symlink = options.fetch(:symlink, true)
+
+        @original_filename  = ::File.expand_path options.fetch(:filename, default_filename)
+        options[:filename]  = @original_filename
+
+        super
+      end
+
+      # @overload write!( event )
+      def write!( event )
+        # do nothing when not closing
+        return super unless close?
+        close
+
+        # exit when file ready present
+        return super if ::File.exist?( @filename )
+
+        # write the header if applicable
+        stream.puts( Header.call(@date, date_pattern) ) if header?
+
+        symlink! if symlink?
+        cleanup! if cleanup?
+
+        super
+      end
+
+      # @overload close!
+      def close!
+        @filename = filename_for( @date )
+
+        super
+      end
 
       # Determine whether to close the file handle or not.
       #

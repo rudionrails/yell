@@ -17,44 +17,6 @@ module Yell #:nodoc:
         -1  => "\e[0m"      # NONE
       }
 
-      setup do |options|
-        @stream = nil
-
-        # colorize the log output (default: false)
-        self.colors = options.fetch(:colors, false)
-
-        # format the log message (default: nil)
-        self.format = options.fetch(:format, nil)
-
-        # sync immediately to IO (default: true)
-        self.sync = options.fetch(:sync, true)
-      end
-
-      write do |event|
-        message = format.format(event)
-
-        # colorize if applicable
-        if colors and color = Colors[event.level]
-          message = color + message + Colors[-1]
-        end
-
-        # add new line if there is none
-        message << "\n" unless message[-1] == ?\n
-
-        stream.syswrite( message )
-      end
-
-      open do
-        @stream.sync = self.sync if @stream.respond_to? :sync
-        @stream.flush            if @stream.respond_to? :flush
-      end
-
-      close do
-        @stream.close if @stream.respond_to? :close
-        @stream = nil
-      end
-
-
       # Sets the “sync mode” to true or false.
       #
       # When true (default), every log event is immediately written to the file. 
@@ -78,6 +40,48 @@ module Yell #:nodoc:
 
 
       private
+
+      # @overload setup!( options )
+      def setup!( options )
+        @stream = nil
+
+        self.colors = options.fetch(:colors, false)
+        self.format = options.fetch(:format, nil)
+        self.sync = options.fetch(:sync, true)
+
+        super
+      end
+
+      # @overload write!( event )
+      def write!( event )
+        message = format.format(event)
+
+        # colorize if applicable
+        if colors and color = Colors[event.level]
+          message = color + message + Colors[-1]
+        end
+
+        message << "\n" unless message[-1] == ?\n
+        stream.syswrite( message )
+
+        super
+      end
+
+      # @overload open!
+      def open!
+        @stream.sync = self.sync if @stream.respond_to? :sync
+        @stream.flush            if @stream.respond_to? :flush
+
+        super
+      end
+
+      # @overload close!
+      def close!
+        @stream.close if @stream.respond_to? :close
+        @stream = nil
+
+        super
+      end
 
       # The IO stream
       #

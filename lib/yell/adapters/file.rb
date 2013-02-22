@@ -7,16 +7,21 @@ module Yell #:nodoc:
     # for logging into files.
     class File < Yell::Adapters::Io
 
-      setup do |options|
-        @filename = ::File.expand_path options.fetch(:filename, default_filename)
-      end
-
-      open do
-        @stream = ::File.open( @filename, ::File::WRONLY|::File::APPEND|::File::CREAT )
-      end
-
-
       private
+
+      # @overload setup!( options )
+      def setup!( options )
+        @filename = ::File.expand_path options.fetch(:filename, default_filename)
+
+        super
+      end
+
+      # @overload open!
+      def open!
+        @stream = ::File.open( @filename, ::File::WRONLY|::File::APPEND|::File::CREAT )
+
+        super
+      end
 
       def default_filename #:nodoc:
         logdir = ::File.expand_path("log")
