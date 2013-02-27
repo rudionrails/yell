@@ -30,9 +30,9 @@ module Yell #:nodoc:
         return name if name.is_a?( Yell::Adapters::Base )
 
         adapter = case name
-          when STDOUT then @@adapters[:stdout]
-          when STDERR then @@adapters[:stderr]
-          else @@adapters[name]
+        when STDOUT then @@adapters[:stdout]
+        when STDERR then @@adapters[:stderr]
+        else @@adapters[name]
         end
 
         raise AdapterNotFound.new( name ) unless adapter

@@ -95,10 +95,10 @@ module Yell #:nodoc:
     # @return [Yell::Level] a level representation of the tracer
     def trace=( severity )
       @trace = case severity
-        when true then Yell::Level.new
-        when false then Yell::Level.new( "gt.#{Yell::Severities.last}" )
-        when Yell::Level then severity
-        else Yell::Level.new( severity )
+      when true then Yell::Level.new
+      when false then Yell::Level.new( "gt.#{Yell::Severities.last}" )
+      when Yell::Level then severity
+      else Yell::Level.new( severity )
       end
     end
 

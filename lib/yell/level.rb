@@ -35,8 +35,8 @@ module Yell #:nodoc:
       # @param [String, Symbol, Integer] severity The minimum log level
       def level=( severity )
         @level = case severity
-          when Yell::Level then severity
-          else Yell::Level.new( severity )
+        when Yell::Level then severity
+        else Yell::Level.new( severity )
         end
       end
     end
@@ -155,10 +155,10 @@ module Yell #:nodoc:
       @severities = Yell::Severities.map { true }
 
       case severity
-        when Array then at( *severity )
-        when Range then gte( severity.first ).lte( severity.last )
-        when Integer, Symbol then gte( severity )
-        when String then interpret!( severity )
+      when Array then at( *severity )
+      when Range then gte( severity.first ).lte( severity.last )
+      when Integer, Symbol then gte( severity )
+      when String then interpret!( severity )
       end
     end
 
@@ -175,11 +175,11 @@ module Yell #:nodoc:
       return if index.nil?
 
       case modifier
-        when :>   then ascending!( index+1 )
-        when :>=  then ascending!( index )
-        when :<   then descending!( index-1 )
-        when :<=  then descending!( index )
-        else set!( index ) # :==
+      when :>   then ascending!( index+1 )
+      when :>=  then ascending!( index )
+      when :<   then descending!( index-1 )
+      when :<=  then descending!( index )
+      else set!( index ) # :==
       end
 
       taint unless tainted?
@@ -187,9 +187,9 @@ module Yell #:nodoc:
 
     def index_from( severity )
       case severity
-        when Integer        then severity
-        when String, Symbol then Yell::Severities.index( severity.to_s.upcase )
-        else nil
+      when Integer        then severity
+      when String, Symbol then Yell::Severities.index( severity.to_s.upcase )
+      else nil
       end
     end
 

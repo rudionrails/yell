@@ -53,9 +53,9 @@ module Yell #:nodoc:
       # Set the format for your message.
       def format=( pattern )
         @format = case pattern
-          when Yell::Formatter then pattern
-          when false then Yell::Formatter.new( Yell::NoFormat )
-          else Yell::Formatter.new( *pattern )
+        when Yell::Formatter then pattern
+        when false then Yell::Formatter.new( Yell::NoFormat )
+        else Yell::Formatter.new( *pattern )
         end
       end
     end
