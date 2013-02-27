@@ -74,11 +74,9 @@ module Yell #:nodoc:
         close
 
         # exit when file ready present
-        return super if ::File.exist?( @filename )
+        return super if ::File.exist?(@filename)
 
-        # write the header if applicable
-        stream.puts( Header.call(@date, date_pattern) ) if header?
-
+        header! if header?
         symlink! if symlink?
         cleanup! if cleanup?
 
@@ -149,6 +147,11 @@ module Yell #:nodoc:
       #
       # @return [Boolean] true or false
       def symlink?; !!symlink; end
+
+      # Write the header information into the file
+      def header!
+        stream.puts( Header.call(@date, date_pattern) )
+      end
 
       # Write header into the file?
       #

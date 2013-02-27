@@ -2,94 +2,109 @@ require 'spec_helper'
 
 describe Yell::Adapters::Datefile do
   let(:logger) { Yell::Logger.new }
+  let(:message) { "Hello World" }
+  let(:event) { Yell::Event.new(logger, 1, message) }
+
+  let(:today) { Time.now }
+  let(:tomorrow) { Time.now + 86400 }
+
   let(:filename) { fixture_path + '/test.log' }
-  let(:event) { Yell::Event.new(logger, 1, "Hello World") }
+  let(:today_filename) { fixture_path + "/test.#{today.strftime(Yell::Adapters::Datefile::DefaultDatePattern)}.log" }
+  let(:tomorrow_filename) { fixture_path + "/test.#{tomorrow.strftime(Yell::Adapters::Datefile::DefaultDatePattern)}.log" }
+
+  let(:adapter) { Yell::Adapters::Datefile.new(:filename => filename, :format => "%m") }
 
   before do
-    Timecop.freeze( Time.now )
+    Timecop.freeze(today)
   end
 
   it { should be_kind_of Yell::Adapters::File }
 
-  describe :filename do
-    let(:adapter) { Yell::Adapters::Datefile.new(:filename => filename, :symlink => false) }
+  describe :write do
+    let(:today_lines) { File.readlines(today_filename) }
 
-    it "should be replaced with date_pattern" do
-      adapter.write( event )
-
-      File.exist?(datefile_filename).should be_true
+    before do
+      adapter.write(event)
     end
 
-    it "should open file handle only once" do
-      mock( File ).open( datefile_filename, anything ) { File.new('/dev/null', 'w') }
+    it "should be output to filename with date pattern" do
+      File.exist?(today_filename).should be_true
 
-      adapter.write( event )
-      Timecop.freeze( Time.now + 10 ) { adapter.write(event) }
+      today_lines.size.should == 2 # includes header line
+      today_lines.last.should match(message)
     end
 
-    context "rollover" do
-      let(:tomorrow) { Time.now + 86400 }
-      let(:tomorrow_datefile_filename) { fixture_path + "/test.#{tomorrow.strftime(Yell::Adapters::Datefile::DefaultDatePattern)}.log" }
+    it "should output to the same file" do
+      adapter.write(event)
 
-      it "should rotate when date has passed" do
-        mock( File ).open( datefile_filename, anything ) { File.new('/dev/null', 'w') }
-        adapter.write( event )
+      File.exist?(today_filename).should be_true
+      today_lines.size.should == 3 # includes header line
+    end
 
-        Timecop.freeze( tomorrow )
+    it "should not open file handle again" do
+      dont_allow(File).open( anything, anything )
 
-        mock( File ).open( tomorrow_datefile_filename, anything ) { File.new('/dev/null', 'w') }
-        adapter.write( event )
+      adapter.write(event)
+    end
+
+    context "on rollover" do
+      let(:tomorrow_lines) { File.readlines(tomorrow_filename) }
+
+      before do
+        Timecop.freeze(tomorrow) { adapter.write(event) }
+      end
+
+      it "should rotate file" do
+        File.exist?(tomorrow_filename).should be_true
+
+        tomorrow_lines.size.should == 2 # includes header line
+        tomorrow_lines.last.should match(message)
       end
     end
   end
 
   describe :keep do
-    let(:adapter) { Yell::Adapters::Datefile.new(:keep => 2, :filename => filename, :symlink => false, :date_pattern => "%M") }
+    before do
+      adapter.symlink = false # to not taint the Dir
+      adapter.keep = 2
+
+      adapter.write(event)
+    end
 
     it "should keep the specified number or files upon rollover" do
-      adapter.write( event )
       Dir[ fixture_path + '/*.log' ].size.should == 1
 
-      Timecop.freeze( Time.now + 60 ) do
-        adapter.write( event )
-        Dir[ fixture_path + '/*.log' ].size.should == 2
-      end
+      Timecop.freeze(tomorrow) { adapter.write(event) }
+      Dir[ fixture_path + '/*.log' ].size.should == 2
 
-      Timecop.freeze( Time.now + 120 ) do
-        adapter.write( event )
-        Dir[ fixture_path + '/*.log' ].size.should == 2
-      end
+      Timecop.freeze(tomorrow + 86400 ) { adapter.write(event) }
+      Dir[ fixture_path + '/*.log' ].size.should == 2
     end
   end
 
   describe :symlink do
-    let(:time) { Time.now }
-    before { Timecop.freeze(time) }
-
-    context "default (true)" do
-      let(:adapter) { Yell::Adapters::Datefile.new(:filename => filename, :date_pattern => "%M") }
-
-      it "should create the sylink the original filename" do
-        adapter.write( event )
-
-        File.symlink?( filename ).should be_true
-        File.readlink( filename ).should == datefile_filename(adapter.date_pattern)
+    context "when true (default)" do
+      before do
+        adapter.write(event)
       end
 
-      it "should symlink upon rollover" do
-        adapter.write( event )
+      it "should be created on the original filename" do
+        File.symlink?( filename ).should be_true
+        File.readlink( filename ).should == today_filename
+      end
 
-        Timecop.freeze( time + 120 ) do
-          adapter.write( event )
+      it "should be recreated upon rollover" do
+        Timecop.freeze(tomorrow) { adapter.write(event) }
 
-          File.symlink?( filename ).should be_true
-          File.readlink( filename ).should == datefile_filename(adapter.date_pattern)
-        end
+        File.symlink?( filename ).should be_true
+        File.readlink( filename ).should == tomorrow_filename
       end
     end
 
-    context "when set to false" do
-      let(:adapter) { Yell::Adapters::Datefile.new(:symlink => false, :filename => filename, :date_pattern => "%M") }
+    context "when false" do
+      before do
+        adapter.symlink = false
+      end
 
       it "should not create the sylink the original filename" do
         adapter.write( event )
@@ -100,24 +115,52 @@ describe Yell::Adapters::Datefile do
   end
 
   describe :header do
-    let(:adapter) { Yell::Adapters::Datefile.new(:filename => filename) }
-    let(:header) { File.open(datefile_filename, &:readline) }
+    let(:header) { File.open(today_filename, &:readline) }
+
+    context "when true (default)" do
+      before do
+        adapter.write( event )
+      end
+
+      it "should be written" do
+        header.should match(Yell::Adapters::Datefile::HeaderRegexp)
+      end
+
+      it "should be rewritten upon rollover" do
+        Timecop.freeze(tomorrow) { adapter.write(event) }
+
+        File.symlink?( filename ).should be_true
+        File.readlink( filename ).should == tomorrow_filename
+      end
+    end
+
+    context "when false" do
+      before do
+        adapter.header = false
+      end
+
+      it "should not be written" do
+        adapter.write( event )
+
+        header.should == "Hello World\n"
+      end
+    end
+  end
+
+  context "another adapter with the same :filename" do
+    let(:another_adapter) { Yell::Adapters::Datefile.new(:filename => filename) }
 
     before do
-      adapter.format = "%m" # easier to parse
+      adapter.write(event)
     end
 
-    it "should be written by default" do
-      adapter.write( event )
+    it "should not write the header again" do
+      another_adapter.write(event)
 
-      header.should match(Yell::Adapters::Datefile::HeaderRegexp)
-    end
-
-    it "should not be written when false" do
-      adapter.header = false
-      adapter.write( event )
-
-      header.should == "Hello World\n"
+      # 1: header
+      # 2: adapter write
+      # 3: another_adapter: write
+      File.readlines(today_filename).size.should == 3
     end
   end
 

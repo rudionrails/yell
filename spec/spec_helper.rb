@@ -30,9 +30,5 @@ RSpec.configure do |config|
     File.expand_path( "fixtures", File.dirname(__FILE__) )
   end
 
-  def datefile_filename( pattern = Yell::Adapters::Datefile::DefaultDatePattern )
-    fixture_path + "/test.#{Time.now.strftime(pattern)}.log"
-  end
-
 end
 
