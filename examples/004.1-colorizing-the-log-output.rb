@@ -8,8 +8,8 @@ You may colorize the log output on your io-based loggers loke so:
 
 logger = Yell.new STDOUT, :colors => true
 
-[:debug, :info, :warn, :error, :fatal, :unknown].each do |level|
-  logger.send level, level
+Yell::Severities.each do |level|
+  logger.send level.downcase, level
 end
 
 EOS
@@ -17,7 +17,7 @@ EOS
 puts "=== actuale example ==="
 logger = Yell.new STDOUT, :colors => true
 
-[:debug, :info, :warn, :error, :fatal, :unknown].each do |level|
-  logger.send level, level
+Yell::Severities.each do |level|
+  logger.send level.downcase, level
 end
 

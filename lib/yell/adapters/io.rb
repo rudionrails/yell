@@ -7,14 +7,14 @@ module Yell #:nodoc:
       include Yell::Formatter::Helpers
 
       # The possible unix log colors
-      Colors = {
-        0   => "\e[32;1m",  # green;bold
-        # 1   => "\e[0m",     # white
-        2   => "\e[33;1m",  # yello;bold
-        3   => "\e[31;1m",  # red;bold
-        4   => "\e[35;1m",  # magenta;bold
-        5   => "\e[36m",    # cyan
-        -1  => "\e[0m"      # NONE
+      TTYColors = {
+        0   => "\033[1;32m",  # green
+        1   => "\033[0m",     # normal
+        2   => "\033[1;33m",  # yellow
+        3   => "\033[1;31m",  # red
+        4   => "\033[1;35m",  # magenta
+        5   => "\033[1;36m",  # cyan
+        -1  => "\033[0m"      # normal
       }
 
       # Sets the “sync mode” to true or false.
@@ -57,8 +57,8 @@ module Yell #:nodoc:
         message = format.format(event)
 
         # colorize if applicable
-        if colors and color = Colors[event.level]
-          message = color + message + Colors[-1]
+        if colors and color = TTYColors[event.level]
+          message = color + message + TTYColors[-1]
         end
 
         message << "\n" unless message[-1] == ?\n
