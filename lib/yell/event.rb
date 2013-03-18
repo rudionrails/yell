@@ -65,23 +65,23 @@ module Yell #:nodoc:
 
     # Accessor to filename the log event occured
     def file
-      @file || (_caller!; @file)
+      @file || (backtrace!; @file)
     end
 
     # Accessor to the line the log event occured
     def line
-      @line || (_caller!; @line)
+      @line || (backtrace!; @line)
     end
 
     # Accessor to the method the log event occured
     def method
-      @method || (_caller!; @method)
+      @method || (backtrace!; @method)
     end
 
 
     private
 
-    def _caller!
+    def backtrace!
       if m = CallerRegexp.match(@caller)
         @file, @line, @method = m[1..-1]
       else
