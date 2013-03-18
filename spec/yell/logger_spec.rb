@@ -64,7 +64,7 @@ describe Yell::Logger do
     end
   end
 
-  context "initialize with a :name" do
+  context "initialize with :name" do
     let(:name) { 'test' }
     let!(:logger) { Yell.new(:name => name) }
 
@@ -77,7 +77,24 @@ describe Yell::Logger do
     end
   end
 
+  context "initialize with :level" do
+    let(:level) { :error }
+    let!(:logger) { Yell.new(:level => level) }
+
+    it "should be set correctly" do
+      logger.level.should be_kind_of(Yell::Level)
+      logger.level.severities.should == [false, false, false, true, true, true]
+    end
+  end
+
   context "initialize with :trace" do
+    let(:trace) { :error }
+    let!(:logger) { Yell.new(:trace => trace) }
+
+    it "should be set correctly" do
+      logger.trace.should be_kind_of(Yell::Level)
+      logger.trace.severities.should == [false, false, false, true, true, true]
+    end
   end
 
   context "initialize with a :filename" do
