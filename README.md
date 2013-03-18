@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/rudionrails/yell.png?branch=master)](https://travis-ci.org/rudionrails/yell)
 [![Code Climate](https://codeclimate.com/github/rudionrails/yell.png)](https://codeclimate.com/github/rudionrails/yell)
 
-Yell works and is tested with ruby 1.8.7, 1.9.x, jruby 1.8 and 1.9 mode, rubinius 1.8 and 1.9 as well as ree.
+Yell works and is tested with ruby 1.8.7, 1.9.x, 2.0.0, jruby 1.8 and 1.9 mode, rubinius 1.8 and 1.9 as well as ree.
 
 **If you want to use Yell with Rails, then head over to [yell-rails](https://github.com/rudionrails/yell-rails).**
 
