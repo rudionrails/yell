@@ -236,5 +236,17 @@ describe Yell::Logger do
     end
   end
 
+  context "silence" do
+    let(:silence) { /silence/ }
+    let(:stdout) { Yell::Adapters::Stdout.new }
+    let(:logger) { Yell::Logger.new(:silence => silence) { |l| l.adapter(stdout) } }
+
+    it "should not pass a matching message to any adapter" do
+      dont_allow(stdout).write
+
+      logger.info "there should be silence"
+    end
+  end
+
 end
 

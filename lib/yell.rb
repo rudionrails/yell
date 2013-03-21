@@ -109,6 +109,7 @@ require File.dirname(__FILE__) + '/yell/repository'
 require File.dirname(__FILE__) + '/yell/event'
 require File.dirname(__FILE__) + '/yell/level'
 require File.dirname(__FILE__) + '/yell/formatter'
+require File.dirname(__FILE__) + '/yell/silencer'
 require File.dirname(__FILE__) + '/yell/adapters'
 require File.dirname(__FILE__) + '/yell/logger'
 

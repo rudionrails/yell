@@ -10,6 +10,7 @@ module Yell #:nodoc:
   # to them if applicable. There are multiple ways of how to create a new logger.
   class Logger
     include Yell::Level::Helpers
+    include Yell::Silencer::Helpers
 
     # The name of the logger instance
     attr_reader :name
@@ -54,6 +55,7 @@ module Yell #:nodoc:
       end
 
       self.level = @options.fetch(:level, 0) # debug by defauly
+      self.silence = @options.fetch(:silence, nil) # no silencing by default
       self.name = @options.fetch(:name, nil) # no name by default
       self.trace = @options.fetch(:trace, :error) # trace from :error level onwards
 
@@ -140,14 +142,19 @@ module Yell #:nodoc:
       name = s.downcase
 
       class_eval <<-EOS, __FILE__, __LINE__
-        def #{name}?; @level.at?(#{index}); end         # def info?; @level.at?(1); end
-                                                        #
-        def #{name}( *m, &b )                           # def info( *m, &b )
-          return false unless #{name}?                  #   return false unless info?
-          write Yell::Event.new(self, #{index}, *m, &b) #   write Yell::Event.new(self, 1, *m, &b)
-                                                        #
-          true                                          #   true
-        end                                             # end
+        def #{name}?; @level.at?(#{index}); end           # def info?; @level.at?(1); end
+                                                          #
+        def #{name}( *m, &b )                             # def info( *m, &b )
+          return false unless #{name}?                    #   return false unless info?
+          silence!(m) if silence?                         #   silence!(m) if silence?
+                                                          #
+          if m.any?                                       #   if m.any?
+            write Yell::Event.new(self, #{index}, *m, &b) #     write Yell::Event.new(self, 1, *m, &b)
+            true                                          #     true
+          else                                            #   else
+            false                                         #     false
+          end                                             #   end
+        end                                               # end
       EOS
     end
 
