@@ -8,4 +8,6 @@ Gemfile.lock
 
 # vim
 *.swp
-**/*.swp
+
+# coverage
+/coverage

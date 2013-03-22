@@ -9,5 +9,8 @@ group :development, :test do
   gem "rspec"
   gem "rr"
   gem "timecop"
+
+  gem 'simplecov', :require => false
+  gem 'coveralls', :require => false
 end
 

@@ -3,11 +3,19 @@ $:.unshift File.expand_path('../../lib', __FILE__)
 
 ENV['YELL_ENV'] = 'test'
 
-require 'yell'
-
 require 'rspec'
 require 'rr'
 require 'timecop'
+
+require 'simplecov'
+require 'coveralls'
+SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter[
+  SimpleCov::Formatter::HTMLFormatter,
+  Coveralls::SimpleCov::Formatter
+]
+SimpleCov.start
+
+require 'yell'
 
 RSpec.configure do |config|
   config.mock_framework = :rr
