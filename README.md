@@ -1,12 +1,12 @@
-**Yell - Your Extensible Logging Library**
+# Yell [![Gem Version](https://badge.fury.io/rb/yell.png)](http://badge.fury.io/rb/yell) [![Build Status](https://travis-ci.org/rudionrails/yell.png?branch=master)](https://travis-ci.org/rudionrails/yell) [![Code Climate](https://codeclimate.com/github/rudionrails/yell.png)](https://codeclimate.com/github/rudionrails/yell) [![Coverage Status](https://coveralls.io/repos/rudionrails/yell/badge.png?branch=master)](https://coveralls.io/r/rudionrails/yell)
 
-[![Gem Version](https://badge.fury.io/rb/yell.png)](http://badge.fury.io/rb/yell)
-[![Build Status](https://travis-ci.org/rudionrails/yell.png?branch=master)](https://travis-ci.org/rudionrails/yell)
-[![Code Climate](https://codeclimate.com/github/rudionrails/yell.png)](https://codeclimate.com/github/rudionrails/yell)
+
+**Yell - Your Extensible Logging Library** is a comprehensive logging replacement for Ruby.
 
 Yell works and is tested with ruby 1.8.7, 1.9.x, 2.0.0, jruby 1.8 and 1.9 mode, rubinius 1.8 and 1.9 as well as ree.
 
-**If you want to use Yell with Rails, then head over to [yell-rails](https://github.com/rudionrails/yell-rails).**
+If you want to conveniently use Yell with Rails, then head over to [yell-rails](https://github.com/rudionrails/yell-rails). You'll find all the documentation in this repository, though.
+
 
 ## Installation
 
