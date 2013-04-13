@@ -7,13 +7,19 @@ require 'rspec'
 require 'rr'
 require 'timecop'
 
-require 'simplecov'
-require 'coveralls'
-SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter[
-  SimpleCov::Formatter::HTMLFormatter,
-  Coveralls::SimpleCov::Formatter
-]
-SimpleCov.start
+begin
+  require 'coveralls'
+
+  require 'simplecov'
+  SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter[
+    SimpleCov::Formatter::HTMLFormatter,
+    Coveralls::SimpleCov::Formatter
+  ]
+
+  SimpleCov.start
+rescue LoadError
+  STDERR.puts "Not running coverage..."
+end
 
 require 'yell'
 
@@ -27,8 +33,7 @@ RSpec.configure do |config|
   end
 
   config.after do
-    # release time after each test
-    Timecop.return
+    Timecop.return # release time after each test
   end
 
 

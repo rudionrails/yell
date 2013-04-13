@@ -10,7 +10,7 @@ group :development, :test do
   gem "rr"
   gem "timecop"
 
-  gem 'simplecov', :require => false
-  gem 'coveralls', :require => false
+  gem 'simplecov', :require => false, :platform => :ruby_20
+  gem 'coveralls', :require => false, :platform => :ruby_20
 end
 
