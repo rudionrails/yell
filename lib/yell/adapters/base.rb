@@ -166,7 +166,7 @@ module Yell #:nodoc:
 
       # Get a pretty string representation of the adapter, including
       def inspect
-        inspection = inspectables.inject( [] ) { |r, c| r << "#{c}: #{send(c).inspect}" }
+        inspection = inspectables.map { |m| "#{m}: #{send(m).inspect}" }
         "#<#{self.class.name} #{inspection * ', '}>"
       end
 

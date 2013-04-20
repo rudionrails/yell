@@ -3,7 +3,8 @@ $:.unshift File.expand_path('../../lib', __FILE__)
 
 ENV['YELL_ENV'] = 'test'
 
-require 'rspec'
+require 'rspec/core'
+require 'rspec/expectations'
 require 'rr'
 require 'timecop'
 
@@ -16,7 +17,9 @@ begin
     Coveralls::SimpleCov::Formatter
   ]
 
-  SimpleCov.start
+  SimpleCov.start do
+    add_filter 'spec'
+  end
 rescue LoadError
   STDERR.puts "Not running coverage..."
 end

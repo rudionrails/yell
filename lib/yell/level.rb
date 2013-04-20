@@ -140,12 +140,8 @@ module Yell #:nodoc:
 
     # Get a pretty string representation of the level, including the severities.
     def inspect
-      severities = Yell::Severities.each.with_index.inject( [] ) do |r, (l, i)|
-        r << l if @severities[i]
-        r
-      end
-
-      "#<#{self.class.name} severities: #{severities * ', '}>"
+      inspectables = Yell::Severities.delete_if.with_index { |l, i| !@severities[i] }
+      "#<#{self.class.name} severities: #{inspectables * ', '}>"
     end
 
 

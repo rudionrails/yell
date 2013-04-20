@@ -6,7 +6,8 @@ gemspec
 group :development, :test do
   gem "rake"
 
-  gem "rspec"
+  gem 'rspec-core'
+  gem 'rspec-expectations'
   gem "rr"
   gem "timecop"
 

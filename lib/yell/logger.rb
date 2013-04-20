@@ -160,7 +160,7 @@ module Yell #:nodoc:
 
     # Get a pretty string representation of the logger.
     def inspect
-      inspection = inspectables.inject( [] ) { |r, c| r << "#{c}: #{send(c).inspect}" }
+      inspection = inspectables.map { |m| "#{m}: #{send(m).inspect}" }
       "#<#{self.class.name} #{inspection * ', '}, adapters: #{@adapters.map(&:inspect) * ', '}>"
     end
 
