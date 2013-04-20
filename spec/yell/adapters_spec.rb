@@ -3,34 +3,23 @@ require 'spec_helper'
 describe Yell::Adapters do
 
   context :new do
-    context "given a Yell::Adapters::Base ancestor" do
-      let(:stdout) { Yell::Adapters::Stdout.new }
-
-      it "should return the instance" do
-        Yell::Adapters.new( stdout ).should == stdout
-      end
+    it "should accept an instance" do
+      stdout = Yell::Adapters::Stdout.new
+      Yell::Adapters.new(stdout).should == stdout
     end
 
-    context "given STDOUT" do
-      it "should initialize Stdout adapter" do
-        mock.proxy( Yell::Adapters::Stdout ).new( anything )
-
-        Yell::Adapters.new STDOUT
-      end
+    it "should accept STDOUT" do
+      mock.proxy(Yell::Adapters::Stdout).new(anything)
+      Yell::Adapters.new(STDOUT)
     end
 
-    context "given STDERR" do
-      it "should initialize Stderr adapter" do
-        mock.proxy( Yell::Adapters::Stderr ).new( anything )
-
-        Yell::Adapters.new STDERR
-      end
+    it "should accept STDERR" do
+      mock.proxy(Yell::Adapters::Stderr).new(anything)
+      Yell::Adapters.new(STDERR)
     end
 
-    context "given an unregistered adapter" do
-      it "should raise AdapterNotFound" do
-        lambda { Yell::Adapters.new :unknown }.should raise_error Yell::AdapterNotFound
-      end
+    it "should raise an unregistered adapter" do
+      expect { Yell::Adapters.new :unknown }.to raise_error(Yell::AdapterNotFound)
     end
   end
 
@@ -41,8 +30,7 @@ describe Yell::Adapters do
     before { Yell::Adapters.register( name, klass ) }
 
     it "should allow to being called from :new" do
-      mock( klass ).new( anything )
-
+      mock(klass).new(anything)
       Yell::Adapters.new(name)
     end
   end

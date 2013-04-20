@@ -47,20 +47,20 @@ describe Yell::Adapters::Io do
     let(:stream) { File.new('/dev/null', 'w') }
 
     before do
-      stub( adapter ).stream { stream }
+      stub(adapter).stream { stream }
     end
 
     it "should format the message" do
-      mock.proxy( adapter.format ).format( event )
+      mock.proxy(adapter.format).format( event )
 
-      adapter.write( event )
+      adapter.write(event)
     end
 
     it "should print formatted message to stream" do
       formatted = Yell::Formatter.new.format( event )
-      mock( stream ).syswrite( formatted << "\n" )
+      mock(stream).syswrite( formatted << "\n" )
 
-      adapter.write( event )
+      adapter.write(event)
     end
   end
 

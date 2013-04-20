@@ -13,13 +13,11 @@ describe Yell do
 
   context :level do
     subject { Yell.level }
-
     it { should be_kind_of Yell::Level }
   end
 
   context :format do
     subject { Yell.format( "%m" ) }
-
     it { should be_kind_of Yell::Formatter }
   end
 
@@ -27,29 +25,29 @@ describe Yell do
     subject { Yell.load!( 'yell.yml' ) }
 
     before do
-      mock( Yell::Configuration ).load!( 'yell.yml' ) { {} }
+      mock(Yell::Configuration).load!('yell.yml') { {} }
     end
 
     it { should be_kind_of Yell::Logger }
   end
 
   context :[] do
-    let( :name ) { 'test' }
+    let(:name) { 'test' }
 
     it "should delegate to the repository" do
-      mock( Yell::Repository )[ name ]
+      mock(Yell::Repository)[ name ]
 
       Yell[ name ]
     end
   end
 
   context :[]= do
-    let( :name ) { 'test' }
+    let(:name) { 'test' }
 
     it "should delegate to the repository" do
-      mock.proxy( Yell::Repository )[name] = logger
+      mock.proxy(Yell::Repository)[name] = logger
 
-      Yell[ name ] = logger
+      Yell[name] = logger
     end
   end
 
@@ -62,8 +60,8 @@ describe Yell do
 
     context "fallback to RACK_ENV" do
       before do
-        stub( ENV ).key?( 'YELL_ENV' ) { false }
-        mock( ENV ).key?( 'RACK_ENV' ) { true }
+        stub(ENV).key?('YELL_ENV') { false }
+        mock(ENV).key?('RACK_ENV') { true }
 
         ENV['RACK_ENV'] = 'rack'
       end
@@ -75,9 +73,9 @@ describe Yell do
 
     context "fallback to RAILS_ENV" do
       before do
-        stub( ENV ).key?( 'YELL_ENV' ) { false }
-        stub( ENV ).key?( 'RACK_ENV' ) { false }
-        mock( ENV ).key?( 'RAILS_ENV' ) { true }
+        stub(ENV).key?('YELL_ENV') { false }
+        stub(ENV).key?('RACK_ENV') { false }
+        mock(ENV).key?('RAILS_ENV') { true }
 
         ENV['RAILS_ENV'] = 'rails'
       end
@@ -92,9 +90,9 @@ describe Yell do
 
     context "fallback to development" do
       before do
-        stub( ENV ).key?( 'YELL_ENV' ) { false }
-        stub( ENV ).key?( 'RACK_ENV' ) { false }
-        stub( ENV ).key?( 'RAILS_ENV' ) { false }
+        stub(ENV).key?('YELL_ENV') { false }
+        stub(ENV).key?('RACK_ENV') { false }
+        stub(ENV).key?('RAILS_ENV') { false }
       end
 
       it { should == 'development' }

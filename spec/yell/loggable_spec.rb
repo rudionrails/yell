@@ -5,14 +5,15 @@ class LoggableFactory
 end
 
 describe Yell::Loggable do
-  subject { LoggableFactory.new }
+  let(:factory) { LoggableFactory.new }
+  subject { factory }
 
-  it { should respond_to :logger }
+  it { should respond_to(:logger) }
 
-  it ":logger should pass class name to the repository" do
-    mock( Yell::Repository )[ LoggableFactory ]
+  it "should make a lookup in the Yell::Repository" do
+    mock(Yell::Repository)[LoggableFactory]
 
-    subject.logger
+    factory.logger
   end
 
 end

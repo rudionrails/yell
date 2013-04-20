@@ -42,7 +42,7 @@ describe Yell::Adapters::Datefile do
     end
 
     it "should not open file handle again" do
-      dont_allow(File).open( anything, anything )
+      dont_allow(File).open(anything, anything)
 
       adapter.write(event)
     end
@@ -89,15 +89,15 @@ describe Yell::Adapters::Datefile do
       end
 
       it "should be created on the original filename" do
-        File.symlink?( filename ).should be_true
-        File.readlink( filename ).should == today_filename
+        File.symlink?(filename).should be_true
+        File.readlink(filename).should == today_filename
       end
 
       it "should be recreated upon rollover" do
         Timecop.freeze(tomorrow) { adapter.write(event) }
 
-        File.symlink?( filename ).should be_true
-        File.readlink( filename ).should == tomorrow_filename
+        File.symlink?(filename).should be_true
+        File.readlink(filename).should == tomorrow_filename
       end
     end
 
@@ -109,7 +109,7 @@ describe Yell::Adapters::Datefile do
       it "should not create the sylink the original filename" do
         adapter.write( event )
 
-        File.symlink?( filename ).should be_false
+        File.symlink?(filename).should be_false
       end
     end
   end
@@ -119,7 +119,7 @@ describe Yell::Adapters::Datefile do
 
     context "when true (default)" do
       before do
-        adapter.write( event )
+        adapter.write(event)
       end
 
       it "should be written" do
@@ -129,8 +129,8 @@ describe Yell::Adapters::Datefile do
       it "should be rewritten upon rollover" do
         Timecop.freeze(tomorrow) { adapter.write(event) }
 
-        File.symlink?( filename ).should be_true
-        File.readlink( filename ).should == tomorrow_filename
+        File.symlink?(filename).should be_true
+        File.readlink(filename).should == tomorrow_filename
       end
     end
 
@@ -140,7 +140,7 @@ describe Yell::Adapters::Datefile do
       end
 
       it "should not be written" do
-        adapter.write( event )
+        adapter.write(event)
 
         header.should == "Hello World\n"
       end

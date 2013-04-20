@@ -31,13 +31,10 @@ describe Yell::Event do
   end
 
   context :time do
+    let(:time) { Time.now }
     subject { event.time.to_s }
 
-    let(:time) { Time.now }
-
-    before do
-      Timecop.freeze( time )
-    end
+    before { Timecop.freeze(time) }
 
     it { should == time.to_s }
   end
@@ -97,3 +94,4 @@ describe Yell::Event do
   end
 
 end
+

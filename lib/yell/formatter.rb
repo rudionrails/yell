@@ -136,7 +136,8 @@ module Yell #:nodoc:
     end
 
     # The iso8601 implementation of the standard Time library is more than
-    # twice as slow than using strftime. So, we just implement it ourselves.
+    # twice as slow compared to using strftime. So, we just implement 
+    # it ourselves.
     def iso8601( t )
       zone = if t.utc?
         "-00:00"
@@ -163,7 +164,6 @@ module Yell #:nodoc:
         m.map { |k,v| "#{k}: #{v}" }.join( ", " )
       when Exception
         backtrace = m.backtrace ? "\n\t#{m.backtrace.join("\n\t")}" : ""
-
         "%s: %s%s" % [m.class, m.message, backtrace]
       else
         m

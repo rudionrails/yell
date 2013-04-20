@@ -15,14 +15,13 @@ end
 describe Yell::Logger do
   let(:filename) { fixture_path + '/logger.log' }
 
-  context "a Logger instance" do
+  describe "a Logger instance" do
     let(:logger) { Yell::Logger.new }
+    subject { logger }
 
     its(:name) { should be_nil }
 
     context "log methods" do
-      subject { logger }
-
       it { should respond_to :debug }
       it { should respond_to :debug? }
 
@@ -42,11 +41,11 @@ describe Yell::Logger do
       it { should respond_to :unknown? }
     end
 
-    context "default adapter" do
-      let(:adapters) { logger.instance_variable_get(:@adapters) }
+    context "default adapters" do
+      subject { logger.instance_variable_get(:@adapters) }
 
-      it { adapters.size.should == 1 }
-      it { adapters.first.should be_kind_of(Yell::Adapters::File) }
+      its(:size) { should == 1 }
+      its(:first) { should be_kind_of(Yell::Adapters::File) }
     end
 
     context "default :level" do
@@ -64,13 +63,9 @@ describe Yell::Logger do
     end
   end
 
-  context "initialize with :name" do
+  describe "initialize with :name" do
     let(:name) { 'test' }
     let!(:logger) { Yell.new(:name => name) }
-
-    it "should set the logger's name" do
-      logger.name.should == name
-    end
 
     it "should be added to the repository" do
       Yell::Repository[name].should == logger
@@ -79,65 +74,61 @@ describe Yell::Logger do
 
   context "initialize with :level" do
     let(:level) { :error }
-    let!(:logger) { Yell.new(:level => level) }
+    let(:logger) { Yell.new(:level => level) }
+    subject { logger.level }
 
-    it "should be set correctly" do
-      logger.level.should be_kind_of(Yell::Level)
-      logger.level.severities.should == [false, false, false, true, true, true]
-    end
+    it { should be_instance_of(Yell::Level) }
+    its(:severities) { should == [false, false, false, true, true, true] }
   end
 
   context "initialize with :trace" do
-    let(:trace) { :error }
-    let!(:logger) { Yell.new(:trace => trace) }
+    let(:trace) { :info }
+    let(:logger) { Yell.new(:trace => trace) }
+    subject { logger.trace }
 
-    it "should be set correctly" do
-      logger.trace.should be_kind_of(Yell::Level)
-      logger.trace.severities.should == [false, false, false, true, true, true]
-    end
+    it { should be_instance_of(Yell::Level) }
+    its(:severities) { should == [false, true, true, true, true, true] }
   end
 
   context "initialize with a :filename" do
     it "should call adapter with :file" do
-      mock.proxy( Yell::Adapters::File ).new( :filename => 'test.log' )
+      mock.proxy(Yell::Adapters::File).new(:filename => filename)
 
-      Yell::Logger.new 'test.log'
+      Yell::Logger.new(filename)
     end
   end
 
   context "initialize with a :filename of Pathname type" do
-    it "should call adapter with :file" do
-      mock.proxy( Yell::Adapters::File ).new( :filename => Pathname.new('test.log') )
+    let(:pathname) { Pathname.new(filename) }
 
-      Yell::Logger.new Pathname.new('test.log')
+    it "should call adapter with :file" do
+      mock.proxy(Yell::Adapters::File).new(:filename => pathname)
+
+      Yell::Logger.new(pathname)
     end
   end
 
   context "initialize with a :stdout adapter" do
-    before do
-      mock.proxy( Yell::Adapters::Stdout ).new( anything )
-    end
+    before { mock.proxy(Yell::Adapters::Stdout).new(anything) }
 
     it "should call adapter with STDOUT" do
-      Yell::Logger.new STDOUT
+      Yell::Logger.new(STDOUT)
     end
 
     it "should call adapter with :stdout" do
-      Yell::Logger.new :stdout
+      Yell::Logger.new(:stdout)
     end
   end
 
   context "initialize with a :stderr adapter" do
-    before do
-      mock.proxy( Yell::Adapters::Stderr ).new( anything )
-    end
+    before { mock.proxy(Yell::Adapters::Stderr).new(anything) }
 
     it "should call adapter with STDERR" do
-      Yell::Logger.new STDERR
+      Yell::Logger.new(STDERR)
     end
 
     it "should call adapter with :stderr" do
-      Yell::Logger.new :stderr
+      Yell::Logger.new(:stderr)
     end
   end
 
@@ -169,10 +160,10 @@ describe Yell::Logger do
 
   context "initialize with :adapters option" do
     let(:logger) do
-      Yell::Logger.new :adapters => [ :stdout, { :stderr => {:level => :error} } ]
+      Yell::Logger.new(:adapters => [:stdout, {:stderr => {:level => :error}}])
     end
 
-    let(:adapters) { logger.instance_variable_get :@adapters }
+    let(:adapters) { logger.instance_variable_get(:@adapters) }
     let(:stdout) { adapters.first }
     let(:stderr) { adapters.last }
 
@@ -198,8 +189,8 @@ describe Yell::Logger do
       factory = LoggerFactory.new
       factory.logger = logger
 
-      mock( stdout.send(:stream) ).syswrite( "#{__FILE__}, 7: foo\n" )
-      mock( stdout.send(:stream) ).syswrite( "#{__FILE__}, 11: bar\n" )
+      mock(stdout.send(:stream)).syswrite("#{__FILE__}, 7: foo\n")
+      mock(stdout.send(:stream)).syswrite("#{__FILE__}, 11: bar\n")
 
       factory.foo
       factory.bar
@@ -243,7 +234,6 @@ describe Yell::Logger do
 
     it "should not pass a matching message to any adapter" do
       dont_allow(stdout).write
-
       logger.info "there should be silence"
     end
   end
