@@ -18,6 +18,20 @@ describe Yell::Repository do
       subject.should == logger
     end
 
+    context "with a global logger" do
+      before do
+        @logger = Yell.new :stdout, :name => :global
+      end
+
+      it "should not raise with any name supplied" do
+        lambda { Yell::Repository[ String ] }.should_not raise_error
+      end
+
+      it "should return the global logger" do
+        Yell::Repository[ Numeric ].should == @logger
+      end
+    end
+
     context "given a Class" do
       before do
         @logger = Yell.new :stdout, :name => "Numeric"

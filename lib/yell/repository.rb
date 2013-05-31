@@ -38,7 +38,7 @@ module Yell #:nodoc:
       # @raise [Yell::LoggerNotFound] Raised when repository does not have that key
       # @return [Yell::Logger] The logger instance
       def []( name )
-        synchronize { instance.fetch(name) or raise Yell::LoggerNotFound.new(name) }
+        synchronize { instance.fetch(name) or instance.fetch(:global) or raise Yell::LoggerNotFound.new(name) }
       end
 
       # Get the list of all loggers in the repository

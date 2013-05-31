@@ -117,6 +117,9 @@ you are good to go.
 # Before you can use it, you will need to define a logger and 
 # provide it with the `:name` of your class.
 Yell.new :stdout, :name => 'Foo'
+# As alternative you can register a global logger
+# which is gonna be used if no named logger for a class found
+Yell.new :stdout, :name => :global
 
 class Foo
   include Yell::Loggable
