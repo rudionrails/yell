@@ -2,6 +2,32 @@
 
 require 'pathname'
 
+# TODO: DSL improvements
+#
+# Initlalize an empty logger
+#   logger = Yell.new(adapters: false)
+#   logger.adapters.add :stdout
+#
+# Or shorthand for adapters.add
+#   logger.add :stdout
+#
+# Or with a block
+#   logger = Yell.new do |l|
+#     l.add :stdout
+#     l.add :stderr
+#   end
+#
+#  logger = Yell.new do |l|
+#    l.adapters.add :stdout
+#    l.adapters.add :stderr
+#  end
+#
+#
+# Define Silencers
+#   logger = Yell.new do |l|
+#     l.silence /password/
+#   end
+#
 module Yell #:nodoc:
 
   # The +Yell::Logger+ is your entrypoint. Anything onwards is derived from here.
@@ -9,14 +35,15 @@ module Yell #:nodoc:
   # A +Yell::Logger+ instance holds all your adapters and sends the log events 
   # to them if applicable. There are multiple ways of how to create a new logger.
   class Logger
-    include Yell::Level::Helpers
-    include Yell::Silencer::Helpers
+    include Yell::Helpers::Base
+    include Yell::Helpers::Level
+    include Yell::Helpers::Formatter
+    include Yell::Helpers::Adapters
+    include Yell::Helpers::Tracer
+    include Yell::Helpers::Silencer
 
     # The name of the logger instance
     attr_reader :name
-
-    # Stacktrace or not
-    attr_reader :trace
 
     # Initialize a new Logger
     #
@@ -41,7 +68,7 @@ module Yell #:nodoc:
     #     l.level = :info
     #   end
     def initialize( *args, &block )
-      @adapters = []
+      reset!
 
       # extract options
       @options = args.last.is_a?(Hash) ? args.pop : {}
@@ -55,9 +82,11 @@ module Yell #:nodoc:
       end
 
       self.level = @options.fetch(:level, 0) # debug by defauly
-      self.silence = @options.fetch(:silence, nil) # no silencing by default
       self.name = @options.fetch(:name, nil) # no name by default
       self.trace = @options.fetch(:trace, :error) # trace from :error level onwards
+
+      # silencer
+      self.silence(*@options[:silence])
 
       # extract adapter
       self.adapter(args.pop) if args.any?
@@ -66,7 +95,7 @@ module Yell #:nodoc:
       block.arity > 0 ? block.call(self) : instance_eval(&block) if block_given?
 
       # default adapter when none defined
-      self.adapter(:file) if @adapters.empty?
+      self.adapter(:file) if adapters.empty?
     end
 
 
@@ -81,57 +110,6 @@ module Yell #:nodoc:
       @name
     end
 
-    # Set whether the logger should allow tracing or not. The trace option
-    # will tell the logger when to provider caller information.
-    #
-    # @example No tracing at all
-    #   trace = false
-    #
-    # @example Trace every time
-    #   race = true
-    #
-    # @example Trace from the error level onwards
-    #   trace = :error
-    #   trace = 'gte.error'
-    #
-    # @return [Yell::Level] a level representation of the tracer
-    def trace=( severity )
-      @trace = case severity
-      when true then Yell::Level.new
-      when false then Yell::Level.new( "gt.#{Yell::Severities.last}" )
-      when Yell::Level then severity
-      else Yell::Level.new( severity )
-      end
-    end
-
-    # Define an adapter to be used for logging.
-    #
-    # @example Standard adapter
-    #   adapter :file
-    #
-    # @example Standard adapter with filename
-    #   adapter :file, 'development.log'
-    #
-    #   # Alternative notation for filename in options
-    #   adapter :file, :filename => 'developent.log'
-    #
-    # @example Standard adapter with filename and additional options
-    #   adapter :file, 'development.log', :level => :warn
-    #
-    # @example Set the adapter directly from an adapter instance
-    #   adapter( Yell::Adapter::File.new )
-    #
-    # @param [Symbol] type The type of the adapter, may be `:file` or `:datefile` (default `:file`)
-    # @return [Yell::Adapter] The instance
-    # @raise [Yell::NoSuchAdapter] Will be thrown when the adapter is not defined
-    def adapter( type = :file, *args, &block )
-      options = [@options, *args].inject( Hash.new ) do |h, c|
-        h.merge( [String, Pathname].include?(c.class) ? {:filename => c} : c  )
-      end
-
-      @adapters << Yell::Adapters.new( type, options, &block )
-    end
-
     # Creates instance methods for every log level:
     #   `debug` and `debug?`
     #   `info` and `info?`
@@ -142,18 +120,17 @@ module Yell #:nodoc:
       name = s.downcase
 
       class_eval <<-EOS, __FILE__, __LINE__
-        def #{name}?; @level.at?(#{index}); end           # def info?; @level.at?(1); end
+        def #{name}?; level.at?(#{index}); end            # def info?; level.at?(1); end
                                                           #
         def #{name}( *m, &b )                             # def info( *m, &b )
           return false unless #{name}?                    #   return false unless info?
-          silence!(m) if silence?                         #   silence!(m) if silence?
                                                           #
-          if m.any?                                       #   if m.any?
-            write Yell::Event.new(self, #{index}, *m, &b) #     write Yell::Event.new(self, 1, *m, &b)
-            true                                          #     true
-          else                                            #   else
-            false                                         #     false
-          end                                             #   end
+          m = silencer.silence(*m) if silencer.silence?   #   m = silencer.silence(*m) if silencer.silence?
+          return false if m.empty?                        #   return false if m.empty?
+                                                          #
+          event = Yell::Event.new(self, #{index}, *m, &b) #   event = Yell::Event.new(self, 1, *m, &b)
+          write(event)                                    #   write(event)
+          true                                            #   true
         end                                               # end
       EOS
     end
@@ -161,7 +138,7 @@ module Yell #:nodoc:
     # Get a pretty string representation of the logger.
     def inspect
       inspection = inspectables.map { |m| "#{m}: #{send(m).inspect}" }
-      "#<#{self.class.name} #{inspection * ', '}, adapters: #{@adapters.map(&:inspect) * ', '}>"
+      "#<#{self.class.name} #{inspection * ', '}, adapters: #{adapters.map(&:inspect) * ', '}>"
     end
 
     # @private
@@ -169,10 +146,6 @@ module Yell #:nodoc:
       @adapters.each(&:close)
     end
 
-    # @private
-    def adapters
-      @adapters
-    end
 
     private
 
@@ -195,12 +168,12 @@ module Yell #:nodoc:
 
     # Cycles all the adapters and writes the message
     def write( event )
-      @adapters.each { |a| a.write(event) }
+      adapters.each { |a| a.write(event) }
     end
 
     # Get an array of inspected attributes for the adapter.
     def inspectables
-      [ :name, :level, :trace ]
+      [:name] | super
     end
 
   end

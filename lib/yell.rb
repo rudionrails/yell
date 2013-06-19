@@ -24,7 +24,7 @@
 module Yell #:nodoc:
 
   # Holds all Yell severities
-  Severities = [ 'DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL', 'UNKNOWN' ]
+  Severities = ['DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL', 'UNKNOWN'].freeze
 
   class << self
     # Creates a new logger instance.
@@ -33,35 +33,35 @@ module Yell #:nodoc:
     #
     # @return [Yell::Logger] The logger instance
     def new( *args, &block )
-      Yell::Logger.new( *args, &block )
+      Yell::Logger.new(*args, &block)
     end
 
     # Shortcut to Yell::Level.new
     #
     # @return [Yell::Level] The level instance
     def level( val = nil )
-      Yell::Level.new( val )
+      Yell::Level.new(val)
     end
 
     # Shortcut to Yell::Repository[]
     #
     # @return [Yell::Logger] The logger instance
     def []( name )
-      Yell::Repository[ name ]
+      Yell::Repository[name]
     end
 
     # Shortcut to Yell::Repository[]=
     #
     # @return [Yell::Logger] The logger instance
     def []=( name, logger )
-      Yell::Repository[ name ] = logger
+      Yell::Repository[name] = logger
     end
 
     # Shortcut to Yell::Fomatter.new
     #
     # @return [Yell::Formatter] A Yell::Formatter instance
     def format( pattern, date_pattern = nil )
-      Yell::Formatter.new( pattern, date_pattern )
+      Yell::Formatter.new(pattern, date_pattern)
     end
 
     # Loads a config from a YAML file
@@ -77,7 +77,7 @@ module Yell #:nodoc:
       return ENV['RACK_ENV']  if ENV.key? 'RACK_ENV'
       return ENV['RAILS_ENV'] if ENV.key? 'RAILS_ENV'
 
-      if defined?( Rails )
+      if defined?(Rails)
         Rails.env
       else
         'development'
@@ -90,18 +90,26 @@ module Yell #:nodoc:
       messages << "  before: #{options[:before]}" if options[:before]
       messages << "  after:  #{options[:after]}" if options[:after]
 
-      _warn( *messages )
+      _warn(*messages)
     end
 
     # @private
     def _warn( *messages )
-      $stderr.puts "[Yell] " + messages.join( "\n" )
-    rescue Exception
+      $stderr.puts "[Yell] " + messages.join("\n")
+    rescue Exception => e
       # do nothing
     end
   end
 
 end
+
+# helpers
+require File.dirname(__FILE__) + '/yell/helpers/base'
+require File.dirname(__FILE__) + '/yell/helpers/adapters'
+require File.dirname(__FILE__) + '/yell/helpers/formatter'
+require File.dirname(__FILE__) + '/yell/helpers/level'
+require File.dirname(__FILE__) + '/yell/helpers/tracer'
+require File.dirname(__FILE__) + '/yell/helpers/silencer'
 
 # classes
 require File.dirname(__FILE__) + '/yell/configuration'

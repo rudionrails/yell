@@ -9,13 +9,13 @@ describe Yell::Adapters::File do
 
   it { should be_kind_of(Yell::Adapters::Io) }
 
-  context :stream do
+  context ":stream" do
     subject { Yell::Adapters::File.new.send(:stream) }
 
     it { should be_kind_of(File) }
   end
 
-  context :write do
+  context ":write" do
     let(:logger) { Yell::Logger.new }
     let(:event) { Yell::Event.new(logger, 1, "Hello World") }
 
@@ -52,7 +52,7 @@ describe Yell::Adapters::File do
       end
     end
 
-    context :sync do
+    context ":sync" do
       let(:adapter) { Yell::Adapters::File.new }
 
       it "should sync by default" do

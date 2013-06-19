@@ -22,29 +22,29 @@ describe Yell::Logger do
     its(:name) { should be_nil }
 
     context "log methods" do
-      it { should respond_to :debug }
-      it { should respond_to :debug? }
+      it { should respond_to(:debug) }
+      it { should respond_to(:debug?) }
 
-      it { should respond_to :info }
-      it { should respond_to :info? }
+      it { should respond_to(:info) }
+      it { should respond_to(:info?) }
 
-      it { should respond_to :warn }
-      it { should respond_to :warn? }
+      it { should respond_to(:warn) }
+      it { should respond_to(:warn?) }
 
-      it { should respond_to :error }
-      it { should respond_to :error? }
+      it { should respond_to(:error) }
+      it { should respond_to(:error?) }
 
-      it { should respond_to :fatal }
-      it { should respond_to :fatal? }
+      it { should respond_to(:fatal) }
+      it { should respond_to(:fatal?) }
 
-      it { should respond_to :unknown }
-      it { should respond_to :unknown? }
+      it { should respond_to(:unknown) }
+      it { should respond_to(:unknown?) }
     end
 
     context "default adapters" do
-      subject { logger.instance_variable_get(:@adapters) }
+      subject { logger.adapters }
 
-      its(:size) { should == 1 }
+      its(:size) { should eq(1) }
       its(:first) { should be_kind_of(Yell::Adapters::File) }
     end
 
@@ -52,14 +52,14 @@ describe Yell::Logger do
       subject { logger.level }
 
       it { should be_instance_of(Yell::Level) }
-      its(:severities) { should == [true, true, true, true, true, true] }
+      its(:severities) { should eq([true, true, true, true, true, true]) }
     end
 
     context "default :trace" do
       subject { logger.trace }
 
       it { should be_instance_of(Yell::Level) }
-      its(:severities) { should == [false, false, false, true, true, true] } # from error onwards
+      its(:severities) { should eq([false, false, false, true, true, true]) } # from error onwards
     end
   end
 
@@ -68,7 +68,7 @@ describe Yell::Logger do
     let!(:logger) { Yell.new(:name => name) }
 
     it "should be added to the repository" do
-      Yell::Repository[name].should == logger
+      expect(Yell::Repository[name]).to eq(logger)
     end
   end
 
@@ -78,7 +78,7 @@ describe Yell::Logger do
     subject { logger.level }
 
     it { should be_instance_of(Yell::Level) }
-    its(:severities) { should == [false, false, false, true, true, true] }
+    its(:severities) { should eq([false, false, false, true, true, true]) }
   end
 
   context "initialize with :trace" do
@@ -87,7 +87,16 @@ describe Yell::Logger do
     subject { logger.trace }
 
     it { should be_instance_of(Yell::Level) }
-    its(:severities) { should == [false, true, true, true, true, true] }
+    its(:severities) { should eq([false, true, true, true, true, true]) }
+  end
+
+  context "initialize with :silence" do
+    let(:silence) { "test" }
+    let(:logger) { Yell.new(:silence => silence) }
+    subject { logger.silencer }
+
+    it { should be_instance_of(Yell::Silencer) }
+    its(:patterns) { should eq([silence]) }
   end
 
   context "initialize with a :filename" do
@@ -142,8 +151,8 @@ describe Yell::Logger do
         Yell::Logger.new(:level => level) { |l| l.adapter(:stdout) }
       end
 
-      its(:level) { should == level }
-      its('adapters.size') { should == 1 }
+      its(:level) { should eq(level) }
+      its('adapters.size') { should eq(1) }
       its('adapters.first') { should be_instance_of(Yell::Adapters::Stdout) }
     end
 
@@ -152,8 +161,8 @@ describe Yell::Logger do
         Yell::Logger.new(:level => level) { adapter(:stdout) }
       end
 
-      its(:level) { should == level }
-      its('adapters.size') { should == 1 }
+      its(:level) { should eq(level) }
+      its('adapters.size') { should eq(1) }
       its('adapters.first') { should be_instance_of(Yell::Adapters::Stdout) }
     end
   end
@@ -168,16 +177,16 @@ describe Yell::Logger do
     let(:stderr) { adapters.last }
 
     it "should define those adapters" do
-      adapters.size.should == 2
+      expect(adapters.size).to eq(2)
 
-      stdout.should be_kind_of Yell::Adapters::Stdout
-      stderr.should be_kind_of Yell::Adapters::Stderr
+      expect(stdout).to be_kind_of(Yell::Adapters::Stdout)
+      expect(stderr).to be_kind_of(Yell::Adapters::Stderr)
     end
 
     it "should pass :level to :stderr adapter" do
-      stderr.level.at?(:warn).should be_false
-      stderr.level.at?(:error).should be_true
-      stderr.level.at?(:fatal).should be_true
+      expect(stderr.level.at?(:warn)).to be_false
+      expect(stderr.level.at?(:error)).to be_true
+      expect(stderr.level.at?(:fatal)).to be_true
     end
   end
 
@@ -203,38 +212,50 @@ describe Yell::Logger do
 
     it "should output a single message" do
       logger.info "Hello World"
-      line.should ==  "Hello World\n"
+
+      expect(line).to eq("Hello World\n")
     end
 
     it "should output multiple messages" do
       logger.info "Hello", "W", "o", "r", "l", "d"
-      line.should == "Hello W o r l d\n"
+
+      expect(line).to eq("Hello W o r l d\n")
     end
 
     it "should output a hash and message" do
       logger.info "Hello World", :test => :message
-      line.should == "Hello World test: message\n"
+
+      expect(line).to eq("Hello World test: message\n")
     end
 
     it "should output a hash and message" do
       logger.info( {:test => :message}, "Hello World" )
-      line.should == "test: message Hello World\n"
+
+      expect(line).to eq("test: message Hello World\n")
     end
 
     it "should output a hash and block" do
       logger.info(:test => :message) { "Hello World" }
-      line.should == "test: message Hello World\n"
+
+      expect(line).to eq("test: message Hello World\n")
     end
   end
 
-  context "silence" do
-    let(:silence) { /silence/ }
+  context "logging with a silencer" do
+    let(:silence) { "this" }
     let(:stdout) { Yell::Adapters::Stdout.new }
-    let(:logger) { Yell::Logger.new(:silence => silence) { |l| l.adapter(stdout) } }
+    let(:logger) { Yell::Logger.new(stdout, :silence => silence) }
 
     it "should not pass a matching message to any adapter" do
       dont_allow(stdout).write
-      logger.info "there should be silence"
+
+      logger.info "this should not be logged"
+    end
+
+    it "should pass a non-matching message to any adapter" do
+      mock(stdout).write(is_a(Yell::Event))
+
+      logger.info "that should be logged"
     end
   end
 

@@ -1,5 +1,4 @@
 # encoding: utf-8
-
 require 'time'
 
 module Yell #:nodoc:
@@ -46,21 +45,8 @@ module Yell #:nodoc:
 
   # The +Formatter+ provides a handle to configure your log message style.
   class Formatter
-    module Helpers
-      # Accessor to the format
-      attr_reader :format
 
-      # Set the format for your message.
-      def format=( pattern )
-        @format = case pattern
-        when Yell::Formatter then pattern
-        when false then Yell::Formatter.new( Yell::NoFormat )
-        else Yell::Formatter.new( *pattern )
-        end
-      end
-    end
-
-    PatternTable = {
+    Table = {
       "m" => "message(*event.messages)",   # Message
       "l" => "level(event.level)[0,1]",    # Level (short), e.g.'I', 'W'
       "L" => "level(event.level)",         # Level, e.g. 'INFO', 'WARN'
@@ -75,7 +61,7 @@ module Yell #:nodoc:
       "n" => "event.line"                  # Line where the logger was called
     }
 
-    PatternRegexp = /([^%]*)(%\d*)?(#{PatternTable.keys.join('|')})?(.*)/
+    Matcher = /([^%]*)(%\d*)?(#{Table.keys.join('|')})?(.*)/
 
 
     # Initializes a new +Yell::Formatter+.
@@ -91,7 +77,7 @@ module Yell #:nodoc:
       define_format_method!
     end
 
-    # Get a pretty string representation of the formatter, including the pattern and date pattern.
+    # Get a pretty string
     def inspect
       "#<#{self.class.name} pattern: #{@pattern.inspect}, date_pattern: #{@date_pattern.inspect}>"
     end
@@ -117,27 +103,27 @@ module Yell #:nodoc:
       buff, args, _pattern = "", [], @pattern.dup
 
       while true
-        match = PatternRegexp.match( _pattern )
+        match = Matcher.match(_pattern)
 
         buff << match[1] unless match[1].empty?
         break if match[2].nil?
 
         buff << match[2] + 's'
-        args << PatternTable[ match[3] ]
+        args << Table[ match[3] ]
 
         _pattern = match[4]
       end
 
-      instance_eval %-
+      instance_eval <<-EOS, __FILE__, __LINE__
         def format( event )
-          sprintf( "#{buff}", #{args.join(',')} )
+          sprintf("#{buff}", #{args.join(',')})
         end
-      -
+      EOS
     end
 
     # The iso8601 implementation of the standard Time library is more than
-    # twice as slow compared to using strftime. So, we just implement 
-    # it ourselves.
+    # twice as slow compared to using strftime. So, we just implement
+    # it ourselves --R
     def iso8601( t )
       zone = if t.utc?
         "-00:00"
@@ -164,7 +150,7 @@ module Yell #:nodoc:
         m.map { |k,v| "#{k}: #{v}" }.join( ", " )
       when Exception
         backtrace = m.backtrace ? "\n\t#{m.backtrace.join("\n\t")}" : ""
-        "%s: %s%s" % [m.class, m.message, backtrace]
+        sprintf("%s: %s%s", m.class, m.message, backtrace)
       else
         m
       end

@@ -2,40 +2,25 @@ require 'spec_helper'
 
 describe Yell::Adapters::Base do
 
-  context "initialize with :level" do
-    before do
-      any_instance_of(Yell::Adapters::Base) do |base|
-        mock(base).level= :info
-      end
-    end
-
-    it "should set the level" do
-      Yell::Adapters::Base.new(:level => :info)
-    end
-  end
-
-  context "insitialize with :block" do
-    context :level do
-      before do
-        any_instance_of(Yell::Adapters::Base) do |base|
-          mock(base).level= :info
-        end
-      end
+  context "initialize" do
+    context ":level" do
+      let(:level) { Yell::Level.new(:warn) }
 
       it "should set the level" do
-        Yell::Adapters::Base.new(:level => :info)
+        adapter = Yell::Adapters::Base.new(:level => level)
+
+        expect(adapter.level).to eq(level)
+      end
+
+      it "should set the level when block was given" do
+        adapter = Yell::Adapters::Base.new { |a| a.level = level }
+
+        expect(adapter.level).to eq(level)
       end
     end
   end
 
-  context :options do
-    let(:options) { {:my => :options} }
-    let(:adapter) { Yell::Adapters::Base.new(options) }
-
-    it { options.should == options }
-  end
-
-  context :write do
+  context ":write" do
     let(:logger) { Yell::Logger.new }
     subject { Yell::Adapters::Base.new(:level => 1) }
 

@@ -18,41 +18,41 @@ describe Yell::Formatter do
 
     context "%m" do
       let(:pattern) { "%m" }
-      it { should == event.messages.join(' ') }
+      it { should eq(event.messages.join(' ')) }
     end
 
     context "%l" do
       let(:pattern) { "%l" }
-      it { should == Yell::Severities[event.level][0,1] }
+      it { should eq(Yell::Severities[event.level][0,1]) }
     end
 
     context "%L" do
       let(:pattern) { "%L" }
-      it { should == Yell::Severities[event.level] }
+      it { should eq(Yell::Severities[event.level]) }
     end
 
     context "%d" do
       let(:pattern) { "%d" }
-      it { should == event.time.iso8601 }
+      it { should eq(event.time.iso8601) }
     end
 
     context "%p" do
       let(:pattern) { "%p" }
-      it { should == event.pid.to_s }
+      it { should eq(event.pid.to_s) }
     end
 
     context "%P" do
       let(:pattern) { "%P" }
-      it { should == event.progname }
+      it { should eq(event.progname) }
     end
     context "%t" do
       let(:pattern) { "%t" }
-      it { should == event.thread_id.to_s }
+      it { should eq(event.thread_id.to_s) }
     end
 
     context "%h" do
       let(:pattern) { "%h" }
-      it { should == event.hostname }
+      it { should eq(event.hostname) }
     end
 
     context ":caller" do
@@ -68,22 +68,22 @@ describe Yell::Formatter do
 
       context "%F" do
         let(:pattern) { "%F" }
-        it { should == "/path/to/file.rb" }
+        it { should eq("/path/to/file.rb") }
       end
 
       context "%f" do
         let(:pattern) { "%f" }
-        it { should == "file.rb" }
+        it { should eq("file.rb") }
       end
 
       context "%M" do
         let(:pattern) { "%M" }
-        it { should == "test_method" }
+        it { should eq("test_method") }
       end
 
       context "%n" do
         let(:pattern) { "%n" }
-        it { should == "123" }
+        it { should eq("123") }
       end
     end
   end
@@ -93,22 +93,22 @@ describe Yell::Formatter do
 
     context "NoFormat" do
       let(:pattern) { Yell::NoFormat }
-      it { should == "Hello World!"  }
+      it { should eq("Hello World!") }
     end
 
     context "DefaultFormat" do
       let(:pattern) { Yell::DefaultFormat }
-      it { should == "#{time.iso8601} [ INFO] #{$$} : Hello World!"  }
+      it { should eq("#{time.iso8601} [ INFO] #{$$} : Hello World!")  }
     end
 
     context "BasicFormat" do
       let(:pattern) { Yell::BasicFormat }
-      it { should == "I, #{time.iso8601} : Hello World!"  }
+      it { should eq("I, #{time.iso8601} : Hello World!") }
     end
 
     context "ExtendedFormat" do
       let(:pattern) { Yell::ExtendedFormat }
-      it { should == "#{time.iso8601} [ INFO] #{$$} #{Socket.gethostname} : Hello World!" }
+      it { should eq("#{time.iso8601} [ INFO] #{$$} #{Socket.gethostname} : Hello World!") }
     end
   end
 
@@ -121,7 +121,7 @@ describe Yell::Formatter do
       mock(exception).backtrace.times(any_times) { ["backtrace"] }
     end
 
-    it { should == "StandardError: This is an Exception\n\tbacktrace" }
+    it { should eq("StandardError: This is an Exception\n\tbacktrace") }
   end
 
   describe "#format from hash messages" do
@@ -129,7 +129,7 @@ describe Yell::Formatter do
     let(:event) { Yell::Event.new(logger, 1, hash) }
     subject { formatter.format(event) }
 
-    it { should == "test: message" }
+    it { should eq("test: message") }
   end
 
 end

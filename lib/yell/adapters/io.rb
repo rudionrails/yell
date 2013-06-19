@@ -4,7 +4,7 @@ module Yell #:nodoc:
   module Adapters #:nodoc:
 
     class Io < Yell::Adapters::Base
-      include Yell::Formatter::Helpers
+      include Yell::Helpers::Formatter
 
       # The possible unix log colors
       TTYColors = {

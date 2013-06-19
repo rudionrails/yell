@@ -41,7 +41,8 @@ module Yell #:nodoc:
     #   logger = Yell.new :puts
     #   logger.info "Hello World!"
     class Base < Monitor
-      include Yell::Level::Helpers
+      include Yell::Helpers::Base
+      include Yell::Helpers::Level
 
       class << self
         # Setup your adapter with this helper method.
@@ -137,6 +138,7 @@ module Yell #:nodoc:
       def initialize( options = {}, &block )
         super() # init the monitor superclass
 
+        reset!
         setup!(options)
 
         # eval the given block
@@ -171,6 +173,10 @@ module Yell #:nodoc:
       end
 
       private
+
+      # def reset!
+      #   super()
+      # end
 
       # Setup the adapter instance.
       #

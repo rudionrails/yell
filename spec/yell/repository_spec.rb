@@ -8,13 +8,13 @@ describe Yell::Repository do
 
   context ".[]" do
     it "should raise when not set" do
-      lambda { subject }.should raise_error(Yell::LoggerNotFound)
+      expect { subject }.to raise_error(Yell::LoggerNotFound)
     end
 
     context "when logger with :name exists" do
       let!(:logger) { Yell.new(:stdout, :name => name) }
 
-      it { should == logger }
+      it { should eq(logger) }
     end
 
     context "given a Class" do
@@ -26,25 +26,25 @@ describe Yell::Repository do
       end
 
       it "should return the logger" do
-        Yell::Repository[Numeric].should == logger
+        Yell::Repository[Numeric].should eq(logger)
       end
 
       it "should return the logger when superclass has it defined" do
-        Yell::Repository[Integer].should == logger
+        Yell::Repository[Integer].should eq(logger)
       end
     end
   end
 
   context ".[]=" do
     before { Yell::Repository[name] = logger }
-    it { should == logger }
+    it { should eq(logger) }
   end
 
   context "[]= with a named logger" do
     let!(:logger) { Yell.new(:stdout, :name => name) }
     before { Yell::Repository[name] = logger }
 
-    it { should == logger }
+    it { should eq(logger) }
   end
 
   context "[]= with a named logger of a different name" do
@@ -53,8 +53,8 @@ describe Yell::Repository do
     before { Yell::Repository[name] = logger }
 
     it "should add logger to both repositories" do
-      Yell::Repository[name].should == logger
-      Yell::Repository[other].should == logger
+      Yell::Repository[name].should eq(logger)
+      Yell::Repository[other].should eq(logger)
     end
   end
 
@@ -63,7 +63,7 @@ describe Yell::Repository do
     subject { Yell::Repository.loggers }
     before { Yell::Repository[name] = logger }
 
-    it { should == loggers }
+    it { should eq(loggers) }
   end
 
 end

@@ -20,33 +20,33 @@ describe Yell::Event do
   let(:logger) { Yell::Logger.new(:trace => true) }
   let(:event) { Yell::Event.new(logger, 1, 'Hello World!') }
 
-  context :level do
+  context ":level" do
     subject { event.level }
-    it { should == 1 }
+    it { should eq(1) }
   end
 
-  context :messages do
+  context ":messages" do
     subject { event.messages }
-    it { should == ['Hello World!'] }
+    it { should eq(['Hello World!']) }
   end
 
-  context :time do
+  context ":time" do
     let(:time) { Time.now }
     subject { event.time.to_s }
 
     before { Timecop.freeze(time) }
 
-    it { should == time.to_s }
+    it { should eq(time.to_s) }
   end
 
-  context :hostname do
+  context ":hostname" do
     subject { event.hostname }
-    it { should == Socket.gethostname }
+    it { should eq(Socket.gethostname) }
   end
 
-  context :pid do
+  context ":pid" do
     subject { event.pid }
-    it { should == Process.pid }
+    it { should eq(Process.pid) }
   end
 
   context "pid when forked", :pending => RUBY_PLATFORM == 'java' ? "No forking with jruby" : false do
@@ -66,30 +66,30 @@ describe Yell::Event do
       read.close
     end
 
-    it { should_not == Process.pid }
-    it { should == @child_pid }
+    it { should_not eq(Process.pid) }
+    it { should eq(@child_pid) }
   end
 
-  context :progname do
+  context ":progname" do
     subject { event.progname }
-    it { should == $0 }
+    it { should eq($0) }
   end
 
-  context :caller do
+  context ":caller" do
     subject { EventFactory.event(logger, 1, "Hello World") }
 
     context "with trace" do
-      its(:file) { should == __FILE__ }
-      its(:line) { should == "8" }
-      its(:method) { should == "event" }
+      its(:file) { should eq(__FILE__) }
+      its(:line) { should eq("8") }
+      its(:method) { should eq("event") }
     end
 
     context "without trace" do
       before { logger.trace = false }
 
-      its(:file) { should == "" }
-      its(:line) { should == "" }
-      its(:method) { should == "" }
+      its(:file) { should eq("") }
+      its(:line) { should eq("") }
+      its(:method) { should eq("") }
     end
   end
 

@@ -23,27 +23,8 @@ module Yell #:nodoc:
   # @example Set at :info only
   #   Yell::Level.new.at(:info)
   class Level
-    module Helpers
-      # Accessor to the log level
-      attr_reader :level
-
-      # Set the minimum log level.
-      #
-      # @example Set the level to :warn
-      #   level = :warn
-      #
-      # @param [String, Symbol, Integer] severity The minimum log level
-      def level=( severity )
-        @level = case severity
-        when Yell::Level then severity
-        else Yell::Level.new( severity )
-        end
-      end
-    end
 
     InterpretRegexp = /(at|gt|gte|lt|lte)?\.?(#{Yell::Severities.join('|')})/i
-
-    attr_reader :severities
 
     # Create a new level instance.
     #
@@ -60,8 +41,22 @@ module Yell #:nodoc:
     #   Yell::Level.new (:info..:error)
     #
     # @param [Integer,String,Symbol,Array,Range,nil] severity The severity for the level.
-    def initialize( severity = nil )
-      reset!( severity )
+    def initialize( *severities )
+      set( *severities )
+    end
+
+    # Set the severity to the given format
+    def set( *severities )
+      @severities = Yell::Severities.map { true }
+      severity = severities.length > 1 ? severities : severities.first
+
+      case severity
+      when Array then at( *severity )
+      when Range then gte( severity.first ).lte( severity.last )
+      when Integer, Symbol then gte( severity )
+      when String then interpret( severity )
+      when Yell::Level then @severities = severity.severities
+      end
     end
 
     # Returns whether the level is allowed at the given severity
@@ -77,7 +72,7 @@ module Yell #:nodoc:
       index.nil? ? false : @severities[index]
     end
 
-    # Set the level at specific severities.
+    # Set the level at specific severities
     #
     # @example Set at :debug and :error only
     #   at :debug, :error
@@ -140,25 +135,25 @@ module Yell #:nodoc:
 
     # Get a pretty string representation of the level, including the severities.
     def inspect
-      inspectables = Yell::Severities.delete_if.with_index { |l, i| !@severities[i] }
+      inspectables = Yell::Severities.select.with_index { |l, i| !!@severities[i] }
       "#<#{self.class.name} severities: #{inspectables * ', '}>"
+    end
+
+    # @private
+    def severities
+      @severities
+    end
+
+    # @private
+    def ==(other)
+      return super unless other.respond_to?(:severities)
+      severities == other.severities
     end
 
 
     private
 
-    def reset!( severity )
-      @severities = Yell::Severities.map { true }
-
-      case severity
-      when Array then at( *severity )
-      when Range then gte( severity.first ).lte( severity.last )
-      when Integer, Symbol then gte( severity )
-      when String then interpret!( severity )
-      end
-    end
-
-    def interpret!( severities )
+    def interpret( severities )
       severities.split( ' ' ).each do |severity|
         if m = InterpretRegexp.match(severity)
           m[1].nil? ? __send__( :gte, m[2] ) : __send__( m[1], m[2] )
