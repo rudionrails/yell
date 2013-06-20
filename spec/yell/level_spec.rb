@@ -195,5 +195,6 @@ describe Yell::Level do
       expect(severities[level]).to eq("WARNING")
     end
   end
+
 end
 

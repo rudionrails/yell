@@ -20,7 +20,7 @@ describe Yell::Adapters::Base do
     end
   end
 
-  context ":write" do
+  context "#write" do
     let(:logger) { Yell::Logger.new }
     subject { Yell::Adapters::Base.new(:level => 1) }
 

@@ -13,17 +13,17 @@ describe Yell do
     }.to raise_error(Yell::AdapterNotFound)
   end
 
-  context ":level" do
+  context ".level" do
     subject { Yell.level }
     it { should be_kind_of Yell::Level }
   end
 
-  context ":format" do
+  context ".format" do
     subject { Yell.format( "%m" ) }
     it { should be_kind_of Yell::Formatter }
   end
 
-  context ":load!" do
+  context ".load!" do
     subject { Yell.load!( 'yell.yml' ) }
 
     before do
@@ -33,7 +33,7 @@ describe Yell do
     it { should be_kind_of Yell::Logger }
   end
 
-  context ":[]" do
+  context ".[]" do
     let(:name) { 'test' }
 
     it "should delegate to the repository" do
@@ -43,7 +43,7 @@ describe Yell do
     end
   end
 
-  context ":[]=" do
+  context ".[]=" do
     let(:name) { 'test' }
 
     it "should delegate to the repository" do
@@ -53,7 +53,7 @@ describe Yell do
     end
   end
 
-  context ":env" do
+  context ".env" do
     subject { Yell.env }
 
     it "should default to YELL_ENV" do

@@ -41,21 +41,21 @@ describe Yell::Logger do
       it { should respond_to(:unknown?) }
     end
 
-    context "default adapters" do
+    context "default #adapters" do
       subject { logger.adapters }
 
       its(:size) { should eq(1) }
       its(:first) { should be_kind_of(Yell::Adapters::File) }
     end
 
-    context "default :level" do
+    context "default #level" do
       subject { logger.level }
 
       it { should be_instance_of(Yell::Level) }
       its(:severities) { should eq([true, true, true, true, true, true]) }
     end
 
-    context "default :trace" do
+    context "default #trace" do
       subject { logger.trace }
 
       it { should be_instance_of(Yell::Level) }
@@ -63,7 +63,7 @@ describe Yell::Logger do
     end
   end
 
-  describe "initialize with :name" do
+  describe "initialize with #name" do
     let(:name) { 'test' }
     let!(:logger) { Yell.new(:name => name) }
 
@@ -72,7 +72,7 @@ describe Yell::Logger do
     end
   end
 
-  context "initialize with :level" do
+  context "initialize with #level" do
     let(:level) { :error }
     let(:logger) { Yell.new(:level => level) }
     subject { logger.level }
@@ -81,7 +81,7 @@ describe Yell::Logger do
     its(:severities) { should eq([false, false, false, true, true, true]) }
   end
 
-  context "initialize with :trace" do
+  context "initialize with #trace" do
     let(:trace) { :info }
     let(:logger) { Yell.new(:trace => trace) }
     subject { logger.trace }
@@ -90,7 +90,7 @@ describe Yell::Logger do
     its(:severities) { should eq([false, true, true, true, true, true]) }
   end
 
-  context "initialize with :silence" do
+  context "initialize with #silence" do
     let(:silence) { "test" }
     let(:logger) { Yell.new(:silence => silence) }
     subject { logger.silencer }
@@ -99,7 +99,7 @@ describe Yell::Logger do
     its(:patterns) { should eq([silence]) }
   end
 
-  context "initialize with a :filename" do
+  context "initialize with a #filename" do
     it "should call adapter with :file" do
       mock.proxy(Yell::Adapters::File).new(:filename => filename)
 
@@ -107,7 +107,7 @@ describe Yell::Logger do
     end
   end
 
-  context "initialize with a :filename of Pathname type" do
+  context "initialize with a #filename of Pathname type" do
     let(:pathname) { Pathname.new(filename) }
 
     it "should call adapter with :file" do
@@ -167,7 +167,7 @@ describe Yell::Logger do
     end
   end
 
-  context "initialize with :adapters option" do
+  context "initialize with #adapters option" do
     let(:logger) do
       Yell::Logger.new(:adapters => [:stdout, {:stderr => {:level => :error}}])
     end

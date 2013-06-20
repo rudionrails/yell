@@ -2,13 +2,13 @@ require 'spec_helper'
 
 describe Yell::Silencer do
 
-  context "initialize with :patterns" do
+  context "initialize with #patterns" do
     subject { Yell::Silencer.new(/this/) }
 
     its(:patterns) { should eq([/this/]) }
   end
 
-  context "add" do
+  context "#add" do
     let(:silencer) { Yell::Silencer.new }
 
     it "should add patterns" do
@@ -24,7 +24,7 @@ describe Yell::Silencer do
     end
   end
 
-  context "silence?" do
+  context "#silence?" do
     let(:silencer) { Yell::Silencer.new }
 
     it "should be false when no patterns present" do
@@ -38,11 +38,12 @@ describe Yell::Silencer do
     end
   end
 
-  context "silence" do
+  context "#silence" do
     let(:silencer) { Yell::Silencer.new(/this/) }
 
     it "should reject messages that match any pattern" do
       expect(silencer.silence("this", "that")).to eq(["that"])
     end
   end
+
 end

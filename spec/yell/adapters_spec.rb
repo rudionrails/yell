@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Yell::Adapters do
 
-  context ":new" do
+  context ".new" do
     it "should accept an adapter instance" do
       stdout = Yell::Adapters::Stdout.new
       adapter = Yell::Adapters.new(stdout)
@@ -29,7 +29,7 @@ describe Yell::Adapters do
     end
   end
 
-  context ":register" do
+  context ".register" do
     let(:name) { :test }
     let(:klass) { mock }
 

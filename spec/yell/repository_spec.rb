@@ -40,14 +40,14 @@ describe Yell::Repository do
     it { should eq(logger) }
   end
 
-  context "[]= with a named logger" do
+  context ".[]= with a named logger" do
     let!(:logger) { Yell.new(:stdout, :name => name) }
     before { Yell::Repository[name] = logger }
 
     it { should eq(logger) }
   end
 
-  context "[]= with a named logger of a different name" do
+  context ".[]= with a named logger of a different name" do
     let(:other) { 'other' }
     let(:logger) { Yell.new(:stdout, :name => other) }
     before { Yell::Repository[name] = logger }

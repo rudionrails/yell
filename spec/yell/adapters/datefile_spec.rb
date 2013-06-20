@@ -20,7 +20,7 @@ describe Yell::Adapters::Datefile do
 
   it { should be_kind_of Yell::Adapters::File }
 
-  describe ":write" do
+  describe "#write" do
     let(:today_lines) { File.readlines(today_filename) }
 
     before do
@@ -63,7 +63,7 @@ describe Yell::Adapters::Datefile do
     end
   end
 
-  describe ":keep" do
+  describe "#keep" do
     before do
       adapter.symlink = false # to not taint the Dir
       adapter.keep = 2
@@ -82,7 +82,7 @@ describe Yell::Adapters::Datefile do
     end
   end
 
-  describe ":symlink" do
+  describe "#symlink" do
     context "when true (default)" do
       before do
         adapter.write(event)
@@ -114,7 +114,7 @@ describe Yell::Adapters::Datefile do
     end
   end
 
-  describe ":header" do
+  describe "#header" do
     let(:header) { File.open(today_filename, &:readline) }
 
     context "when true (default)" do

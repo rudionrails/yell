@@ -44,7 +44,7 @@ describe Yell::Adapters::Io do
     end
   end
 
-  context ":write" do
+  context "#write" do
     let(:logger) { Yell::Logger.new }
     let(:event) { Yell::Event.new(logger, 1, "Hello World") }
     let(:adapter) { Yell::Adapters::Io.new }
