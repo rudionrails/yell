@@ -56,8 +56,8 @@ Here are some short examples on how to combine them:
 
 ```ruby
 logger = Yell.new do |l|
-  l.adapter STDOUT, :level => [:debug, :info, :warn]
-  l.adapter STDERR, :level => [:error, :fatal]
+  l.adapter STDOUT, level: [:debug, :info, :warn]
+  l.adapter STDERR, level: [:error, :fatal]
 end
 ```
 
@@ -69,10 +69,25 @@ into the 'error.log'.
 
 ```ruby
 logger = Yell.new do |l|
-  l.level = :info # will only pass :info and above to the adapters
+  l.level = 'gte.info' # will only pass :info and above to the adapters
 
-  l.adapter :datefile, 'production.log', :level => Yell.level.lte(:warn)
-  l.adapter :datefile, 'error.log', :level => Yell.level.gte(:error)
+  l.adapter :datefile, 'production.log', level: 'lte.warn' # anything lower or equal to :warn
+  l.adapter :datefile, 'error.log', level: 'gte.error' # anything greater or equal to :error
+end
+```
+
+##### Example: Typical production Logger for Heroku
+
+When deploying to Heroku, the "rails_log_stdout" gem gets injected to your Rails project.
+Yell does not need that when properly configured (see [yell-rails](https://github.com/rudionrails/yell-rails)
+for a more convenient integration with Rails).
+
+```ruby
+logger = Yell.new do |l|
+  l.level = 'gte.info'
+
+  l.adapter :stdout, level: 'lte.warn'
+  l.adapter :stderr, level: 'gte.error'
 end
 ```
 
@@ -99,7 +114,7 @@ With Yell you can do the same thing with less:
 require 'yell'
 
 # create a logger named 'mylog' that logs to stdout
-Yell.new :stdout, :name => 'mylog'
+Yell.new :stdout, name: 'mylog'
 
 # later in the code, you can get the logger back
 Yell['mylog']
@@ -108,7 +123,7 @@ Yell['mylog']
 There is no need to define outputters separately and you don't have to taint 
 you global namespace with Yell's subclasses.
 
-### You want any class to have a logger?
+### Adding a logger to an existing class
 
 Yell comes with a simple module: +Yell::Loggable+. Simply include this in a class and 
 you are good to go.
@@ -116,13 +131,14 @@ you are good to go.
 ```ruby
 # Before you can use it, you will need to define a logger and 
 # provide it with the `:name` of your class.
-Yell.new :stdout, :name => 'Foo'
+Yell.new :stdout, name: 'Foo'
 
 class Foo
   include Yell::Loggable
 end
 
 # Now you can log
+Foo.logger.info "Hello World"
 Foo.new.logger.info "Hello World"
 ```
 
@@ -134,7 +150,43 @@ class Bar < Foo
 end
 
 # The logger will fallback to the Foo superclass
+Bar.logger.info "Hello World"
 Bar.new.logger.info "Hello World"
+```
+
+### Adding a logger to all classes at once (global logger)
+
+Derived from the example above, simply do the following.
+
+```ruby
+# Define a logger and pass `Object` as name. Internally, Yell adds this
+# logger to the repository where you can access it later on.
+Yell.new :stdout, name: Object
+
+# Enable logging for the class that (almost) every Ruby class inherits from
+Object.send :include, Yell::Loggable
+
+# now you are good to go... from wherever you are
+logger.info "Hello from anything"
+Integer.logger.info "Hello from Integer"
+```
+
+### Suppress log messages with silencers
+
+In case you woul like to suppress certain log messages, you may define
+silencers with Yell. Use this to get control of a noisy log environment. For
+instance, you can suppress logging messages that contain secure information or
+more simply, to skip information about serving your Rails assets. Provide a
+string or a regular expression of the message patterns you would like to exclude.
+
+```ruby
+logger = Yell.new do |l|
+  l.silence /^Started GET "\/assets/
+  l.silence /^Served asset/
+end
+
+logger.debug 'Started GET "/assets/logo.png" for 127.0.0.1 at 2013-06-20 10:18:38 +0200'
+logger.debug 'Served asset /logo.png - 304 Not Modified (0ms)'
 ```
 
 
