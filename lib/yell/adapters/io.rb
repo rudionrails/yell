@@ -54,7 +54,7 @@ module Yell #:nodoc:
 
       # @overload write!( event )
       def write!( event )
-        message = format.format(event)
+        message = format.call(event)
 
         # colorize if applicable
         if colors and color = TTYColors[event.level]

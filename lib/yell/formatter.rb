@@ -92,7 +92,7 @@ module Yell #:nodoc:
       @modifier = builder.modifier
 
       define_date_method!
-      define_format_method!
+      define_call_method!
     end
 
     # Get a pretty string
@@ -162,7 +162,7 @@ module Yell #:nodoc:
       -
     end
 
-    def define_format_method!
+    def define_call_method!
       buff, args, _pattern = "", [], @pattern.dup
 
       while true
@@ -178,7 +178,7 @@ module Yell #:nodoc:
       end
 
       instance_eval <<-EOS, __FILE__, __LINE__
-        def format( event )
+        def call( event )
           sprintf("#{buff}", #{args.join(',')})
         end
       EOS

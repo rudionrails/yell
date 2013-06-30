@@ -11,7 +11,7 @@ describe Yell::Formatter do
 
   let(:time) { Time.now }
 
-  subject { formatter.format(event) }
+  subject { formatter.call(event) }
 
   before do
     Timecop.freeze(time)

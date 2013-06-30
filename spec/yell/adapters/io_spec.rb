@@ -55,13 +55,13 @@ describe Yell::Adapters::Io do
     end
 
     it "should format the message" do
-      mock.proxy(adapter.format).format( event )
+      mock.proxy(adapter.format).call( event )
 
       adapter.write(event)
     end
 
     it "should print formatted message to stream" do
-      formatted = Yell::Formatter.new.format( event )
+      formatted = Yell::Formatter.new.call( event )
       mock(stream).syswrite( formatted << "\n" )
 
       adapter.write(event)

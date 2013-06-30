@@ -25,7 +25,7 @@ module Yell #:nodoc:
     #     end
     #
     #     write do |event|
-    #       message = format.format(event)
+    #       message = format.call(event)
     #
     #       STDOUT.puts message
     #     end
