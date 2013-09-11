@@ -48,7 +48,7 @@ module Yell #:nodoc:
 
     Table = {
       "m" => "message(*event.messages)",   # Message
-      "l" => "level(event.level)[0,1]",    # Level (short), e.g.'I', 'W'
+      "l" => "level(event.level, 1)",      # Level (short), e.g.'I', 'W'
       "L" => "level(event.level)",         # Level, e.g. 'INFO', 'WARN'
       "d" => "date(event.time)",           # ISO8601 Timestamp
       "h" => "event.hostname",             # Hostname
@@ -62,7 +62,20 @@ module Yell #:nodoc:
       "N" => "event.name"                  # Name of the logger
     }
 
-    Matcher = /([^%]*)(%\d*)?(#{Table.keys.join('|')})?(.*)/
+    # For standard formatted backwards compatibility
+    LegacyTable = Hash[ Table.keys.map { |k| [k, 'noop'] } ].merge(
+      'm' => 'message(*msg)',
+      'l' => 'level(event, 1)',
+      'L' => 'level(event)',
+      'd' => 'date(time)',
+      "p" => "$$",
+      'P' => 'progname'
+    )
+
+    PatternMatcher = /([^%]*)(%\d*)?(#{Table.keys.join('|')})?(.*)/m
+
+
+    attr_reader :pattern, :date_pattern
 
 
     # Initializes a new +Yell::Formatter+.
@@ -138,6 +151,7 @@ module Yell #:nodoc:
         @modifier = Modifier.new
 
         @pattern = pattern || Yell::DefaultFormat
+        @pattern << "\n" unless @pattern[-1] == ?\n # add newline if not present
         @date_pattern = date_pattern || :iso8601
 
         block.call(self) if block
@@ -155,33 +169,36 @@ module Yell #:nodoc:
       else "iso8601(t)"
       end
 
-      instance_eval %-
-        def date( t )
-          #{buf}
-        end
-      -
+      # define the method
+      instance_eval "def date(t = Time.now); #{buf}; end", __FILE__, __LINE__
     end
 
+    # define a standard +Logger+ backwards compatible #call method for the formatter
     def define_call_method!
+      instance_eval <<-METHOD, __FILE__, __LINE__
+        def call(event, time = nil, progname = nil, msg = nil)
+          event.is_a?(Yell::Event) ? #{to_sprintf(Table)} : #{to_sprintf(LegacyTable)}
+        end
+      METHOD
+    end
+
+    def to_sprintf( table )
+      # new and improved Yell version of a formatter call method
       buff, args, _pattern = "", [], @pattern.dup
 
       while true
-        match = Matcher.match(_pattern)
+        match = PatternMatcher.match(_pattern)
 
         buff << match[1] unless match[1].empty?
         break if match[2].nil?
 
         buff << match[2] + 's'
-        args << Table[ match[3] ]
+        args << table[ match[3] ]
 
         _pattern = match[4]
       end
 
-      instance_eval <<-EOS, __FILE__, __LINE__
-        def call( event )
-          sprintf("#{buff}", #{args.join(',')})
-        end
-      EOS
+      "sprintf('#{buff}', #{args.join(', ')})"
     end
 
     # The iso8601 implementation of the standard Time library is more than
@@ -199,12 +216,22 @@ module Yell #:nodoc:
       t.strftime("%Y-%m-%dT%H:%M:%S#{zone}")
     end
 
-    def level( l )
-      Yell::Severities[ l ]
+    def level( sev, length = nil )
+      severity = case sev
+      when Integer then Yell::Severities[sev] || 'ANY'
+      else sev
+      end
+
+      length.nil? ? severity : severity[0, length]
     end
 
     def message( *messages )
       messages.map { |m| @modifier.call(m) }.join(" ")
+    end
+
+    # do nothing
+    def noop
+      ''
     end
 
   end

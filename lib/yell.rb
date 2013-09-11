@@ -129,12 +129,14 @@ require File.dirname(__FILE__) + '/yell/logger'
 # modules
 require File.dirname(__FILE__) + '/yell/loggable'
 
+# core extensions
+require File.dirname(__FILE__) + '/core_ext/logger'
+
 # register known adapters
 Yell.register :null, Yell::Adapters::Base # adapter that does nothing (for convenience only)
 Yell.register :file, Yell::Adapters::File
 Yell.register :datefile, Yell::Adapters::Datefile
 Yell.register :stdout, Yell::Adapters::Stdout
 Yell.register :stderr, Yell::Adapters::Stderr
-
 
 

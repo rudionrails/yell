@@ -23,6 +23,7 @@ module Yell #:nodoc:
   # @example Set at :info only
   #   Yell::Level.new.at(:info)
   class Level
+    include Comparable
 
     InterpretRegexp = /(at|gt|gte|lt|lte)?\.?(#{Yell::Severities.join('|')})/i
 
@@ -42,7 +43,9 @@ module Yell #:nodoc:
     #
     # @param [Integer,String,Symbol,Array,Range,nil] severity The severity for the level.
     def initialize( *severities )
-      set( *severities )
+      set(*severities)
+
+      # super(to_i)
     end
 
     # Set the severity to the given format
@@ -146,8 +149,12 @@ module Yell #:nodoc:
 
     # @private
     def ==(other)
-      return super unless other.respond_to?(:severities)
-      severities == other.severities
+      other.respond_to?(:severities) ? severities == other.severities : super
+    end
+
+    # @private
+    def <=>( other )
+      other.is_a?(Numeric) ? to_i <=> other : super
     end
 
 

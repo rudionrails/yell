@@ -2,32 +2,6 @@
 
 require 'pathname'
 
-# TODO: DSL improvements
-#
-# Initlalize an empty logger
-#   logger = Yell.new(adapters: false)
-#   logger.adapters.add :stdout
-#
-# Or shorthand for adapters.add
-#   logger.add :stdout
-#
-# Or with a block
-#   logger = Yell.new do |l|
-#     l.add :stdout
-#     l.add :stderr
-#   end
-#
-#  logger = Yell.new do |l|
-#    l.adapters.add :stdout
-#    l.adapters.add :stderr
-#  end
-#
-#
-# Define Silencers
-#   logger = Yell.new do |l|
-#     l.silence /password/
-#   end
-#
 module Yell #:nodoc:
 
   # The +Yell::Logger+ is your entrypoint. Anything onwards is derived from here.
