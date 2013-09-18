@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Yell::Formatter do
 
-  let(:logger) { Yell::Logger.new(name: 'Yell') }
+  let(:logger) { Yell::Logger.new(:name => 'Yell') }
   let(:event) { Yell::Event.new(logger, 1, 'Hello World!') }
   let(:time) { Time.now }
 
