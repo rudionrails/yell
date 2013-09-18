@@ -67,6 +67,10 @@ describe Yell::Logger do
     let(:name) { 'test' }
     let!(:logger) { Yell.new(:name => name) }
 
+    it "should set the name correctly" do
+      expect(logger.name).to eq(name)
+    end
+
     it "should be added to the repository" do
       expect(Yell::Repository[name]).to eq(logger)
     end

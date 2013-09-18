@@ -58,7 +58,8 @@ module Yell #:nodoc:
       "F" => "event.file",                 # Path with filename where the logger was called
       "f" => "File.basename(event.file)",  # Filename where the loger was called
       "M" => "event.method",               # Method name where the logger was called
-      "n" => "event.line"                  # Line where the logger was called
+      "n" => "event.line",                 # Line where the logger was called
+      "N" => "event.name"                  # Name of the logger
     }
 
     Matcher = /([^%]*)(%\d*)?(#{Table.keys.join('|')})?(.*)/

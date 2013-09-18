@@ -27,10 +27,14 @@ module Yell #:nodoc:
     # Accessor to the time the log event occured
     attr_reader :time
 
+    # Accessor to the logger's name
+    attr_reader :name
+
 
     def initialize(logger, level, *messages, &block)
-      @time     = Time.now
-      @level    = level
+      @time   = Time.now
+      @level  = level
+      @name   = logger.name
 
       @messages = messages
       @messages << block.call if block

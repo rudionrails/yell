@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Yell::Formatter do
 
-  let(:logger) { Yell::Logger.new }
+  let(:logger) { Yell::Logger.new(name: 'Yell') }
   let(:event) { Yell::Event.new(logger, 1, 'Hello World!') }
   let(:time) { Time.now }
 
@@ -85,6 +85,11 @@ describe Yell::Formatter do
         let(:pattern) { "%n" }
         it { should eq("123") }
       end
+    end
+
+    context "%N" do
+      let(:pattern) { "%N" }
+      it { should eq("Yell") }
     end
   end
 
