@@ -67,12 +67,29 @@ module Yell #:nodoc:
 
     # Initializes a new +Yell::Formatter+.
     #
-    # Upon initialization it defines a format method. `format` takes 
-    # a {Yell::Event} instance as agument in order to apply for desired log 
+    # Upon initialization it defines a format method. `format` takes
+    # a {Yell::Event} instance as agument in order to apply for desired log
     # message formatting.
-    def initialize( pattern = nil, date_pattern = nil )
-      @pattern      = pattern || Yell::DefaultFormat
-      @date_pattern = date_pattern || :iso8601
+    #
+    # @example Blank formatter
+    #   Formatter.new
+    #
+    # @example Formatter with a message pattern
+    #   Formatter.new("%d [%5L] %p : %m")
+    #
+    # @example Formatter with a message and date pattern
+    #   Formatter.new("%d [%5L] %p : %m", "%D %H:%M:%S.%L")
+    #
+    # @example Formatter with a message modifier
+    #   Formatter.new do |f|
+    #     f.modify(Hash) { |h| "Hash: #{h.inspect}" }
+    #   end
+    def initialize( *args, &block )
+      builder = Builder.new(*args, &block)
+
+      @pattern = builder.pattern
+      @date_pattern = builder.date_pattern
+      @modifier = builder.modifier
 
       define_date_method!
       define_format_method!
@@ -85,6 +102,51 @@ module Yell #:nodoc:
 
 
     private
+
+    # Message modifier class to allow different modifiers for different requirements.
+    class Modifier
+      def initialize
+        @repository = {}
+      end
+
+      def set( key, &block )
+        @repository.merge!(key => block)
+      end
+
+      def call( message )
+        case
+        when mod = @repository[message.class] || @repository[message.class.to_s]
+          mod.call(message)
+        when message.is_a?(Hash)
+          message.map { |k,v| "#{k}: #{v}" }.join(", ")
+        when message.is_a?(Exception)
+          backtrace = message.backtrace ? "\n\t#{message.backtrace.join("\n\t")}" : ""
+          sprintf("%s: %s%s", message.class, message.message, backtrace)
+        else
+          message
+        end
+      end
+    end
+
+    # Builder class to allow setters that won't be accessible once
+    # transferred to the Formatter
+    class Builder
+      attr_accessor :pattern, :date_pattern
+      attr_reader :modifier
+
+      def initialize( pattern = nil, date_pattern = nil, &block )
+        @modifier = Modifier.new
+
+        @pattern = pattern || Yell::DefaultFormat
+        @date_pattern = date_pattern || :iso8601
+
+        block.call(self) if block
+      end
+
+      def modify( key, &block )
+        modifier.set(key, &block)
+      end
+    end
 
     def define_date_method!
       buf = case @date_pattern
@@ -142,19 +204,7 @@ module Yell #:nodoc:
     end
 
     def message( *messages )
-      messages.map { |m| to_message(m) }.join(" ")
-    end
-
-    def to_message( m )
-      case m
-      when Hash
-        m.map { |k,v| "#{k}: #{v}" }.join( ", " )
-      when Exception
-        backtrace = m.backtrace ? "\n\t#{m.backtrace.join("\n\t")}" : ""
-        sprintf("%s: %s%s", m.class, m.message, backtrace)
-      else
-        m
-      end
+      messages.map { |m| @modifier.call(m) }.join(" ")
     end
 
   end

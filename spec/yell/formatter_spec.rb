@@ -2,20 +2,22 @@ require 'spec_helper'
 
 describe Yell::Formatter do
 
-  let(:logger) { Yell::Logger.new(:name => 'Yell') }
-  let(:event) { Yell::Event.new(logger, 1, 'Hello World!') }
-  let(:time) { Time.now }
+  let(:logger) { Yell::Logger.new(:stdout, :name => 'Yell') }
+  let(:message) { "Hello World!" }
+  let(:event) { Yell::Event.new(logger, 1, message) }
 
   let(:pattern) { "%m" }
   let(:formatter) { Yell::Formatter.new(pattern) }
+
+  let(:time) { Time.now }
+
+  subject { formatter.format(event) }
 
   before do
     Timecop.freeze(time)
   end
 
-  describe "#format" do
-    subject { formatter.format(event) }
-
+  describe "patterns" do
     context "%m" do
       let(:pattern) { "%m" }
       it { should eq(event.messages.join(' ')) }
@@ -45,6 +47,7 @@ describe Yell::Formatter do
       let(:pattern) { "%P" }
       it { should eq(event.progname) }
     end
+
     context "%t" do
       let(:pattern) { "%t" }
       it { should eq(event.thread_id.to_s) }
@@ -93,9 +96,7 @@ describe Yell::Formatter do
     end
   end
 
-  describe "#format from presets" do
-    subject { formatter.format(event) }
-
+  describe "presets" do
     context "NoFormat" do
       let(:pattern) { Yell::NoFormat }
       it { should eq("Hello World!") }
@@ -117,24 +118,28 @@ describe Yell::Formatter do
     end
   end
 
-  describe "#format from exception" do
-    let(:exception) { StandardError.new( "This is an Exception" ) }
-    let(:event) { Yell::Event.new(logger, 1, exception) }
-    subject { formatter.format(event) }
+  describe "Exception" do
+    let(:message) { StandardError.new("This is an Exception") }
 
     before do
-      mock(exception).backtrace.times(any_times) { ["backtrace"] }
+      stub(message).backtrace { ["backtrace"] }
     end
 
     it { should eq("StandardError: This is an Exception\n\tbacktrace") }
   end
 
-  describe "#format from hash messages" do
-    let(:hash) { { :test => 'message' } }
-    let(:event) { Yell::Event.new(logger, 1, hash) }
-    subject { formatter.format(event) }
+  describe "Hash" do
+    let(:message) { {:test => 'message'} }
 
     it { should eq("test: message") }
+  end
+
+  describe "custom message modifiers" do
+    let(:formatter) do
+      Yell::Formatter.new(pattern) { |f| f.modify(String) { |m| "Modified! #{m}" } }
+    end
+
+    it { should eq("Modified! #{message}") }
   end
 
 end
