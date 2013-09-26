@@ -41,11 +41,10 @@ describe Yell::Logger do
       it { should respond_to(:unknown?) }
     end
 
-    context "default #adapters" do
-      subject { logger.adapters }
+    context "default #adapter" do
+      subject { logger._adapter }
 
-      its(:size) { should eq(1) }
-      its(:first) { should be_kind_of(Yell::Adapters::File) }
+      it { should be_kind_of(Yell::Adapters::File) }
     end
 
     context "default #level" do
@@ -156,8 +155,7 @@ describe Yell::Logger do
       end
 
       its(:level) { should eq(level) }
-      its('adapters.size') { should eq(1) }
-      its('adapters.first') { should be_instance_of(Yell::Adapters::Stdout) }
+      its(:_adapter) { should be_instance_of(Yell::Adapters::Stdout) }
     end
 
     context "without arity" do
@@ -166,31 +164,18 @@ describe Yell::Logger do
       end
 
       its(:level) { should eq(level) }
-      its('adapters.size') { should eq(1) }
-      its('adapters.first') { should be_instance_of(Yell::Adapters::Stdout) }
+      its(:_adapter) { should be_instance_of(Yell::Adapters::Stdout) }
     end
   end
 
   context "initialize with #adapters option" do
-    let(:logger) do
+    it "should set adapters in logger correctly" do
+      any_instance_of(Yell::Logger) do |logger|
+        mock.proxy(logger).adapter(:stdout)
+        mock.proxy(logger).adapter(:stderr, :level => :error)
+      end
+
       Yell::Logger.new(:adapters => [:stdout, {:stderr => {:level => :error}}])
-    end
-
-    let(:adapters) { logger.instance_variable_get(:@adapters) }
-    let(:stdout) { adapters.first }
-    let(:stderr) { adapters.last }
-
-    it "should define those adapters" do
-      expect(adapters.size).to eq(2)
-
-      expect(stdout).to be_kind_of(Yell::Adapters::Stdout)
-      expect(stderr).to be_kind_of(Yell::Adapters::Stderr)
-    end
-
-    it "should pass :level to :stderr adapter" do
-      expect(stderr.level.at?(:warn)).to be_false
-      expect(stderr.level.at?(:error)).to be_true
-      expect(stderr.level.at?(:fatal)).to be_true
     end
   end
 

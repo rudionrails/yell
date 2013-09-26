@@ -1,7 +1,7 @@
 # encoding: utf-8
 module Yell #:nodoc:
   module Helpers #:nodoc:
-    module Adapters #:nodoc:
+    module Adapter #:nodoc:
 
       # Define an adapter to be used for logging.
       #
@@ -18,29 +18,38 @@ module Yell #:nodoc:
       #   adapter :file, 'development.log', :level => :warn
       #
       # @example Set the adapter directly from an adapter instance
-      #   adapter( Yell::Adapter::File.new )
+      #   adapter Yell::Adapter::File.new
       #
       # @param [Symbol] type The type of the adapter, may be `:file` or `:datefile` (default `:file`)
       # @return [Yell::Adapter] The instance
       # @raise [Yell::NoSuchAdapter] Will be thrown when the adapter is not defined
       def adapter( type = :file, *args, &block )
-        options = [@options, *args].inject( Hash.new ) do |h, c|
+        options = [@options, *args].inject(Hash.new) do |h, c|
           h.merge( [String, Pathname].include?(c.class) ? {:filename => c} : c  )
         end
 
-        @adapters << Yell::Adapters.new(type, options, &block)
+        new_adapter = Yell::Adapters.new(type, options, &block)
+
+        # Also replaces the :null logger of type Yell::Adapters::Base
+        if @_adapter.nil? || @_adapter.instance_of?(Yell::Adapters::Base)
+          @_adapter = new_adapter
+        else
+          @_adapter.extend(Yell::Adapters.broadcast(new_adapter))
+        end
+
+        _adapter
       end
 
       # @private
-      def adapters
-        @adapters
+      def _adapter
+        @_adapter
       end
 
 
       private
 
       def reset!
-        @adapters = []
+        @_adapter = nil
 
         super
       end

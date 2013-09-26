@@ -155,7 +155,7 @@ module Yell #:nodoc:
         # make sure the adapter is closed and re-raise the exception
         synchronize { close }
 
-        raise( e )
+        raise(e)
       end
 
       # Close the adapter (stream, connection, etc).
@@ -172,11 +172,8 @@ module Yell #:nodoc:
         "#<#{self.class.name} #{inspection * ', '}>"
       end
 
-      private
 
-      # def reset!
-      #   super()
-      # end
+      private
 
       # Setup the adapter instance.
       #
@@ -219,7 +216,7 @@ module Yell #:nodoc:
       #
       # @return [Boolean] true or false
       def write?( event )
-        @level.nil? || @level.at?( event.level )
+        @level.nil? || @level.at?(event.level)
       end
 
       # Get an array of inspected attributes for the adapter.
@@ -228,6 +225,8 @@ module Yell #:nodoc:
       end
 
     end
+
+    register(:null, Yell::Adapters::Base)
 
   end
 end

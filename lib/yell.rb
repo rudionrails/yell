@@ -60,8 +60,8 @@ module Yell #:nodoc:
     # Shortcut to Yell::Fomatter.new
     #
     # @return [Yell::Formatter] A Yell::Formatter instance
-    def format( pattern, date_pattern = nil )
-      Yell::Formatter.new(pattern, date_pattern)
+    def format( pattern = nil, date_pattern = nil, &block )
+      Yell::Formatter.new(pattern, date_pattern, &block)
     end
 
     # Loads a config from a YAML file
@@ -105,7 +105,7 @@ end
 
 # helpers
 require File.dirname(__FILE__) + '/yell/helpers/base'
-require File.dirname(__FILE__) + '/yell/helpers/adapters'
+require File.dirname(__FILE__) + '/yell/helpers/adapter'
 require File.dirname(__FILE__) + '/yell/helpers/formatter'
 require File.dirname(__FILE__) + '/yell/helpers/level'
 require File.dirname(__FILE__) + '/yell/helpers/tracer'

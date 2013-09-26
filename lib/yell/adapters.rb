@@ -39,6 +39,21 @@ module Yell #:nodoc:
       adapter.new(options, &block)
     end
 
+    # Thanks, railties :-)
+    def self.broadcast( adapter )
+      Module.new do
+        define_method(:write) do |event|
+          adapter.write(event)
+          super(event)
+        end
+
+        define_method(:close) do
+          adapter.close
+          super()
+        end
+      end
+    end
+
   end
 end
 

@@ -38,7 +38,7 @@ module Yell #:nodoc:
     include Yell::Helpers::Base
     include Yell::Helpers::Level
     include Yell::Helpers::Formatter
-    include Yell::Helpers::Adapters
+    include Yell::Helpers::Adapter
     include Yell::Helpers::Tracer
     include Yell::Helpers::Silencer
 
@@ -74,14 +74,14 @@ module Yell #:nodoc:
       @options = args.last.is_a?(Hash) ? args.pop : {}
 
       # adapters may be passed in the options
-      extract!(@options)
+      extract!(*@options[:adapters])
 
       # check if filename was given as argument and put it into the @options
       if [String, Pathname].include?(args.last.class)
         @options[:filename] = args.pop unless @options[:filename]
       end
 
-      self.level = @options.fetch(:level, 0) # debug by defauly
+      self.level = @options.fetch(:level, 0) # debug by default
       self.name = @options.fetch(:name, nil) # no name by default
       self.trace = @options.fetch(:trace, :error) # trace from :error level onwards
 
@@ -95,7 +95,7 @@ module Yell #:nodoc:
       block.arity > 0 ? block.call(self) : instance_eval(&block) if block_given?
 
       # default adapter when none defined
-      self.adapter(:file) if adapters.empty?
+      self.adapter(:file) if _adapter.nil?
     end
 
 
@@ -138,12 +138,12 @@ module Yell #:nodoc:
     # Get a pretty string representation of the logger.
     def inspect
       inspection = inspectables.map { |m| "#{m}: #{send(m).inspect}" }
-      "#<#{self.class.name} #{inspection * ', '}, adapters: #{adapters.map(&:inspect) * ', '}>"
+      "#<#{self.class.name} #{inspection * ', '}>"
     end
 
     # @private
     def close
-      @adapters.each(&:close)
+      _adapter.close
     end
 
 
@@ -153,22 +153,22 @@ module Yell #:nodoc:
     # multiple variations:
     #
     # @example
-    #   options = { :adapters => [:stdout, :stderr] }
+    #   extract!(:stdout, :stderr)
     #
     # @example
-    #   options = { :adapters => [:stdout => {:level => :info}, :stderr => {:level => :error}]
-    def extract!( opts )
-      ( opts.delete(:adapters) || [] ).each do |a|
+    #   extract!(:stdout => {:level => :info}, :stderr => {:level => :error})
+    def extract!( *adapters )
+      adapters.each do |a|
         case a
-        when String, Symbol then adapter( a )
-        else a.each { |n, o| adapter( n, o || {} ) }
+        when Hash then a.each { |t, o| adapter(t, o) }
+        else adapter(a)
         end
       end
     end
 
     # Cycles all the adapters and writes the message
     def write( event )
-      adapters.each { |a| a.write(event) }
+      _adapter.write(event)
     end
 
     # Get an array of inspected attributes for the adapter.

@@ -96,5 +96,6 @@ describe "running Yell multi-threaded" do
   def datefile_pattern_for( time )
     time.strftime(Yell::Adapters::Datefile::DefaultDatePattern)
   end
+
 end
 
