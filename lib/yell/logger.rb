@@ -74,7 +74,7 @@ module Yell #:nodoc:
       @options = args.last.is_a?(Hash) ? args.pop : {}
 
       # adapters may be passed in the options
-      extract!(*@options[:adapters])
+      extract!(*@options[:adapters]) if @options.key?(:adapters)
 
       # check if filename was given as argument and put it into the @options
       if [String, Pathname].include?(args.last.class)
