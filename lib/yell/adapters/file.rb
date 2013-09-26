@@ -31,8 +31,6 @@ module Yell #:nodoc:
 
     end
 
-    register( :file, Yell::Adapters::File )
-
   end
 end
 

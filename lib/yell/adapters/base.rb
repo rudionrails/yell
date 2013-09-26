@@ -226,8 +226,6 @@ module Yell #:nodoc:
 
     end
 
-    register(:null, Yell::Adapters::Base)
-
   end
 end
 

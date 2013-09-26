@@ -71,6 +71,11 @@ module Yell #:nodoc:
       Yell.new Yell::Configuration.load!(file)
     end
 
+    # Shortcut to Yell::Adapters.register
+    def register( name, klass )
+      Yell::Adapters.register(name, klass)
+    end
+
     # @private
     def env
       return ENV['YELL_ENV']  if ENV.key? 'YELL_ENV'
@@ -123,4 +128,13 @@ require File.dirname(__FILE__) + '/yell/logger'
 
 # modules
 require File.dirname(__FILE__) + '/yell/loggable'
+
+# register known adapters
+Yell.register :null, Yell::Adapters::Base # adapter that does nothing (for convenience only)
+Yell.register :file, Yell::Adapters::File
+Yell.register :datefile, Yell::Adapters::Datefile
+Yell.register :stdout, Yell::Adapters::Stdout
+Yell.register :stderr, Yell::Adapters::Stderr
+
+
 

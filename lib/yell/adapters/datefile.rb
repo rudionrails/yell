@@ -184,8 +184,6 @@ module Yell #:nodoc:
 
     end
 
-    register( :datefile, Yell::Adapters::Datefile )
-
   end
 end
 

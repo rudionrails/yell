@@ -27,9 +27,6 @@ module Yell #:nodoc:
 
     end
 
-    register( :stdout, Yell::Adapters::Stdout )
-    register( :stderr, Yell::Adapters::Stderr )
-
   end
 end
 
