@@ -25,12 +25,12 @@ module Yell #:nodoc:
     # Clears out all the messages that would match any defined pattern
     #
     # @example
-    #   silence('username', 'password')
+    #   silence('username')
     #   #=> ['username]
     #
     # @return [Array<String>] The remaining messages
-    def silence( *messages )
-      messages.reject { |m| matches?(m) }
+    def silence( message )
+      matches?(message) ? nil : message
     end
 
     # Anything to silence at all?

@@ -47,20 +47,22 @@ module Yell #:nodoc:
       # extract options
       @options = args.last.is_a?(Hash) ? args.pop : {}
 
-      # adapters may be passed in the options
-      extract!(*@options[:adapters]) if @options.key?(:adapters)
-
       # check if filename was given as argument and put it into the @options
       if [String, Pathname].include?(args.last.class)
         @options[:filename] = args.pop unless @options[:filename]
       end
 
-      self.level = @options.fetch(:level, 0) # debug by default
-      self.name = @options.fetch(:name, nil) # no name by default
-      self.trace = @options.fetch(:trace, :error) # trace from :error level onwards
+      # FIXME: :format is deprecated in future versions --R
+      self.formatter = @options.fetch(:format, @options.fetch(:formatter, Yell::DefaultFormat))
+      self.level = @options.fetch(:level, 0)
+      self.name = @options.fetch(:name, nil)
+      self.trace = @options.fetch(:trace, :error)
 
       # silencer
-      self.silence(*@options[:silence])
+      self.silence(*@options[:silence]) if @options.key?(:silence)
+
+      # adapters may be passed in the options
+      extract!(*@options[:adapters]) if @options.key?(:adapters)
 
       # extract adapter
       self.adapter(args.pop) if args.any?
@@ -84,6 +86,17 @@ module Yell #:nodoc:
       @name
     end
 
+    # Somewhat backwards compatible method (not fully though)
+    def add( severity, message, options = {}, &block )
+      return false unless level.at?(severity)
+
+      message = silencer.silence(message) if silencer.silence?
+      return false if message.nil?
+
+      event = Yell::Event.new(self, severity, message, {:caller => 0}.merge(options), &block)
+      write(event)
+    end
+
     # Creates instance methods for every log level:
     #   `debug` and `debug?`
     #   `info` and `info?`
@@ -94,18 +107,11 @@ module Yell #:nodoc:
       name = s.downcase
 
       class_eval <<-EOS, __FILE__, __LINE__
-        def #{name}?; level.at?(#{index}); end            # def info?; level.at?(1); end
-                                                          #
-        def #{name}( *m, &b )                             # def info( *m, &b )
-          return false unless #{name}?                    #   return false unless info?
-                                                          #
-          m = silencer.silence(*m) if silencer.silence?   #   m = silencer.silence(*m) if silencer.silence?
-          return false if m.empty?                        #   return false if m.empty?
-                                                          #
-          event = Yell::Event.new(self, #{index}, *m, &b) #   event = Yell::Event.new(self, 1, *m, &b)
-          write(event)                                    #   write(event)
-          true                                            #   true
-        end                                               # end
+        def #{name}?; level.at?(#{index}); end                        # def info?; level.at?(1); end
+                                                                      #
+        def #{name}( message, options = {}, &block )                  # def info( message, options = {}, &block )
+          add(#{index}, message, options.merge(:caller => 1), &block) #   add(1, message, options.merge(:caller => 1), &block)
+        end                                                           # end
       EOS
     end
 
@@ -123,6 +129,11 @@ module Yell #:nodoc:
 
     private
 
+    def write( event )
+      _adapter.write(event)
+      true
+    end
+
     # The :adapters key may be passed to the options hash. It may appear in
     # multiple variations:
     #
@@ -138,11 +149,6 @@ module Yell #:nodoc:
         else adapter(a)
         end
       end
-    end
-
-    # Cycles all the adapters and writes the message
-    def write( event )
-      _adapter.write(event)
     end
 
     # Get an array of inspected attributes for the adapter.

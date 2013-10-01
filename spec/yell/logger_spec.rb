@@ -205,29 +205,29 @@ describe Yell::Logger do
       expect(line).to eq("Hello World\n")
     end
 
-    it "should output multiple messages" do
-      logger.info "Hello", "W", "o", "r", "l", "d"
+    # it "should output multiple messages" do
+    #   logger.info "Hello", "W", "o", "r", "l", "d"
 
-      expect(line).to eq("Hello W o r l d\n")
-    end
+    #   expect(line).to eq("Hello W o r l d\n")
+    # end
 
-    it "should output a hash and message" do
-      logger.info "Hello World", :test => :message
+    # it "should output a hash and message" do
+    #   logger.info "Hello World", :test => :message
 
-      expect(line).to eq("Hello World test: message\n")
-    end
+    #   expect(line).to eq("Hello World test: message\n")
+    # end
 
-    it "should output a hash and message" do
-      logger.info( {:test => :message}, "Hello World" )
+    # it "should output a hash and message" do
+    #   logger.info( {:test => :message}, "Hello World" )
 
-      expect(line).to eq("test: message Hello World\n")
-    end
+    #   expect(line).to eq("test: message Hello World\n")
+    # end
 
-    it "should output a hash and block" do
-      logger.info(:test => :message) { "Hello World" }
+    # it "should output a hash and block" do
+    #   logger.info(:test => :message) { "Hello World" }
 
-      expect(line).to eq("test: message Hello World\n")
-    end
+    #   expect(line).to eq("test: message Hello World\n")
+    # end
   end
 
   context "logging with a silencer" do

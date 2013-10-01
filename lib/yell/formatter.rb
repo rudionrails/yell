@@ -1,6 +1,14 @@
 # encoding: utf-8
 require 'time'
 
+# TODO: Register custom formats
+#
+# @example The Yell default fomat
+#   Yell::Formatter.register(:default)
+#
+# @example The Ruby standard logger format
+#   Yell::Formatter.register(:stdlogger, "%l, [%d #%p] %5L -- : %m", "%Y-%m-%dT%H:%M:%S.%6N")
+#
 module Yell #:nodoc:
 
   # No format on the log message
@@ -47,7 +55,7 @@ module Yell #:nodoc:
   class Formatter
 
     Table = {
-      "m" => "message(*event.messages)",   # Message
+      "m" => "message(event.message)",   # Message
       "l" => "level(event.level, 1)",      # Level (short), e.g.'I', 'W'
       "L" => "level(event.level)",         # Level, e.g. 'INFO', 'WARN'
       "d" => "date(event.time)",           # ISO8601 Timestamp
@@ -225,8 +233,8 @@ module Yell #:nodoc:
       length.nil? ? severity : severity[0, length]
     end
 
-    def message( *messages )
-      messages.map { |m| @modifier.call(m) }.join(" ")
+    def message( message )
+      @modifier.call(message)
     end
 
     # do nothing

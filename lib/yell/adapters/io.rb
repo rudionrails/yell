@@ -61,7 +61,6 @@ module Yell #:nodoc:
           message = color + message + TTYColors[-1]
         end
 
-        # message << "\n" unless message[-1] == ?\n
         stream.syswrite(message)
 
         super

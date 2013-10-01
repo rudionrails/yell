@@ -25,9 +25,9 @@ describe Yell::Event do
     it { should eq(1) }
   end
 
-  context "#messages" do
-    subject { event.messages }
-    it { should eq(['Hello World!']) }
+  context "#message" do
+    subject { event.message }
+    it { should eq('Hello World!') }
   end
 
   context "#time" do

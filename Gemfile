@@ -14,5 +14,7 @@ group :development, :test do
 
   gem 'simplecov', :require => false, :platform => :ruby_20
   gem 'coveralls', :require => false, :platform => :ruby_20
+
+  gem 'activesupport', '~> 4'
 end
 

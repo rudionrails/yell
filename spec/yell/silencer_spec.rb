@@ -42,7 +42,8 @@ describe Yell::Silencer do
     let(:silencer) { Yell::Silencer.new(/this/) }
 
     it "should reject messages that match any pattern" do
-      expect(silencer.silence("this", "that")).to eq(["that"])
+      expect(silencer.silence("this")).to be_nil
+      expect(silencer.silence("that")).to eq("that")
     end
   end
 

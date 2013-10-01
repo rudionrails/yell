@@ -21,8 +21,8 @@ module Yell #:nodoc:
     # Accessor to the log level
     attr_reader :level
 
-    # Accessor to the log messages
-    attr_reader :messages
+    # Accessor to the log message
+    attr_reader :message
 
     # Accessor to the time the log event occured
     attr_reader :time
@@ -31,17 +31,17 @@ module Yell #:nodoc:
     attr_reader :name
 
 
-    def initialize(logger, level, *messages, &block)
-      @time   = Time.now
-      @level  = level
-      @name   = logger.name
+    def initialize(logger, level, message = nil, options = {}, &block)
+      @time = Time.now
+      @level = level
+      @options = options
+      @name = logger.name
 
-      @messages = messages
-      @messages << block.call if block
+      @message = block.nil? ? message : block.call
 
-      @caller = logger.trace.at?(level) ? caller[CallerIndex].to_s : ''
-      @file   = nil
-      @line   = nil
+      @caller = logger.trace.at?(level) ? caller[caller_index].to_s : ''
+      @file = nil
+      @line = nil
       @method = nil
 
       @pid = nil
@@ -84,6 +84,10 @@ module Yell #:nodoc:
 
 
     private
+
+    def caller_index
+      CallerIndex + @options[:caller].to_i
+    end
 
     def backtrace!
       if m = CallerRegexp.match(@caller)
