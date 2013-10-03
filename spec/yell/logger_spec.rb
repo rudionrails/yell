@@ -19,8 +19,6 @@ describe Yell::Logger do
     let(:logger) { Yell::Logger.new }
     subject { logger }
 
-    its(:name) { should be_nil }
-
     context "log methods" do
       it { should respond_to(:debug) }
       it { should respond_to(:debug?) }
@@ -41,10 +39,16 @@ describe Yell::Logger do
       it { should respond_to(:unknown?) }
     end
 
-    context "default #adapter" do
-      subject { logger._adapter }
+    context "default #name" do
+      its(:name) { should eq("<Yell::Logger##{logger.object_id}>") }
 
-      it { should be_kind_of(Yell::Adapters::File) }
+      it "should not be added to the repository" do
+        expect { Yell::Repository[logger.name] }.to raise_error(Yell::LoggerNotFound)
+      end
+    end
+
+    context "default #adapter" do
+      its(:_adapter) { should be_kind_of(Yell::Adapters::File) }
     end
 
     context "default #level" do

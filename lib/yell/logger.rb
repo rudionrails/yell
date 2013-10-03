@@ -80,8 +80,8 @@ module Yell #:nodoc:
     #
     # @return [String] The logger's name
     def name=( val )
-      @name = val
-      Yell::Repository[@name] = self if @name
+      Yell::Repository[val] = self if val
+      @name = val.nil? ? "<#{self.class.name}##{object_id}>": val
 
       @name
     end
