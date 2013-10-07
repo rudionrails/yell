@@ -55,7 +55,7 @@ module Yell #:nodoc:
   class Formatter
 
     Table = {
-      "m" => "message(event.message)",   # Message
+      "m" => "message(event.messages)",    # Message
       "l" => "level(event.level, 1)",      # Level (short), e.g.'I', 'W'
       "L" => "level(event.level)",         # Level, e.g. 'INFO', 'WARN'
       "d" => "date(event.time)",           # ISO8601 Timestamp
@@ -72,7 +72,7 @@ module Yell #:nodoc:
 
     # For standard formatted backwards compatibility
     LegacyTable = Hash[ Table.keys.map { |k| [k, 'noop'] } ].merge(
-      'm' => 'message(*msg)',
+      'm' => 'message(msg)',
       'l' => 'level(event, 1)',
       'L' => 'level(event)',
       'd' => 'date(time)',
@@ -138,8 +138,10 @@ module Yell #:nodoc:
         case
         when mod = @repository[message.class] || @repository[message.class.to_s]
           mod.call(message)
+        when message.is_a?(Array)
+          message.map { |m| call(m) }.join(" ")
         when message.is_a?(Hash)
-          message.map { |k,v| "#{k}: #{v}" }.join(", ")
+          message.map { |k, v| "#{k}: #{v}" }.join(", ")
         when message.is_a?(Exception)
           backtrace = message.backtrace ? "\n\t#{message.backtrace.join("\n\t")}" : ""
           sprintf("%s: %s%s", message.class, message.message, backtrace)
@@ -233,8 +235,8 @@ module Yell #:nodoc:
       length.nil? ? severity : severity[0, length]
     end
 
-    def message( message )
-      @modifier.call(message)
+    def message( messages )
+      @modifier.call(messages.is_a?(Array) && messages.size == 1 ? messages.first : messages)
     end
 
     # do nothing

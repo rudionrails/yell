@@ -20,7 +20,7 @@ describe Yell::Formatter do
   describe "patterns" do
     context "%m" do
       let(:pattern) { "%m" }
-      it { should eq("#{event.message}\n") }
+      it { should eq("#{event.messages.join(' ')}\n") }
     end
 
     context "%l" do

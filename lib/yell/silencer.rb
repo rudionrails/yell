@@ -25,19 +25,15 @@ module Yell #:nodoc:
     # Clears out all the messages that would match any defined pattern
     #
     # @example
-    #   silence('username')
+    #   call(['username', 'password'])
     #   #=> ['username]
     #
-    # @return [Array<String>] The remaining messages
-    def silence( message )
-      matches?(message) ? nil : message
-    end
+    # @return [Array] The remaining messages
+    def call( messages )
+      messages = messages.is_a?(Array) ? messages : [messages]
+      return messages if @patterns.empty?
 
-    # Anything to silence at all?
-    #
-    # @return [Boolean] true or false
-    def silence?
-      @patterns.any?
+      messages.reject { |m| matches?(m) }
     end
 
     # Get a pretty string
@@ -61,7 +57,7 @@ module Yell #:nodoc:
     #
     # @return [Boolean] true or false
     def matches?( message )
-      @patterns.any? { |pattern| message.match(pattern) }
+      @patterns.any? { |pattern| message.respond_to?(:match) && message.match(pattern) }
     end
 
   end

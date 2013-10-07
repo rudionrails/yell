@@ -22,7 +22,7 @@ module Yell #:nodoc:
     attr_reader :level
 
     # Accessor to the log message
-    attr_reader :message
+    attr_reader :messages
 
     # Accessor to the time the log event occured
     attr_reader :time
@@ -31,13 +31,14 @@ module Yell #:nodoc:
     attr_reader :name
 
 
-    def initialize(logger, level, message = nil, options = {}, &block)
+    def initialize(logger, level, messages = nil, options = {}, &block)
       @time = Time.now
       @level = level
       @options = options
       @name = logger.name
 
-      @message = block.nil? ? message : block.call
+      @messages = messages.is_a?(Array) ? messages : [messages]
+      @messages << block.call unless block.nil?
 
       @caller = logger.trace.at?(level) ? caller[caller_index].to_s : ''
       @file = nil

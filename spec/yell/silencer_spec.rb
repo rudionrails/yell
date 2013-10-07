@@ -24,27 +24,15 @@ describe Yell::Silencer do
     end
   end
 
-  context "#silence?" do
-    let(:silencer) { Yell::Silencer.new }
-
-    it "should be false when no patterns present" do
-      expect(silencer.silence?).to be_false
-    end
-
-    it "should be true when patterns present" do
-      silencer.add /this/
-
-      expect(silencer.silence?).to be_true
-    end
-  end
-
-  context "#silence" do
+  context "#call" do
     let(:silencer) { Yell::Silencer.new(/this/) }
 
     it "should reject messages that match any pattern" do
-      expect(silencer.silence("this")).to be_nil
-      expect(silencer.silence("that")).to eq("that")
+      expect(silencer.call("this")).to eq([])
+      expect(silencer.call("that")).to eq(["that"])
+      expect(silencer.call(["this", "that"])).to eq(["that"])
     end
   end
 
 end
+

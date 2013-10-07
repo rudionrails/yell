@@ -53,7 +53,7 @@ module Yell #:nodoc:
       end
 
       # FIXME: :format is deprecated in future versions --R
-      self.formatter = @options.fetch(:format, @options.fetch(:formatter, Yell::DefaultFormat))
+      self.formatter = @options.fetch(:format, @options[:formatter])
       self.level = @options.fetch(:level, 0)
       self.name = @options.fetch(:name, nil)
       self.trace = @options.fetch(:trace, :error)
@@ -87,13 +87,19 @@ module Yell #:nodoc:
     end
 
     # Somewhat backwards compatible method (not fully though)
-    def add( severity, message, options = {}, &block )
+    def add( severity, messages, options = {}, &block )
       return false unless level.at?(severity)
 
-      message = silencer.silence(message) if silencer.silence?
-      return false if message.nil?
+      messages = silencer.call(messages)
+      return false if messages.empty?
 
-      event = Yell::Event.new(self, severity, message, {:caller => 0}.merge(options), &block)
+      # TODO: better Event DSL (pass constructor to Event::Builder
+      #   Yell::Event.new(self, severity, messages, &block) do |e|
+      #     e.caller = options[:caller] if options.key?(:caller)
+      #   end
+      options = {:caller => 0}.merge(options)
+      event = Yell::Event.new(self, severity, messages, options, &block)
+
       write(event)
     end
 
