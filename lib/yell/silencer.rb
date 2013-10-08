@@ -4,6 +4,15 @@ module Yell #:nodoc:
   # The +Yell::Silencer+ is your handly helper for stiping out unwanted log messages.
   class Silencer
 
+    class PresetNotFound < StandardError
+      def message; "Could not find a preset for #{super.inspect}"; end
+    end
+
+    Presets = {
+      :assets => [/^Started GET "\/assets/, /^Served asset/, /^$/] # for Rails
+    }
+
+
     def initialize( *patterns )
       @patterns = patterns.dup
     end
@@ -17,9 +26,11 @@ module Yell #:nodoc:
     # @example Add regular expressions
     #   add( /password/ )
     #
-    # @return [Array] All set patterns
+    # @return [self] The silencer instance
     def add( *patterns )
-      @patterns = @patterns | patterns.compact
+      patterns.each { |pattern| add!(pattern) }
+
+      self
     end
 
     # Clears out all the messages that would match any defined pattern
@@ -48,6 +59,17 @@ module Yell #:nodoc:
 
 
     private
+
+    def add!( pattern )
+      @patterns = @patterns | fetch(pattern)
+    end
+
+    def fetch( pattern )
+      case pattern
+      when Symbol then Presets[pattern] or raise PresetNotFound.new(pattern)
+      else pattern
+      end
+    end
 
     # Check if the provided message matches any of the defined patterns.
     #
