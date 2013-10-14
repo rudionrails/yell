@@ -87,19 +87,13 @@ module Yell #:nodoc:
     end
 
     # Somewhat backwards compatible method (not fully though)
-    def add( severity, messages, options = {}, &block )
-      return false unless level.at?(severity)
+    def add( options, *messages, &block )
+      return false unless level.at?(options)
 
-      messages = silencer.call(messages)
+      messages = silencer.call(*messages)
       return false if messages.empty?
 
-      # TODO: better Event DSL (pass constructor to Event::Builder
-      #   Yell::Event.new(self, severity, messages, &block) do |e|
-      #     e.caller = options[:caller] if options.key?(:caller)
-      #   end
-      options = {:caller => 0}.merge(options)
-      event = Yell::Event.new(self, severity, messages, options, &block)
-
+      event = Yell::Event.new(self, options, *messages, &block)
       write(event)
     end
 
@@ -112,12 +106,13 @@ module Yell #:nodoc:
     Yell::Severities.each_with_index do |s, index|
       name = s.downcase
 
-      class_eval <<-EOS, __FILE__, __LINE__
-        def #{name}?; level.at?(#{index}); end                        # def info?; level.at?(1); end
-                                                                      #
-        def #{name}( message, options = {}, &block )                  # def info( message, options = {}, &block )
-          add(#{index}, message, options.merge(:caller => 1), &block) #   add(1, message, options.merge(:caller => 1), &block)
-        end                                                           # end
+      class_eval <<-EOS, __FILE__, __LINE__ + index
+        def #{name}?; level.at?(#{index}); end            # def info?; level.at?(1); end
+                                                          #
+        def #{name}( *m, &b )                             # def info( *m, &b )
+          options = Yell::Event::Options.new(#{index}, 1)
+          add(options, *m, &b)                            #   add(Yell::Event::Options.new(1, 1), *m, &b)
+        end                                               # end
       EOS
     end
 

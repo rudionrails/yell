@@ -9,6 +9,7 @@ group :development, :test do
   gem 'rspec-core'
   gem 'rspec-expectations'
   gem "rr"
+  gem 'pry'
 
   gem 'timecop', '0.6.1'
 

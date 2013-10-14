@@ -40,8 +40,7 @@ module Yell #:nodoc:
     #   #=> ['username]
     #
     # @return [Array] The remaining messages
-    def call( messages )
-      messages = messages.is_a?(Array) ? messages : [messages]
+    def call( *messages )
       return messages if @patterns.empty?
 
       messages.reject { |m| matches?(m) }
@@ -67,7 +66,7 @@ module Yell #:nodoc:
     def fetch( pattern )
       case pattern
       when Symbol then Presets[pattern] or raise PresetNotFound.new(pattern)
-      else pattern
+      else [pattern]
       end
     end
 

@@ -30,7 +30,7 @@ describe Yell::Silencer do
     it "should reject messages that match any pattern" do
       expect(silencer.call("this")).to eq([])
       expect(silencer.call("that")).to eq(["that"])
-      expect(silencer.call(["this", "that"])).to eq(["that"])
+      expect(silencer.call("this", "that")).to eq(["that"])
     end
   end
 

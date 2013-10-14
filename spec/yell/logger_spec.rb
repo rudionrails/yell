@@ -3,12 +3,12 @@ require 'spec_helper'
 class LoggerFactory
   attr_accessor :logger
 
-  def foo
+  def info
     logger.info :foo
   end
 
-  def bar
-    logger.info :bar
+  def add
+    logger.add 1, :bar
   end
 end
 
@@ -191,11 +191,11 @@ describe Yell::Logger do
       factory = LoggerFactory.new
       factory.logger = logger
 
-      mock(stdout.send(:stream)).syswrite("#{__FILE__}, 7: foo\n")
-      mock(stdout.send(:stream)).syswrite("#{__FILE__}, 11: bar\n")
+      mock(stdout.send(:stream)).syswrite("#{__FILE__}, 7: info\n")
+      mock(stdout.send(:stream)).syswrite("#{__FILE__}, 11: add\n")
 
-      factory.foo
-      factory.bar
+      factory.info
+      factory.add
     end
   end
 

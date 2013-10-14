@@ -44,8 +44,6 @@ module Yell #:nodoc:
     # @param [Integer,String,Symbol,Array,Range,nil] severity The severity for the level.
     def initialize( *severities )
       set(*severities)
-
-      # super(to_i)
     end
 
     # Set the severity to the given format
@@ -54,11 +52,11 @@ module Yell #:nodoc:
       severity = severities.length > 1 ? severities : severities.first
 
       case severity
-      when Array then at( *severity )
-      when Range then gte( severity.first ).lte( severity.last )
-      when Integer, Symbol then gte( severity )
-      when String then interpret( severity )
+      when Array then at(*severity)
+      when Range then gte(severity.first).lte(severity.last)
+      when String then interpret(severity)
       when Yell::Level then @severities = severity.severities
+      when Integer, Symbol then gte(severity)
       end
     end
 
@@ -70,7 +68,7 @@ module Yell #:nodoc:
     #
     # @return [Boolean] tru or false
     def at?( severity )
-      index = index_from( severity )
+      index = index_from(severity)
 
       index.nil? ? false : @severities[index]
     end
@@ -169,7 +167,7 @@ module Yell #:nodoc:
     end
 
     def calculate!( modifier, severity )
-      index = index_from( severity )
+      index = index_from(severity)
       return if index.nil?
 
       case modifier
@@ -185,9 +183,8 @@ module Yell #:nodoc:
 
     def index_from( severity )
       case severity
-      when Integer        then severity
-      when String, Symbol then Yell::Severities.index( severity.to_s.upcase )
-      else nil
+      when String, Symbol then Yell::Severities.index(severity.to_s.upcase)
+      else Integer(severity)
       end
     end
 
