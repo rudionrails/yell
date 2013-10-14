@@ -54,8 +54,6 @@ module Yell #:nodoc:
 
       # @overload setup!( options )
       def setup!( options )
-        @date, @date_strftime = nil, nil # default; do not override --R
-
         self.header = options.fetch(:header, true)
         self.date_pattern = options.fetch(:date_pattern, DefaultDatePattern)
         self.keep = options.fetch(:keep, false)
@@ -63,6 +61,9 @@ module Yell #:nodoc:
 
         @original_filename  = ::File.expand_path options.fetch(:filename, default_filename)
         options[:filename]  = @original_filename
+
+        @date = Time.now
+        @date_strftime = @date.strftime(date_pattern)
 
         super
       end
