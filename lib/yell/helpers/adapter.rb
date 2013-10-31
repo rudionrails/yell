@@ -37,7 +37,7 @@ module Yell #:nodoc:
           @_adapter.extend(Yell::Adapters.broadcast(new_adapter))
         end
 
-        _adapter
+        new_adapter
       end
 
       # @private

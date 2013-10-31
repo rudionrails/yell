@@ -18,6 +18,7 @@ module Yell #:nodoc:
         @level
       end
 
+
       private
 
       def reset!
