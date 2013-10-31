@@ -10,19 +10,22 @@ module Yell #:nodoc:
       #
       # @param [String, Symbol, Integer] severity The minimum log level
       def level=( severity )
-        @level.set(severity)
+        @__level__ = case severity
+        when Yell::Level then severity
+        else Yell::Level.new(severity)
+        end
       end
 
       # @private
       def level
-        @level
+        @__level__
       end
 
 
       private
 
       def reset!
-        @level = Yell::Level.new
+        @__level__ = Yell::Level.new
 
         super
       end

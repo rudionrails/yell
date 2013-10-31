@@ -160,7 +160,12 @@ module Yell #:nodoc:
       def initialize( pattern = nil, date_pattern = nil, &block )
         @modifier = Modifier.new
 
-        @pattern = pattern || Yell::DefaultFormat
+        @pattern = case pattern
+        when false then Yell::NoFormat
+        when nil then Yell::DefaultFormat
+        else pattern
+        end
+
         @pattern << "\n" unless @pattern[-1] == ?\n # add newline if not present
         @date_pattern = date_pattern || :iso8601
 
@@ -176,11 +181,15 @@ module Yell #:nodoc:
       buf = case @date_pattern
       when String then "t.strftime(@date_pattern)"
       when Symbol then respond_to?(@date_pattern, true) ? "#{@date_pattern}(t)" : "t.#{@date_pattern}"
-      else "iso8601(t)"
+      else t.iso8601
       end
 
       # define the method
-      instance_eval "def date(t = Time.now); #{buf}; end", __FILE__, __LINE__
+      instance_eval <<-METHOD, __FILE__, __LINE__
+        def date(t = Time.now)
+          #{buf}
+        end
+       METHOD
     end
 
     # define a standard +Logger+ backwards compatible #call method for the formatter
@@ -193,7 +202,6 @@ module Yell #:nodoc:
     end
 
     def to_sprintf( table )
-      # new and improved Yell version of a formatter call method
       buff, args, _pattern = "", [], @pattern.dup
 
       while true
@@ -208,22 +216,7 @@ module Yell #:nodoc:
         _pattern = match[4]
       end
 
-      "sprintf('#{buff}', #{args.join(', ')})"
-    end
-
-    # The iso8601 implementation of the standard Time library is more than
-    # twice as slow compared to using strftime. So, we just implement
-    # it ourselves --R
-    def iso8601( t )
-      zone = if t.utc?
-        "-00:00"
-      else
-        offset = t.utc_offset
-        sign = offset < 0 ? '-' : '+'
-        sprintf('%s%02d:%02d', sign, *(offset.abs/60).divmod(60))
-      end
-
-      t.strftime("%Y-%m-%dT%H:%M:%S#{zone}")
+      %Q{sprintf("#{buff.gsub(/"/, '\"')}", #{args.join(', ')})}
     end
 
     def level( sev, length = nil )

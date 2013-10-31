@@ -8,22 +8,21 @@ module Yell #:nodoc:
         silencer.add(*patterns)
       end
 
-      # @private
       def silencer
-        @silencer
+        @__silencer__
       end
 
 
       private
 
       def reset!
-        @silencer = Yell::Silencer.new
+        @__silencer__ = Yell::Silencer.new
 
         super
       end
 
       def silence!( *messages )
-        silencer.silence!(*messages) if silencer.silence?
+        @__silencer__.silence!(*messages) if silencer.silence?
       end
 
     end

@@ -6,7 +6,7 @@ puts <<-EOS
 
 # The extended formatting string looks like: %d [%5L] %p %h : %m.
 
-logger = Yell.new STDOUT, :format => "[%f:%n in `%M'] %m"
+logger = Yell.new STDOUT, :format => "[%f:%n in `%M'] %m", :trace => true
 logger.info "Hello World!"
 #=> [003.4-formatting-on-your-own.rb:20 in `<main>'] Hello World!
 #    ^                               ^      ^        ^
@@ -16,6 +16,6 @@ logger.info "Hello World!"
 EOS
 
 puts "=== actuale example ==="
-logger = Yell.new STDOUT, :format => "[%f:%n in `%M'] %m"
+logger = Yell.new STDOUT, :format => "[%f:%n in `%M'] %m", :trace => true
 logger.info "Hello World!"
 

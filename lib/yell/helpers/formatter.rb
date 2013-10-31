@@ -5,17 +5,15 @@ module Yell #:nodoc:
 
       # Set the format for your message.
       def formatter=( pattern )
-        @formatter = case pattern
+        @__formatter__ = case pattern
         when Yell::Formatter then pattern
-        when false then Yell::Formatter.new(Yell::NoFormat)
         else Yell::Formatter.new(*pattern)
         end
       end
       alias :format= :formatter=
 
-      # @private
       def formatter
-        @formatter
+        @__formatter__
       end
       alias :format :formatter
 
@@ -23,7 +21,7 @@ module Yell #:nodoc:
       private
 
       def reset!
-        @formatter = Yell::Formatter.new
+        @__formatter__ = Yell::Formatter.new
 
         super
       end

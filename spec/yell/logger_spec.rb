@@ -48,7 +48,10 @@ describe Yell::Logger do
     end
 
     context "default #adapter" do
-      its(:_adapter) { should be_kind_of(Yell::Adapters::File) }
+      subject { logger.adapters.instance_variable_get(:@collection) }
+
+      its(:size) { should == 1 }
+      its(:first) { should be_kind_of(Yell::Adapters::File) }
     end
 
     context "default #level" do
@@ -150,25 +153,34 @@ describe Yell::Logger do
 
   context "initialize with a block" do
     let(:level) { Yell::Level.new :error }
-    let(:stdout) { Yell::Adapters::Stdout.new }
-    let(:adapters) { loggr.instance_variable_get(:@adapters) }
+    let(:adapters) { logger.adapters.instance_variable_get(:@collection) }
 
     context "with arity" do
-      subject do
+      let(:logger) do
         Yell::Logger.new(:level => level) { |l| l.adapter(:stdout) }
       end
 
-      its(:level) { should eq(level) }
-      its(:_adapter) { should be_instance_of(Yell::Adapters::Stdout) }
+      it "should pass the level correctly" do
+        expect(logger.level).to eq(level)
+      end
+
+      it "should pass the adapter correctly" do
+        expect(adapters.first).to be_instance_of(Yell::Adapters::Stdout)
+      end
     end
 
     context "without arity" do
-      subject do
+      let(:logger) do
         Yell::Logger.new(:level => level) { adapter(:stdout) }
       end
 
-      its(:level) { should eq(level) }
-      its(:_adapter) { should be_instance_of(Yell::Adapters::Stdout) }
+      it "should pass the level correctly" do
+        expect(logger.level).to eq(level)
+      end
+
+      it "should pass the adapter correctly" do
+        expect(adapters.first).to be_instance_of(Yell::Adapters::Stdout)
+      end
     end
   end
 

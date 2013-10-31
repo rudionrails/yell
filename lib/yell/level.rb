@@ -55,8 +55,8 @@ module Yell #:nodoc:
       when Array then at(*severity)
       when Range then gte(severity.first).lte(severity.last)
       when String then interpret(severity)
-      when Yell::Level then @severities = severity.severities
       when Integer, Symbol then gte(severity)
+      when Yell::Level then @severities = severity.severities
       end
     end
 

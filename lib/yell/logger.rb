@@ -42,8 +42,6 @@ module Yell #:nodoc:
     #     l.level = :info
     #   end
     def initialize( *args, &block )
-      reset!
-
       # extract options
       @options = args.last.is_a?(Hash) ? args.pop : {}
 
@@ -51,6 +49,8 @@ module Yell #:nodoc:
       if [String, Pathname].include?(args.last.class)
         @options[:filename] = args.pop unless @options[:filename]
       end
+
+      reset!
 
       # FIXME: :format is deprecated in future versions --R
       self.formatter = @options.fetch(:format, @options[:formatter])
@@ -71,7 +71,7 @@ module Yell #:nodoc:
       block.arity > 0 ? block.call(self) : instance_eval(&block) if block_given?
 
       # default adapter when none defined
-      self.adapter(:file) if _adapter.nil?
+      self.adapter(:file) if adapters.empty?
     end
 
 
@@ -124,16 +124,15 @@ module Yell #:nodoc:
 
     # @private
     def close
-      _adapter.close
+      adapters.close
     end
 
+    # @private
+    def write( event )
+      adapters.write(event)
+    end
 
     private
-
-    def write( event )
-      _adapter.write(event)
-      true
-    end
 
     # The :adapters key may be passed to the options hash. It may appear in
     # multiple variations:

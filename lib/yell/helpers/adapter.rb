@@ -24,32 +24,18 @@ module Yell #:nodoc:
       # @return [Yell::Adapter] The instance
       # @raise [Yell::NoSuchAdapter] Will be thrown when the adapter is not defined
       def adapter( type = :file, *args, &block )
-        options = [@options, *args].inject(Hash.new) do |h, c|
-          h.merge( [String, Pathname].include?(c.class) ? {:filename => c} : c  )
-        end
-
-        new_adapter = Yell::Adapters.new(type, options, &block)
-
-        # Also replaces the :null logger of type Yell::Adapters::Base
-        if @_adapter.nil? || @_adapter.instance_of?(Yell::Adapters::Base)
-          @_adapter = new_adapter
-        else
-          @_adapter.extend(Yell::Adapters.broadcast(new_adapter))
-        end
-
-        new_adapter
+        adapters.add(type, *args, &block)
       end
 
-      # @private
-      def _adapter
-        @_adapter
+      def adapters
+        @__adapters__
       end
 
 
       private
 
       def reset!
-        @_adapter = nil
+        @__adapters__ = Yell::Adapters::Collection.new(@options)
 
         super
       end
