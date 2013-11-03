@@ -18,7 +18,7 @@ module Yell #:nodoc:
     # @example
     #   Yell::Adapters.register( :myadapter, MyAdapter )
     def self.register( name, klass )
-      @adapters[name] = klass
+      @adapters[name.to_sym] = klass
     end
 
     # Returns an instance of the given processor type.
@@ -31,7 +31,7 @@ module Yell #:nodoc:
       adapter = case name
       when STDOUT then @adapters[:stdout]
       when STDERR then @adapters[:stderr]
-      else @adapters[name]
+      else @adapters[name.to_sym]
       end
 
       raise AdapterNotFound.new(name) if adapter.nil?

@@ -42,4 +42,38 @@ describe Yell::Adapters do
     end
   end
 
+  context "keys for registering and search registered adapters" do
+    let(:adapter_class) do 
+      klass = mock
+      mock(klass).new(anything) { :adapter_instance }
+      klass
+    end
+
+    before { Yell::Adapters.register(adapter_name, adapter_class) }
+
+    context "registered with string" do
+      let(:adapter_name) { "mocked_adapter" }
+
+      it "can be found using string as key" do
+        Yell::Adapters.new(adapter_name.to_s).should == :adapter_instance
+      end
+
+      it "can be found using symbol as key" do
+        Yell::Adapters.new(adapter_name.to_sym).should == :adapter_instance
+      end
+    end
+
+    context "registered with symbol" do
+      let(:adapter_name) { :mocked_adapter }
+
+      it "can be found using string as key" do
+        Yell::Adapters.new(adapter_name.to_s).should == :adapter_instance
+      end
+
+      it "can be found using symbol as key" do
+        Yell::Adapters.new(adapter_name.to_sym).should == :adapter_instance
+      end
+    end
+  end
+
 end

@@ -33,6 +33,21 @@ describe Yell do
     it { should be_kind_of Yell::Logger }
   end
 
+  context ".load! understand adapters set as symbols or strings" do
+    subject { Yell.load!( 'yell.yml' ) }
+
+    before do
+      mock(Yell::Configuration).load!('yell.yml') { {:adapters => [:stdout, {'stderr' => {:level => "gte.error"}} ] } }
+    end
+
+    it "something" do 
+      should be_kind_of Yell::Logger
+
+      subject.adapters.map(&:class).should include Yell::Adapters::Stderr
+      subject.adapters.map(&:class).should include Yell::Adapters::Stdout
+    end
+  end
+
   context ".[]" do
     let(:name) { 'test' }
 
