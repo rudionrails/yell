@@ -5,6 +5,7 @@ Gem::Specification.new do |s|
   s.name        = "yell"
   s.version     = Yell::VERSION
   s.authors     = ["Rudolf Schmidt"]
+  s.license     = 'MIT'
 
   s.homepage    = "http://rudionrails.github.com/yell"
   s.summary     = %q{Yell - Your Extensible Logging Library}
