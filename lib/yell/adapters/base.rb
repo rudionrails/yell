@@ -25,7 +25,7 @@ module Yell #:nodoc:
     #     end
     #
     #     write do |event|
-    #       message = format.format(event)
+    #       message = format.call(event)
     #
     #       STDOUT.puts message
     #     end
@@ -216,7 +216,7 @@ module Yell #:nodoc:
       #
       # @return [Boolean] true or false
       def write?( event )
-        @level.nil? || @level.at?(event.level)
+        level.nil? || level.at?(event.level)
       end
 
       # Get an array of inspected attributes for the adapter.

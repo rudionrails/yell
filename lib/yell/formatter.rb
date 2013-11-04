@@ -1,6 +1,14 @@
 # encoding: utf-8
 require 'time'
 
+# TODO: Register custom formats
+#
+# @example The Yell default fomat
+#   Yell::Formatter.register(:default)
+#
+# @example The Ruby standard logger format
+#   Yell::Formatter.register(:stdlogger, "%l, [%d #%p] %5L -- : %m", "%Y-%m-%dT%H:%M:%S.%6N")
+#
 module Yell #:nodoc:
 
   # No format on the log message
@@ -47,8 +55,8 @@ module Yell #:nodoc:
   class Formatter
 
     Table = {
-      "m" => "message(*event.messages)",   # Message
-      "l" => "level(event.level)[0,1]",    # Level (short), e.g.'I', 'W'
+      "m" => "message(event.messages)",    # Message
+      "l" => "level(event.level, 1)",      # Level (short), e.g.'I', 'W'
       "L" => "level(event.level)",         # Level, e.g. 'INFO', 'WARN'
       "d" => "date(event.time)",           # ISO8601 Timestamp
       "h" => "event.hostname",             # Hostname
@@ -62,7 +70,20 @@ module Yell #:nodoc:
       "N" => "event.name"                  # Name of the logger
     }
 
-    Matcher = /([^%]*)(%\d*)?(#{Table.keys.join('|')})?(.*)/
+    # For standard formatted backwards compatibility
+    LegacyTable = Hash[ Table.keys.map { |k| [k, 'noop'] } ].merge(
+      'm' => 'message(msg)',
+      'l' => 'level(event, 1)',
+      'L' => 'level(event)',
+      'd' => 'date(time)',
+      "p" => "$$",
+      'P' => 'progname'
+    )
+
+    PatternMatcher = /([^%]*)(%\d*)?(#{Table.keys.join('|')})?(.*)/m
+
+
+    attr_reader :pattern, :date_pattern
 
 
     # Initializes a new +Yell::Formatter+.
@@ -92,7 +113,7 @@ module Yell #:nodoc:
       @modifier = builder.modifier
 
       define_date_method!
-      define_format_method!
+      define_call_method!
     end
 
     # Get a pretty string
@@ -117,8 +138,10 @@ module Yell #:nodoc:
         case
         when mod = @repository[message.class] || @repository[message.class.to_s]
           mod.call(message)
+        when message.is_a?(Array)
+          message.map { |m| call(m) }.join(" ")
         when message.is_a?(Hash)
-          message.map { |k,v| "#{k}: #{v}" }.join(", ")
+          message.map { |k, v| "#{k}: #{v}" }.join(", ")
         when message.is_a?(Exception)
           backtrace = message.backtrace ? "\n\t#{message.backtrace.join("\n\t")}" : ""
           sprintf("%s: %s%s", message.class, message.message, backtrace)
@@ -137,7 +160,13 @@ module Yell #:nodoc:
       def initialize( pattern = nil, date_pattern = nil, &block )
         @modifier = Modifier.new
 
-        @pattern = pattern || Yell::DefaultFormat
+        @pattern = case pattern
+        when false then Yell::NoFormat
+        when nil then Yell::DefaultFormat
+        else pattern
+        end
+
+        @pattern << "\n" unless @pattern[-1] == ?\n # add newline if not present
         @date_pattern = date_pattern || :iso8601
 
         block.call(self) if block
@@ -152,59 +181,60 @@ module Yell #:nodoc:
       buf = case @date_pattern
       when String then "t.strftime(@date_pattern)"
       when Symbol then respond_to?(@date_pattern, true) ? "#{@date_pattern}(t)" : "t.#{@date_pattern}"
-      else "iso8601(t)"
+      else t.iso8601
       end
 
-      instance_eval %-
-        def date( t )
+      # define the method
+      instance_eval <<-METHOD, __FILE__, __LINE__
+        def date(t = Time.now)
           #{buf}
         end
-      -
+       METHOD
     end
 
-    def define_format_method!
+    # define a standard +Logger+ backwards compatible #call method for the formatter
+    def define_call_method!
+      instance_eval <<-METHOD, __FILE__, __LINE__
+        def call(event, time = nil, progname = nil, msg = nil)
+          event.is_a?(Yell::Event) ? #{to_sprintf(Table)} : #{to_sprintf(LegacyTable)}
+        end
+      METHOD
+    end
+
+    def to_sprintf( table )
       buff, args, _pattern = "", [], @pattern.dup
 
       while true
-        match = Matcher.match(_pattern)
+        match = PatternMatcher.match(_pattern)
 
         buff << match[1] unless match[1].empty?
         break if match[2].nil?
 
         buff << match[2] + 's'
-        args << Table[ match[3] ]
+        args << table[ match[3] ]
 
         _pattern = match[4]
       end
 
-      instance_eval <<-EOS, __FILE__, __LINE__
-        def format( event )
-          sprintf("#{buff}", #{args.join(',')})
-        end
-      EOS
+      %Q{sprintf("#{buff.gsub(/"/, '\"')}", #{args.join(', ')})}
     end
 
-    # The iso8601 implementation of the standard Time library is more than
-    # twice as slow compared to using strftime. So, we just implement
-    # it ourselves --R
-    def iso8601( t )
-      zone = if t.utc?
-        "-00:00"
-      else
-        offset = t.utc_offset
-        sign = offset < 0 ? '-' : '+'
-        sprintf('%s%02d:%02d', sign, *(offset.abs/60).divmod(60))
+    def level( sev, length = nil )
+      severity = case sev
+      when Integer then Yell::Severities[sev] || 'ANY'
+      else sev
       end
 
-      t.strftime("%Y-%m-%dT%H:%M:%S#{zone}")
+      length.nil? ? severity : severity[0, length]
     end
 
-    def level( l )
-      Yell::Severities[ l ]
+    def message( messages )
+      @modifier.call(messages.is_a?(Array) && messages.size == 1 ? messages.first : messages)
     end
 
-    def message( *messages )
-      messages.map { |m| @modifier.call(m) }.join(" ")
+    # do nothing
+    def noop
+      ''
     end
 
   end

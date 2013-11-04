@@ -3,12 +3,12 @@ require 'spec_helper'
 class LoggerFactory
   attr_accessor :logger
 
-  def foo
+  def info
     logger.info :foo
   end
 
-  def bar
-    logger.info :bar
+  def add
+    logger.add 1, :bar
   end
 end
 
@@ -18,8 +18,6 @@ describe Yell::Logger do
   describe "a Logger instance" do
     let(:logger) { Yell::Logger.new }
     subject { logger }
-
-    its(:name) { should be_nil }
 
     context "log methods" do
       it { should respond_to(:debug) }
@@ -41,10 +39,19 @@ describe Yell::Logger do
       it { should respond_to(:unknown?) }
     end
 
-    context "default #adapter" do
-      subject { logger._adapter }
+    context "default #name" do
+      its(:name) { should eq("<Yell::Logger##{logger.object_id}>") }
 
-      it { should be_kind_of(Yell::Adapters::File) }
+      it "should not be added to the repository" do
+        expect { Yell::Repository[logger.name] }.to raise_error(Yell::LoggerNotFound)
+      end
+    end
+
+    context "default #adapter" do
+      subject { logger.adapters.instance_variable_get(:@collection) }
+
+      its(:size) { should == 1 }
+      its(:first) { should be_kind_of(Yell::Adapters::File) }
     end
 
     context "default #level" do
@@ -146,25 +153,34 @@ describe Yell::Logger do
 
   context "initialize with a block" do
     let(:level) { Yell::Level.new :error }
-    let(:stdout) { Yell::Adapters::Stdout.new }
-    let(:adapters) { loggr.instance_variable_get(:@adapters) }
+    let(:adapters) { logger.adapters.instance_variable_get(:@collection) }
 
     context "with arity" do
-      subject do
+      let(:logger) do
         Yell::Logger.new(:level => level) { |l| l.adapter(:stdout) }
       end
 
-      its(:level) { should eq(level) }
-      its(:_adapter) { should be_instance_of(Yell::Adapters::Stdout) }
+      it "should pass the level correctly" do
+        expect(logger.level).to eq(level)
+      end
+
+      it "should pass the adapter correctly" do
+        expect(adapters.first).to be_instance_of(Yell::Adapters::Stdout)
+      end
     end
 
     context "without arity" do
-      subject do
+      let(:logger) do
         Yell::Logger.new(:level => level) { adapter(:stdout) }
       end
 
-      its(:level) { should eq(level) }
-      its(:_adapter) { should be_instance_of(Yell::Adapters::Stdout) }
+      it "should pass the level correctly" do
+        expect(logger.level).to eq(level)
+      end
+
+      it "should pass the adapter correctly" do
+        expect(adapters.first).to be_instance_of(Yell::Adapters::Stdout)
+      end
     end
   end
 
@@ -187,11 +203,11 @@ describe Yell::Logger do
       factory = LoggerFactory.new
       factory.logger = logger
 
-      mock(stdout.send(:stream)).syswrite("#{__FILE__}, 7: foo\n")
-      mock(stdout.send(:stream)).syswrite("#{__FILE__}, 11: bar\n")
+      mock(stdout.send(:stream)).syswrite("#{__FILE__}, 7: info\n")
+      mock(stdout.send(:stream)).syswrite("#{__FILE__}, 11: add\n")
 
-      factory.foo
-      factory.bar
+      factory.info
+      factory.add
     end
   end
 
@@ -206,19 +222,19 @@ describe Yell::Logger do
     end
 
     it "should output multiple messages" do
-      logger.info "Hello", "W", "o", "r", "l", "d"
+      logger.info ["Hello", "W", "o", "r", "l", "d"]
 
       expect(line).to eq("Hello W o r l d\n")
     end
 
     it "should output a hash and message" do
-      logger.info "Hello World", :test => :message
+      logger.info ["Hello World", {:test => :message}]
 
       expect(line).to eq("Hello World test: message\n")
     end
 
     it "should output a hash and message" do
-      logger.info( {:test => :message}, "Hello World" )
+      logger.info [{:test => :message}, "Hello World"]
 
       expect(line).to eq("test: message Hello World\n")
     end

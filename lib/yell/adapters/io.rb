@@ -46,7 +46,7 @@ module Yell #:nodoc:
         @stream = nil
 
         self.colors = options.fetch(:colors, false)
-        self.format = options.fetch(:format, nil)
+        self.formatter = options.fetch(:format, options[:formatter])
         self.sync = options.fetch(:sync, true)
 
         super
@@ -54,15 +54,14 @@ module Yell #:nodoc:
 
       # @overload write!( event )
       def write!( event )
-        message = format.format(event)
+        message = formatter.call(event)
 
         # colorize if applicable
         if colors and color = TTYColors[event.level]
           message = color + message + TTYColors[-1]
         end
 
-        message << "\n" unless message[-1] == ?\n
-        stream.syswrite( message )
+        stream.syswrite(message)
 
         super
       end
@@ -93,7 +92,7 @@ module Yell #:nodoc:
 
       # @overload inspectables
       def inspectables
-        super.concat [:format, :colors, :sync]
+        super.concat [:formatter, :colors, :sync]
       end
 
     end

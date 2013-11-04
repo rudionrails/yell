@@ -4,23 +4,24 @@ module Yell #:nodoc:
     module Formatter #:nodoc:
 
       # Set the format for your message.
-      def format=( pattern )
-        @formatter = case pattern
+      def formatter=( pattern )
+        @__formatter__ = case pattern
         when Yell::Formatter then pattern
-        when false then Yell::Formatter.new(Yell::NoFormat)
         else Yell::Formatter.new(*pattern)
         end
       end
+      alias :format= :formatter=
 
-      # @private
-      def format
-        @formatter
+      def formatter
+        @__formatter__
       end
+      alias :format :formatter
+
 
       private
 
       def reset!
-        @formatter = Yell::Formatter.new
+        @__formatter__ = Yell::Formatter.new
 
         super
       end

@@ -23,6 +23,7 @@ module Yell #:nodoc:
   # @example Set at :info only
   #   Yell::Level.new.at(:info)
   class Level
+    include Comparable
 
     InterpretRegexp = /(at|gt|gte|lt|lte)?\.?(#{Yell::Severities.join('|')})/i
 
@@ -42,7 +43,7 @@ module Yell #:nodoc:
     #
     # @param [Integer,String,Symbol,Array,Range,nil] severity The severity for the level.
     def initialize( *severities )
-      set( *severities )
+      set(*severities)
     end
 
     # Set the severity to the given format
@@ -51,10 +52,10 @@ module Yell #:nodoc:
       severity = severities.length > 1 ? severities : severities.first
 
       case severity
-      when Array then at( *severity )
-      when Range then gte( severity.first ).lte( severity.last )
-      when Integer, Symbol then gte( severity )
-      when String then interpret( severity )
+      when Array then at(*severity)
+      when Range then gte(severity.first).lte(severity.last)
+      when String then interpret(severity)
+      when Integer, Symbol then gte(severity)
       when Yell::Level then @severities = severity.severities
       end
     end
@@ -67,7 +68,7 @@ module Yell #:nodoc:
     #
     # @return [Boolean] tru or false
     def at?( severity )
-      index = index_from( severity )
+      index = index_from(severity)
 
       index.nil? ? false : @severities[index]
     end
@@ -146,8 +147,12 @@ module Yell #:nodoc:
 
     # @private
     def ==(other)
-      return super unless other.respond_to?(:severities)
-      severities == other.severities
+      other.respond_to?(:severities) ? severities == other.severities : super
+    end
+
+    # @private
+    def <=>( other )
+      other.is_a?(Numeric) ? to_i <=> other : super
     end
 
 
@@ -162,7 +167,7 @@ module Yell #:nodoc:
     end
 
     def calculate!( modifier, severity )
-      index = index_from( severity )
+      index = index_from(severity)
       return if index.nil?
 
       case modifier
@@ -178,9 +183,8 @@ module Yell #:nodoc:
 
     def index_from( severity )
       case severity
-      when Integer        then severity
-      when String, Symbol then Yell::Severities.index( severity.to_s.upcase )
-      else nil
+      when String, Symbol then Yell::Severities.index(severity.to_s.upcase)
+      else Integer(severity)
       end
     end
 

@@ -2,32 +2,6 @@
 
 require 'pathname'
 
-# TODO: DSL improvements
-#
-# Initlalize an empty logger
-#   logger = Yell.new(adapters: false)
-#   logger.adapters.add :stdout
-#
-# Or shorthand for adapters.add
-#   logger.add :stdout
-#
-# Or with a block
-#   logger = Yell.new do |l|
-#     l.add :stdout
-#     l.add :stderr
-#   end
-#
-#  logger = Yell.new do |l|
-#    l.adapters.add :stdout
-#    l.adapters.add :stderr
-#  end
-#
-#
-# Define Silencers
-#   logger = Yell.new do |l|
-#     l.silence /password/
-#   end
-#
 module Yell #:nodoc:
 
   # The +Yell::Logger+ is your entrypoint. Anything onwards is derived from here.
@@ -68,25 +42,27 @@ module Yell #:nodoc:
     #     l.level = :info
     #   end
     def initialize( *args, &block )
-      reset!
-
       # extract options
       @options = args.last.is_a?(Hash) ? args.pop : {}
-
-      # adapters may be passed in the options
-      extract!(*@options[:adapters]) if @options.key?(:adapters)
 
       # check if filename was given as argument and put it into the @options
       if [String, Pathname].include?(args.last.class)
         @options[:filename] = args.pop unless @options[:filename]
       end
 
-      self.level = @options.fetch(:level, 0) # debug by default
-      self.name = @options.fetch(:name, nil) # no name by default
-      self.trace = @options.fetch(:trace, :error) # trace from :error level onwards
+      reset!
+
+      # FIXME: :format is deprecated in future versions --R
+      self.formatter = @options.fetch(:format, @options[:formatter])
+      self.level = @options.fetch(:level, 0)
+      self.name = @options.fetch(:name, nil)
+      self.trace = @options.fetch(:trace, :error)
 
       # silencer
-      self.silence(*@options[:silence])
+      self.silence(*@options[:silence]) if @options.key?(:silence)
+
+      # adapters may be passed in the options
+      extract!(*@options[:adapters]) if @options.key?(:adapters)
 
       # extract adapter
       self.adapter(args.pop) if args.any?
@@ -95,7 +71,7 @@ module Yell #:nodoc:
       block.arity > 0 ? block.call(self) : instance_eval(&block) if block_given?
 
       # default adapter when none defined
-      self.adapter(:file) if _adapter.nil?
+      self.adapter(:file) if adapters.empty?
     end
 
 
@@ -104,10 +80,21 @@ module Yell #:nodoc:
     #
     # @return [String] The logger's name
     def name=( val )
-      @name = val
-      Yell::Repository[@name] = self if @name
+      Yell::Repository[val] = self if val
+      @name = val.nil? ? "<#{self.class.name}##{object_id}>": val
 
       @name
+    end
+
+    # Somewhat backwards compatible method (not fully though)
+    def add( options, *messages, &block )
+      return false unless level.at?(options)
+
+      messages = silencer.call(*messages)
+      return false if messages.empty?
+
+      event = Yell::Event.new(self, options, *messages, &block)
+      write(event)
     end
 
     # Creates instance methods for every log level:
@@ -119,18 +106,12 @@ module Yell #:nodoc:
     Yell::Severities.each_with_index do |s, index|
       name = s.downcase
 
-      class_eval <<-EOS, __FILE__, __LINE__
+      class_eval <<-EOS, __FILE__, __LINE__ + index
         def #{name}?; level.at?(#{index}); end            # def info?; level.at?(1); end
                                                           #
         def #{name}( *m, &b )                             # def info( *m, &b )
-          return false unless #{name}?                    #   return false unless info?
-                                                          #
-          m = silencer.silence(*m) if silencer.silence?   #   m = silencer.silence(*m) if silencer.silence?
-          return false if m.empty?                        #   return false if m.empty?
-                                                          #
-          event = Yell::Event.new(self, #{index}, *m, &b) #   event = Yell::Event.new(self, 1, *m, &b)
-          write(event)                                    #   write(event)
-          true                                            #   true
+          options = Yell::Event::Options.new(#{index}, 1)
+          add(options, *m, &b)                            #   add(Yell::Event::Options.new(1, 1), *m, &b)
         end                                               # end
       EOS
     end
@@ -143,9 +124,13 @@ module Yell #:nodoc:
 
     # @private
     def close
-      _adapter.close
+      adapters.close
     end
 
+    # @private
+    def write( event )
+      adapters.write(event)
+    end
 
     private
 
@@ -164,11 +149,6 @@ module Yell #:nodoc:
         else adapter(a)
         end
       end
-    end
-
-    # Cycles all the adapters and writes the message
-    def write( event )
-      _adapter.write(event)
     end
 
     # Get an array of inspected attributes for the adapter.

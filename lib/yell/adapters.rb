@@ -10,6 +10,42 @@ module Yell #:nodoc:
   # directly.
   module Adapters
 
+    class Collection
+      def initialize( options = {} )
+        @options = options
+        @collection = []
+      end
+
+      def add( type = :file, *args, &block )
+        options = [@options, *args].inject(Hash.new) do |h, c|
+          h.merge( [String, Pathname].include?(c.class) ? {:filename => c} : c  )
+        end
+
+        # remove possible :null adapters
+        @collection.shift if @collection.first.instance_of?(Yell::Adapters::Base)
+
+        new_adapter = Yell::Adapters.new(type, options, &block)
+        @collection.push(new_adapter)
+
+        new_adapter
+      end
+
+      def empty?
+        @collection.empty?
+      end
+
+      # @private
+      def write( event )
+        @collection.each { |c| c.write(event) }
+        true
+      end
+
+      # @private
+      def close
+        @collection.each { |c| c.close }
+      end
+    end
+
     # holds the list of known adapters
     @adapters = {}
 
@@ -35,23 +71,7 @@ module Yell #:nodoc:
       end
 
       raise AdapterNotFound.new(name) if adapter.nil?
-
       adapter.new(options, &block)
-    end
-
-    # Thanks, railties :-)
-    def self.broadcast( adapter )
-      Module.new do
-        define_method(:write) do |event|
-          adapter.write(event)
-          super(event)
-        end
-
-        define_method(:close) do
-          adapter.close
-          super()
-        end
-      end
     end
 
   end

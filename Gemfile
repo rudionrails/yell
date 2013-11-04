@@ -9,10 +9,12 @@ group :development, :test do
   gem 'rspec-core'
   gem 'rspec-expectations'
   gem "rr"
-
-  gem 'timecop', '0.6.1'
+  gem 'pry'
+  gem 'timecop'
 
   gem 'simplecov', :require => false, :platform => :ruby_20
   gem 'coveralls', :require => false, :platform => :ruby_20
+
+  gem 'activesupport', '~> 4'
 end
 
