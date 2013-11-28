@@ -45,9 +45,9 @@ module Yell #:nodoc:
       def setup!( options )
         @stream = nil
 
-        self.colors = options.fetch(:colors, false)
-        self.formatter = options.fetch(:format, options[:formatter])
-        self.sync = options.fetch(:sync, true)
+        self.colors = Yell.__fetch__(options, :colors, :default => false)
+        self.formatter = Yell.__fetch__(options, :format, :formatter)
+        self.sync = Yell.__fetch__(options, :sync, :default => true)
 
         super
       end
@@ -68,15 +68,15 @@ module Yell #:nodoc:
 
       # @overload open!
       def open!
-        @stream.sync = self.sync if @stream.respond_to? :sync
-        @stream.flush            if @stream.respond_to? :flush
+        @stream.sync = self.sync if @stream.respond_to?(:sync)
+        @stream.flush if @stream.respond_to?(:flush)
 
         super
       end
 
       # @overload close!
       def close!
-        @stream.close if @stream.respond_to? :close
+        @stream.close if @stream.respond_to?(:close)
         @stream = nil
 
         super

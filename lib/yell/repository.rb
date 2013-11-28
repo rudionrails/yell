@@ -35,7 +35,7 @@ module Yell #:nodoc:
     # @raise [Yell::LoggerNotFound] Raised when repository does not have that key
     # @return [Yell::Logger] The logger instance
     def self.[]( name )
-      synchronize { instance.fetch(name) or raise Yell::LoggerNotFound.new(name) }
+      synchronize { instance.__fetch__(name) or raise Yell::LoggerNotFound.new(name) }
     end
 
     # Get the list of all loggers in the repository
@@ -57,11 +57,11 @@ module Yell #:nodoc:
     # If the logger could not be found and has a superclass, it 
     # will attempt to look there. This is important for the 
     # Yell::Loggable module.
-    def fetch( name )
+    def __fetch__( name )
       logger = loggers[name] || loggers[name.to_s]
 
       if logger.nil? && name.respond_to?(:superclass)
-        return fetch(name.superclass)
+        return __fetch__(name.superclass)
       end
 
       logger

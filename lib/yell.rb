@@ -90,20 +90,29 @@ module Yell #:nodoc:
     end
 
     # @private
-    def _deprecate( version, message, options = {} )
+    def __deprecate__( version, message, options = {} ) #:nodoc:
       messages = ["Deprecation Warning (since v#{version}): #{message}" ]
       messages << "  before: #{options[:before]}" if options[:before]
       messages << "  after:  #{options[:after]}" if options[:after]
 
-      _warn(*messages)
+      __warn__(*messages)
     end
 
     # @private
-    def _warn( *messages )
+    def __warn__( *messages ) #:nodoc:
       $stderr.puts "[Yell] " + messages.join("\n")
     rescue Exception => e
       # do nothing
     end
+
+    # @private
+    def __fetch__( hash, *args )
+      options = args.last.is_a?(Hash) ? args.pop : {}
+      value = args.map { |key| hash.fetch(key.to_sym, hash[key.to_s]) }.compact.first
+
+      value.nil? ? options[:default] : value
+    end
+
   end
 
 end

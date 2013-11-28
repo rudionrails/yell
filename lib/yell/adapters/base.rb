@@ -52,7 +52,7 @@ module Yell #:nodoc:
         #     @file_handle = File.new( '/dev/null', 'w' )
         #   end
         def setup( &block )
-          compile!( :setup!, &block )
+          compile!(:setup!, &block)
         end
 
         # Define your write method with this helper.
@@ -62,7 +62,7 @@ module Yell #:nodoc:
         #     @file_handle.puts event.message
         #   end
         def write( &block )
-          compile!( :write!, &block )
+          compile!(:write!, &block)
         end
 
         # Define your open method with this helper.
@@ -72,7 +72,7 @@ module Yell #:nodoc:
         #     @stream = ::File.open( 'test.log', ::File::WRONLY|::File::APPEND|::File::CREAT )
         #   end
         def open( &block )
-          compile!( :open!, &block )
+          compile!(:open!, &block)
         end
 
         # Define your close method with this helper.
@@ -82,7 +82,7 @@ module Yell #:nodoc:
         #     @stream.close
         #   end
         def close( &block )
-          compile!( :close!, &block )
+          compile!(:close!, &block)
         end
 
 
@@ -106,24 +106,24 @@ module Yell #:nodoc:
           m = instance_method( name )
 
           # Create a new method with leading underscore
-          define_method( "_#{name}", &block )
-          _m = instance_method( "_#{name}" )
-          remove_method( "_#{name}" )
+          define_method("_#{name}", &block)
+          _m = instance_method("_#{name}")
+          remove_method("_#{name}")
 
           # Define instance method
-          define!( name, _m, m, &block )
+          define!(name, _m, m, &block)
         end
 
         # Define instance method by given name and call the unbound
         # methods in order with provided block.
         def define!( name, _m, m, &block )
           if block.arity == 0
-            define_method( name ) do
+            define_method(name) do
               _m.bind(self).call
               m.bind(self).call
             end
           else
-            define_method( name ) do |*args|
+            define_method(name) do |*args|
               _m.bind(self).call(*args)
               m.bind(self).call(*args)
             end
@@ -180,7 +180,7 @@ module Yell #:nodoc:
       # Adapter classes should provide their own implementation 
       # of this method (if applicable).
       def setup!( options )
-        self.level = options[:level]
+        self.level = Yell.__fetch__(options,:level)
       end
 
       # Perform the actual write.
@@ -221,7 +221,7 @@ module Yell #:nodoc:
 
       # Get an array of inspected attributes for the adapter.
       def inspectables
-        [ :level ]
+        [:level]
       end
 
     end

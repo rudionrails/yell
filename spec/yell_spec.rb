@@ -24,7 +24,7 @@ describe Yell do
   end
 
   context ".load!" do
-    subject { Yell.load!( 'yell.yml' ) }
+    subject { Yell.load!('yell.yml') }
 
     before do
       mock(Yell::Configuration).load!('yell.yml') { {} }

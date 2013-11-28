@@ -53,16 +53,16 @@ module Yell #:nodoc:
       reset!
 
       # FIXME: :format is deprecated in future versions --R
-      self.formatter = @options.fetch(:format, @options[:formatter])
-      self.level = @options.fetch(:level, 0)
-      self.name = @options.fetch(:name, nil)
-      self.trace = @options.fetch(:trace, :error)
+      self.formatter = Yell.__fetch__(@options, :format, :formatter)
+      self.level = Yell.__fetch__(@options, :level, :default => 0)
+      self.name = Yell.__fetch__(@options, :name)
+      self.trace = Yell.__fetch__(@options, :trace, :default => :error)
 
       # silencer
-      self.silence(*@options[:silence]) if @options.key?(:silence)
+      self.silence(*Yell.__fetch__(@options, :silence))
 
       # adapters may be passed in the options
-      extract!(*@options[:adapters]) if @options.key?(:adapters)
+      extract!(*Yell.__fetch__(@options, :adapters))
 
       # extract adapter
       self.adapter(args.pop) if args.any?

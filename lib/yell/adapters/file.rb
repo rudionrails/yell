@@ -11,14 +11,14 @@ module Yell #:nodoc:
 
       # @overload setup!( options )
       def setup!( options )
-        @filename = ::File.expand_path options.fetch(:filename, default_filename)
+        @filename = ::File.expand_path(Yell.__fetch__(options, :filename, :default => default_filename))
 
         super
       end
 
       # @overload open!
       def open!
-        @stream = ::File.open( @filename, ::File::WRONLY|::File::APPEND|::File::CREAT )
+        @stream = ::File.open(@filename, ::File::WRONLY|::File::APPEND|::File::CREAT)
 
         super
       end
@@ -26,7 +26,7 @@ module Yell #:nodoc:
       def default_filename #:nodoc:
         logdir = ::File.expand_path("log")
 
-        ::File.expand_path ::File.directory?(logdir) ? "#{logdir}/#{Yell.env}.log" : "#{Yell.env}.log"
+        ::File.expand_path(::File.directory?(logdir) ? "#{logdir}/#{Yell.env}.log" : "#{Yell.env}.log")
       end
 
     end

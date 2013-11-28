@@ -54,12 +54,12 @@ module Yell #:nodoc:
 
       # @overload setup!( options )
       def setup!( options )
-        self.header = options.fetch(:header, true)
-        self.date_pattern = options.fetch(:date_pattern, DefaultDatePattern)
-        self.keep = options.fetch(:keep, false)
-        self.symlink = options.fetch(:symlink, true)
+        self.header = Yell.__fetch__(options, :header, :default => true)
+        self.date_pattern = Yell.__fetch__(options, :date_pattern, :default => DefaultDatePattern)
+        self.keep = Yell.__fetch__(options, :keep, :default => false)
+        self.symlink = Yell.__fetch__(options, :symlink, :default => true)
 
-        @original_filename  = ::File.expand_path options.fetch(:filename, default_filename)
+        @original_filename  = ::File.expand_path(Yell.__fetch__(options, :filename, :default => default_filename))
         options[:filename]  = @original_filename
 
         @date = Time.now
@@ -86,7 +86,7 @@ module Yell #:nodoc:
 
       # @overload close!
       def close!
-        @filename = filename_for( @date )
+        @filename = filename_for(@date)
 
         super
       end
@@ -117,7 +117,7 @@ module Yell #:nodoc:
       # it makes the best guess by checking the last access time (which may result 
       # in false cleanups).
       def cleanup!
-        files = Dir[ @original_filename.sub( /(\.\w+)?$/, ".*\\1" ) ].sort.select do |file|
+        files = Dir[ @original_filename.sub(/(\.\w+)?$/, ".*\\1") ].sort.select do |file|
           _, pattern = header_from(file)
 
           # Select if the date pattern is nil (no header info available within the file) or
@@ -140,14 +140,16 @@ module Yell #:nodoc:
         # do nothing, because symlink is already correct
         return if ::File.symlink?(@original_filename) && ::File.readlink(@original_filename) == @filename
 
-        ::File.unlink( @original_filename ) if ::File.exist?( @original_filename )
-        ::File.symlink( @filename, @original_filename )
+        ::File.unlink(@original_filename) if ::File.exist?(@original_filename)
+        ::File.symlink(@filename, @original_filename)
       end
 
       # Symlink the original filename?
       #
       # @return [Boolean] true or false
-      def symlink?; !!symlink; end
+      def symlink?
+        !!symlink
+      end
 
       # Write the header information into the file
       def header!
@@ -157,24 +159,26 @@ module Yell #:nodoc:
       # Write header into the file?
       #
       # @return [Boolean] true or false
-      def header?; !!header; end
+      def header?
+        !!header
+      end
 
       # Sets the filename with the `:date_pattern` appended to it.
       def filename_for( date )
-        @original_filename.sub( /(\.\w+)?$/, ".#{date.strftime(date_pattern)}\\1" )
+        @original_filename.sub(/(\.\w+)?$/, ".#{date.strftime(date_pattern)}\\1")
       end
 
       # Fetch the header form the file
       def header_from( file )
-        if m = ::File.open( file, &:readline ).match( HeaderRegexp )
+        if m = ::File.open(file, &:readline).match(HeaderRegexp)
           # in case there is a Header present, we can just read from it
-          [ Time.at( m[2].to_f ), m[3] ]
+          [ Time.at(m[2].to_f), m[3] ]
         else
           # In case there is no header: we need to take a good guess
           #
           # Since the pattern can not be determined, we will just return the Posix ctime. 
           # That is NOT the creatint time, so the value will potentially be wrong!
-          [ ::File.ctime(file), nil ]
+          [::File.ctime(file), nil]
         end
       end
 
