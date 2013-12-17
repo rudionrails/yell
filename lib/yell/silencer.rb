@@ -9,7 +9,7 @@ module Yell #:nodoc:
     end
 
     Presets = {
-      :assets => [/^Started GET "\/assets/, /^Served asset/, /^$/] # for Rails
+      :assets => [/\AStarted GET "\/assets/, /\AServed asset/, /\A\s*\z/] # for Rails
     }
 
 
