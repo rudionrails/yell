@@ -140,7 +140,7 @@ module Yell #:nodoc:
         # do nothing, because symlink is already correct
         return if ::File.symlink?(@original_filename) && ::File.readlink(@original_filename) == @filename
 
-        ::File.unlink(@original_filename) if ::File.exist?(@original_filename)
+        ::File.unlink(@original_filename) if ::File.exist?(@original_filename) || ::File.symlink?(@original_filename)
         ::File.symlink(@filename, @original_filename)
       end
 
