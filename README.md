@@ -189,6 +189,8 @@ logger.debug 'Started GET "/assets/logo.png" for 127.0.0.1 at 2013-06-20 10:18:3
 logger.debug 'Served asset /logo.png - 304 Not Modified (0ms)'
 ```
 
+### Alter log messages with modifiers
+
 
 ## Further Readings
 
@@ -202,6 +204,7 @@ logger.debug 'Served asset /logo.png - 304 Not Modified (0ms)'
 ### Additional Adapters
 [Syslog](https://github.com/rudionrails/yell/wiki/additional-adapters-syslog)  
 [Graylog2 (GELF)](https://github.com/rudionrails/yell/wiki/additional-adapters-gelf)  
+[Fluentd](https://github.com/red5studios/yell-adapters-fluentd)  
 
 
 ### Development

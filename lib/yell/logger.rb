@@ -59,10 +59,10 @@ module Yell #:nodoc:
       self.trace = Yell.__fetch__(@options, :trace, :default => :error)
 
       # silencer
-      self.silence(*Yell.__fetch__(@options, :silence))
+      self.silence(*Yell.__fetch__(@options, :silence, :default => []))
 
       # adapters may be passed in the options
-      extract!(*Yell.__fetch__(@options, :adapters))
+      extract!(*Yell.__fetch__(@options, :adapters, :default => []))
 
       # extract adapter
       self.adapter(args.pop) if args.any?

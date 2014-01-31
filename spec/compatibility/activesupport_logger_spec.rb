@@ -10,7 +10,7 @@ end
 #
 # We simulate the case when Rails 4 starts up its server
 # and wants to append the log output.
-describe "Compatibility to ActiveSupport::Logger", pending: (!defined?(ActiveSupport) || ActiveSupport::VERSION::MAJOR < 4) do
+describe "Compatibility to ActiveSupport::Logger", :pending => (!defined?(ActiveSupport) || ActiveSupport::VERSION::MAJOR < 4) do
 
   let!(:yell) { Yell.new($stdout, :format => "%m") }
 
