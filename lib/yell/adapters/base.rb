@@ -180,7 +180,7 @@ module Yell #:nodoc:
       # Adapter classes should provide their own implementation 
       # of this method (if applicable).
       def setup!( options )
-        self.level = Yell.__fetch__(options,:level)
+        self.level = Yell.__fetch__(options, :level)
       end
 
       # Perform the actual write.
