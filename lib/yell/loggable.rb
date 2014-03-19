@@ -18,8 +18,18 @@ module Yell #:nodoc:
   #   Foo.new.logger.info "Hello World"
   module Loggable
 
+    def self.included(base)
+      base.extend(ClassMethods)
+    end
+
+    module ClassMethods
+      def logger
+        Yell[self]
+      end
+    end
+
     def logger
-      Yell[ self.class ]
+      self.class.logger
     end
 
   end
