@@ -1,6 +1,4 @@
-$LOAD_PATH.unshift( 'lib' )
-require 'bundler'
-
+require 'bundler/gem_tasks'
 
 # Run stuff in the examples folder
 desc "Run examples"

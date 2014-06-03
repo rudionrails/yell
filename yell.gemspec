@@ -1,22 +1,23 @@
-# -*- encoding: utf-8 -*-
-require File.expand_path( '../lib/yell/version', __FILE__ )
+# coding: utf-8
+lib = File.expand_path('../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+require 'yell/version'
 
-Gem::Specification.new do |s|
-  s.name        = "yell"
-  s.version     = Yell::VERSION
-  s.authors     = ["Rudolf Schmidt"]
-  s.license     = 'MIT'
+Gem::Specification.new do |spec|
+  spec.name        = "yell"
+  spec.version     = Yell::VERSION
+  spec.authors     = ["Rudolf Schmidt"]
+  spec.license     = 'MIT'
 
-  s.homepage    = "http://rudionrails.github.com/yell"
-  s.summary     = %q{Yell - Your Extensible Logging Library}
-  s.description = %q{Yell - Your Extensible Logging Library. Define multiple adapters, various log level combinations or message formatting options like you've never done before}
+  spec.homepage    = "http://rudionrailspec.github.com/yell"
+  spec.summary     = %q{Yell - Your Extensible Logging Library}
+  spec.description = %q{Yell - Your Extensible Logging Library. Define multiple adapters, various log level combinations or message formatting options like you've never done before}
 
-  s.rubyforge_project = "yell"
+  spec.rubyforge_project = "yell"
 
-  s.files         = `git ls-files`.split($\)
-  s.executables   = s.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
-  s.test_files    = s.files.grep(%r{^(test|spec|features)/})
-
-  s.require_paths = ["lib"]
+  spec.files         = `git ls-files -z`.split("\x0")
+  spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
+  spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
+  spec.require_paths = ["lib"]
 end
 
