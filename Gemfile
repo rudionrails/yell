@@ -6,8 +6,8 @@ gemspec
 group :development, :test do
   gem "rake"
 
-  gem 'rspec-core', '>= 2.0'
-  gem 'rspec-expectations', '>= 2.0'
+  gem 'rspec-core', '~> 2'
+  gem 'rspec-expectations', '~> 2'
   gem "rr"
   gem 'pry'
 
