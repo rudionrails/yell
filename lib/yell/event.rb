@@ -49,14 +49,13 @@ module Yell #:nodoc:
     attr_reader :name
 
 
-    def initialize( logger, options, *messages, &block )
+    def initialize( logger, options, *messages)
       @time = Time.now
       @name = logger.name
 
       extract!(options)
 
       @messages = messages
-      @messages << block.call unless block.nil?
 
       @caller = logger.trace.at?(level) ? caller[caller_index].to_s : ''
       @file = nil
