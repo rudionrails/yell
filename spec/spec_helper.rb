@@ -7,7 +7,11 @@ require 'rspec/core'
 require 'rspec/expectations'
 require 'rr'
 require 'timecop'
-require 'pry'
+
+begin
+  require 'pry'
+rescue LoadError
+end
 
 begin
   require 'coveralls'

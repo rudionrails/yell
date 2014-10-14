@@ -9,7 +9,6 @@ group :development, :test do
   gem 'rspec-core', '~> 2'
   gem 'rspec-expectations', '~> 2'
   gem "rr"
-  gem 'pry'
 
   if RUBY_VERSION < "1.9"
     gem 'timecop', '0.6.0'
@@ -17,6 +16,8 @@ group :development, :test do
   else
     gem 'timecop'
     gem 'activesupport'
+
+    gem 'pry'
   end
 
   gem 'simplecov', :require => false, :platform => :ruby_20
