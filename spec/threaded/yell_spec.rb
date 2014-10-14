@@ -19,7 +19,7 @@ describe "running Yell multi-threaded" do
     end
 
     it "should write all messages" do
-      lines.should == 10*threads
+      expect(lines).to eq(10*threads)
     end
   end
 
@@ -51,7 +51,7 @@ describe "running Yell multi-threaded" do
         Thread.new { 10.times { Yell['threaded'].info count } }
       end.each(&:join)
 
-      lines.should == 10*threads
+      expect(lines).to eq(10*threads)
     end
   end
 
@@ -83,7 +83,7 @@ describe "running Yell multi-threaded" do
         sleep 0.3
 
         files = Dir[ fixture_path + '/*.*.log' ]
-        files.size.should == 2
+        expect(files.size).to eq(2)
 
         # files.last.should match( datefile_pattern_for(Time.now) ) # today
         # files.first.should match( datefile_pattern_for(Time.now-86400) ) # yesterday

@@ -5,6 +5,7 @@ ENV['YELL_ENV'] = 'test'
 
 require 'rspec/core'
 require 'rspec/expectations'
+require 'rspec/its'
 require 'rr'
 require 'timecop'
 require 'pry'

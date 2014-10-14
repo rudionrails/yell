@@ -14,7 +14,9 @@ describe Yell::Repository do
     context "when logger with :name exists" do
       let!(:logger) { Yell.new(:stdout, :name => name) }
 
-      it { should eq(logger) }
+      it "should eq(logger)" do
+        expect(subject).to eq(logger)
+      end
     end
 
     context "given a Class" do
@@ -22,29 +24,33 @@ describe Yell::Repository do
 
       it "should raise with the correct :name when logger not found" do
         mock.proxy(Yell::LoggerNotFound).new(String)
-        lambda { Yell::Repository[String] }.should raise_error(Yell::LoggerNotFound)
+        expect{ Yell::Repository[String] }.to raise_error(Yell::LoggerNotFound)
       end
 
       it "should return the logger" do
-        Yell::Repository[Numeric].should eq(logger)
+        expect(Yell::Repository[Numeric]).to eq(logger)
       end
 
       it "should return the logger when superclass has it defined" do
-        Yell::Repository[Integer].should eq(logger)
+        expect(Yell::Repository[Integer]).to eq(logger)
       end
     end
   end
 
   context ".[]=" do
     before { Yell::Repository[name] = logger }
-    it { should eq(logger) }
+    it "should eq(logger)" do
+      expect(subject).to eq(logger)
+    end
   end
 
   context ".[]= with a named logger" do
     let!(:logger) { Yell.new(:stdout, :name => name) }
     before { Yell::Repository[name] = logger }
 
-    it { should eq(logger) }
+    it "should eq(logger)" do
+      expect(subject).to eq(logger)
+    end
   end
 
   context ".[]= with a named logger of a different name" do
@@ -53,8 +59,8 @@ describe Yell::Repository do
     before { Yell::Repository[name] = logger }
 
     it "should add logger to both repositories" do
-      Yell::Repository[name].should eq(logger)
-      Yell::Repository[other].should eq(logger)
+      expect(Yell::Repository[name]).to eq(logger)
+      expect(Yell::Repository[other]).to eq(logger)
     end
   end
 
@@ -63,7 +69,9 @@ describe Yell::Repository do
     subject { Yell::Repository.loggers }
     before { Yell::Repository[name] = logger }
 
-    it { should eq(loggers) }
+    it "should eq(loggers)" do
+      expect(subject).to eq(loggers)
+    end
   end
 
 end
