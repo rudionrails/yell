@@ -6,7 +6,7 @@ module Yell #:nodoc:
 
   # The +Yell::Logger+ is your entrypoint. Anything onwards is derived from here.
   #
-  # A +Yell::Logger+ instance holds all your adapters and sends the log events 
+  # A +Yell::Logger+ instance holds all your adapters and sends the log events
   # to them if applicable. There are multiple ways of how to create a new logger.
   class Logger
     include Yell::Helpers::Base
@@ -90,10 +90,12 @@ module Yell #:nodoc:
     def add( options, *messages, &block )
       return false unless level.at?(options)
 
+      messages = messages
+      messages << block.call unless block.nil?
       messages = silencer.call(*messages)
       return false if messages.empty?
 
-      event = Yell::Event.new(self, options, *messages, &block)
+      event = Yell::Event.new(self, options, *messages)
       write(event)
     end
 
