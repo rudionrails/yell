@@ -16,6 +16,8 @@ module Yell #:nodoc:
 
 
     class Options
+      include Comparable
+
       attr_reader :severity
       attr_reader :caller_offset
 
