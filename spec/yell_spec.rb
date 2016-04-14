@@ -5,7 +5,9 @@ describe Yell do
 
   subject { logger }
 
-  it { should be_kind_of Yell::Logger }
+  it "should be_kind_of Yell::Logger" do
+    expect(subject).to be_a_kind_of(Yell::Logger)
+  end
 
   it "should raise AdapterNotFound when adapter cant be loaded" do
     expect {
@@ -15,12 +17,16 @@ describe Yell do
 
   context ".level" do
     subject { Yell.level }
-    it { should be_kind_of Yell::Level }
+    it "should be_kind_of Yell::Level" do
+      expect(subject).to be_a_kind_of(Yell::Level)
+    end
   end
 
   context ".format" do
     subject { Yell.format( "%m" ) }
-    it { should be_kind_of Yell::Formatter }
+    it "should be_kind_of Yell::Formatter" do
+      expect(subject).to be_a_kind_of(Yell::Formatter)
+    end
   end
 
   context ".load!" do
@@ -30,7 +36,9 @@ describe Yell do
       mock(Yell::Configuration).load!('yell.yml') { {} }
     end
 
-    it { should be_kind_of Yell::Logger }
+    it "should be_kind_of Yell::Logger" do
+      expect(subject).to be_a_kind_of(Yell::Logger)
+    end
   end
 
   context ".[]" do
@@ -57,7 +65,7 @@ describe Yell do
     subject { Yell.env }
 
     it "should default to YELL_ENV" do
-      subject.should == 'test'
+      expect(subject).to eq('test')
     end
 
     context "fallback to RACK_ENV" do
@@ -70,7 +78,9 @@ describe Yell do
 
       after { ENV.delete 'RACK_ENV' }
 
-      it { should == 'rack' }
+      it "should == 'rack'" do
+        expect(subject).to eq('rack')
+      end
     end
 
     context "fallback to RAILS_ENV" do
@@ -84,7 +94,9 @@ describe Yell do
 
       after { ENV.delete 'RAILS_ENV' }
 
-      it { should == 'rails' }
+      it "should == 'rails'" do
+        expect(subject).to eq('rails')
+      end
     end
 
     context "fallback to development" do
@@ -94,7 +106,9 @@ describe Yell do
         stub(ENV).key?('RAILS_ENV') { false }
       end
 
-      it { should == 'development' }
+      it "should == 'development'" do
+        expect(subject).to eq('development')
+      end
     end
   end
 
