@@ -23,8 +23,13 @@ describe Yell::Repository do
       let!(:logger) { Yell.new(:stdout, :name => "Numeric") }
 
       it "should raise with the correct :name when logger not found" do
-        mock.proxy(Yell::LoggerNotFound).new(String)
-        expect{ Yell::Repository[String] }.to raise_error(Yell::LoggerNotFound)
+        expect(Yell::LoggerNotFound).to(
+          receive(:new).with(String).and_call_original
+        )
+
+        expect {
+          Yell::Repository[String]
+        }.to raise_error(Yell::LoggerNotFound)
       end
 
       it "should return the logger" do

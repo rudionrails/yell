@@ -42,7 +42,7 @@ describe Yell::Adapters::Datefile do
     end
 
     it "should not open file handle again" do
-      dont_allow(File).open(anything, anything)
+      expect(File).to_not receive(:open)
 
       adapter.write(event)
     end

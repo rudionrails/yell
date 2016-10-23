@@ -1,9 +1,7 @@
 # encoding: utf-8
-
 require 'pathname'
 
 module Yell #:nodoc:
-
   # The +Yell::Logger+ is your entrypoint. Anything onwards is derived from here.
   #
   # A +Yell::Logger+ instance holds all your adapters and sends the log events
@@ -144,11 +142,12 @@ module Yell #:nodoc:
     #
     # @example
     #   extract!(:stdout => {:level => :info}, :stderr => {:level => :error})
-    def extract!( *adapters )
-      adapters.each do |a|
-        case a
-        when Hash then a.each { |t, o| adapter(t, o) }
-        else adapter(a)
+    def extract!( *list )
+      list.each do |a|
+        if a.is_a?(Hash)
+          a.each { |t, o| adapter(t, o) }
+        else
+          adapter(a)
         end
       end
     end
@@ -157,7 +156,6 @@ module Yell #:nodoc:
     def inspectables
       [:name] | super
     end
-
   end
 end
 

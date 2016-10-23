@@ -2,7 +2,6 @@
 
 module Yell #:nodoc:
   module Adapters #:nodoc:
-
     class Io < Yell::Adapters::Base
       include Yell::Helpers::Formatter
 
@@ -94,9 +93,7 @@ module Yell #:nodoc:
       def inspectables
         super.concat [:formatter, :colors, :sync]
       end
-
     end
-
   end
 end
 

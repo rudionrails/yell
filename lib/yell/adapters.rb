@@ -1,6 +1,5 @@
 # encoding: utf-8
 module Yell #:nodoc:
-
   # AdapterNotFound is raised whenever you want to instantiate an 
   # adapter that does not exist.
   class AdapterNotFound < StandardError; end
@@ -9,7 +8,6 @@ module Yell #:nodoc:
   # the logger. You should not have to call the corresponding classes
   # directly.
   module Adapters
-
     class Collection
       def initialize( options = {} )
         @options = options
@@ -61,19 +59,18 @@ module Yell #:nodoc:
     #
     # @example A simple file adapter
     #   Yell::Adapters.new( :file )
-    def self.new( name, options = {}, &block )
-      return name if name.is_a?(Yell::Adapters::Base)
+    def self.new( type, options = {}, &block )
+      return type if type.is_a?(Yell::Adapters::Base)
 
-      adapter = case name
+      adapter = case type
       when STDOUT then @adapters[:stdout]
       when STDERR then @adapters[:stderr]
-      else @adapters[name.to_sym]
+      else @adapters[type.to_sym]
       end
 
-      raise AdapterNotFound.new(name) if adapter.nil?
+      raise AdapterNotFound.new(type) if adapter.nil?
       adapter.new(options, &block)
     end
-
   end
 end
 

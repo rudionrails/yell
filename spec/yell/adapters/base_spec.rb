@@ -22,20 +22,20 @@ describe Yell::Adapters::Base do
 
   context "#write" do
     let(:logger) { Yell::Logger.new }
-    subject { Yell::Adapters::Base.new(:level => 1) }
+    let(:adapter) { Yell::Adapters::Base.new(:level => 1) }
 
     it "should delegate :event to :write!" do
       event = Yell::Event.new(logger, 1, "Hello World!")
-      mock(subject).write!(event)
+      expect(adapter).to receive(:write!).with(event)
 
-      subject.write(event)
+      adapter.write(event)
     end
 
     it "should not write when event does not have the right level" do
       event = Yell::Event.new(logger, 0, "Hello World!")
-      dont_allow(subject).write!(event)
+      expect(adapter).to_not receive(:write!)
 
-      subject.write(event)
+      adapter.write(event)
     end
   end
 

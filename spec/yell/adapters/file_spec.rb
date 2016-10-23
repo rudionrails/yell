@@ -4,7 +4,7 @@ describe Yell::Adapters::File do
   let(:devnull) { File.new('/dev/null', 'w') }
 
   before do
-    stub(File).open(anything, anything) { devnull }
+    allow(File).to receive(:open) { devnull }
   end
 
   it { should be_kind_of(Yell::Adapters::Io) }
@@ -24,7 +24,10 @@ describe Yell::Adapters::File do
       let(:adapter) { Yell::Adapters::File.new }
 
       it "should print to file" do
-        mock(File).open(filename, File::WRONLY|File::APPEND|File::CREAT) { devnull }
+        expect(File).to(
+          receive(:open).
+            with(filename, File::WRONLY|File::APPEND|File::CREAT) { devnull }
+        )
 
         adapter.write(event)
       end
@@ -35,7 +38,10 @@ describe Yell::Adapters::File do
       let(:adapter) { Yell::Adapters::File.new(:filename => filename) }
 
       it "should print to file" do
-        mock(File).open(filename, File::WRONLY|File::APPEND|File::CREAT) { devnull }
+        expect(File).to(
+          receive(:open).
+            with(filename, File::WRONLY|File::APPEND|File::CREAT) { devnull }
+        )
 
         adapter.write(event)
       end
@@ -46,7 +52,10 @@ describe Yell::Adapters::File do
       let(:adapter) { Yell::Adapters::File.new( :filename => pathname ) }
 
       it "should accept pathanme as filename" do
-        mock(File).open(pathname.to_s, File::WRONLY|File::APPEND|File::CREAT) { devnull }
+        expect(File).to(
+          receive(:open).
+            with(pathname.to_s, File::WRONLY|File::APPEND|File::CREAT) { devnull }
+        )
 
         adapter.write(event)
       end
@@ -56,7 +65,7 @@ describe Yell::Adapters::File do
       let(:adapter) { Yell::Adapters::File.new }
 
       it "should sync by default" do
-        mock(devnull).sync=(true)
+        expect(devnull).to receive(:sync=).with(true)
 
         adapter.write(event)
       end
@@ -64,7 +73,7 @@ describe Yell::Adapters::File do
       it "pass the option to File" do
         adapter.sync = false
 
-        mock(devnull).sync=(false)
+        expect(devnull).to receive(:sync=).with(false)
 
         adapter.write(event)
       end

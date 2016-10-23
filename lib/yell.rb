@@ -22,7 +22,6 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 module Yell #:nodoc:
-
   # Holds all Yell severities
   Severities = ['DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL', 'UNKNOWN'].freeze
 
@@ -112,9 +111,7 @@ module Yell #:nodoc:
 
       value.nil? ? options[:default] : value
     end
-
   end
-
 end
 
 # helpers
@@ -147,5 +144,3 @@ Yell.register :file, Yell::Adapters::File
 Yell.register :datefile, Yell::Adapters::Datefile
 Yell.register :stdout, Yell::Adapters::Stdout
 Yell.register :stderr, Yell::Adapters::Stderr
-
-

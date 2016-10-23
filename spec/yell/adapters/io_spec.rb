@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Yell::Adapters::Io do
-
   it { should be_kind_of Yell::Adapters::Base }
 
   context "initialize" do
@@ -51,22 +50,22 @@ describe Yell::Adapters::Io do
     let(:stream) { File.new('/dev/null', 'w') }
 
     before do
-      stub(adapter).stream { stream }
+      allow(adapter).to receive(:stream) { stream }
     end
 
     it "should format the message" do
-      mock.proxy(adapter.format).call( event )
+      expect(adapter.format).to(
+        receive(:call).with(event).and_call_original
+      )
 
       adapter.write(event)
     end
 
     it "should print formatted message to stream" do
       formatted = Yell::Formatter.new.call(event)
-      mock(stream).syswrite(formatted)
+      expect(stream).to receive(:syswrite).with(formatted)
 
       adapter.write(event)
     end
   end
-
 end
-

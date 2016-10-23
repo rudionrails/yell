@@ -6,15 +6,16 @@ end
 
 describe Yell::Loggable do
   let(:factory) { LoggableFactory.new }
-  subject { factory }
 
-  it { should respond_to(:logger) }
+  it "responds with logger" do
+    expect(factory).to respond_to(:logger)
+  end
 
   it "should make a lookup in the Yell::Repository" do
-    mock(Yell::Repository)[LoggableFactory]
+    expect(Yell::Repository).to(
+      receive(:[]).with(LoggableFactory)
+    )
 
     factory.logger
   end
-
 end
-

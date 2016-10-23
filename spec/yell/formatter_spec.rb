@@ -1,17 +1,15 @@
 require 'spec_helper'
 
 describe Yell::Formatter do
-
   let(:logger) { Yell::Logger.new(:stdout, :name => 'Yell') }
   let(:message) { "Hello World!" }
   let(:event) { Yell::Event.new(logger, 1, message) }
+  let(:time) { Time.now }
 
   let(:pattern) { "%m" }
   let(:formatter) { Yell::Formatter.new(pattern) }
 
-  let(:time) { Time.now }
-
-  subject { formatter.call(event) }
+  let(:output) { formatter.call(event) }
 
   before do
     Timecop.freeze(time)
@@ -20,101 +18,150 @@ describe Yell::Formatter do
   describe "patterns" do
     context "%m" do
       let(:pattern) { "%m" }
-      it { should eq("#{event.messages.join(' ')}\n") }
+
+      it "returns correctly" do
+        expect(output).to eq("#{event.messages.join(' ')}\n")
+      end
     end
 
     context "%l" do
       let(:pattern) { "%l" }
-      it { should eq("#{Yell::Severities[event.level][0,1]}\n") }
+
+      it "returns correctly" do
+        expect(output).to eq("#{Yell::Severities[event.level][0,1]}\n")
+      end
     end
 
     context "%L" do
       let(:pattern) { "%L" }
-      it { should eq("#{Yell::Severities[event.level]}\n") }
+
+      it "returns correctly" do
+        expect(output).to eq("#{Yell::Severities[event.level]}\n")
+      end
     end
 
     context "%d" do
       let(:pattern) { "%d" }
-      it { should eq("#{event.time.iso8601}\n") }
+
+      it "returns correctly" do
+        expect(output).to eq("#{event.time.iso8601}\n")
+      end
     end
 
     context "%p" do
       let(:pattern) { "%p" }
-      it { should eq("#{event.pid}\n") }
+
+      it "returns correctly" do
+        expect(output).to eq("#{event.pid}\n")
+      end
     end
 
     context "%P" do
       let(:pattern) { "%P" }
-      it { should eq("#{event.progname}\n") }
+
+      it "returns correctly" do
+        expect(output).to eq("#{event.progname}\n")
+      end
     end
 
     context "%t" do
       let(:pattern) { "%t" }
-      it { should eq("#{event.thread_id}\n") }
+
+      it "returns correctly" do
+        expect(output).to eq("#{event.thread_id}\n")
+      end
     end
 
     context "%h" do
       let(:pattern) { "%h" }
-      it { should eq("#{event.hostname}\n") }
+
+      it "returns correctly" do
+        expect(output).to eq("#{event.hostname}\n")
+      end
     end
 
     context ":caller" do
       let(:_caller) { [nil, nil, "/path/to/file.rb:123:in `test_method'"] }
 
       before do
-        any_instance_of(Yell::Event) do |e|
-          stub(e).file { "/path/to/file.rb" }
-          stub(e).line { "123" }
-          stub(e).method { "test_method" }
-        end
+        allow(event).to receive(:file) { "/path/to/file.rb" }
+        allow(event).to receive(:line) { "123" }
+        allow(event).to receive(:method) { "test_method" }
       end
 
       context "%F" do
         let(:pattern) { "%F" }
-        it { should eq("/path/to/file.rb\n") }
+
+        it "returns correctly" do
+          expect(output).to eq("/path/to/file.rb\n")
+        end
       end
 
       context "%f" do
         let(:pattern) { "%f" }
-        it { should eq("file.rb\n") }
+
+        it "returns correctly" do
+          expect(output).to eq("file.rb\n")
+        end
       end
 
       context "%M" do
         let(:pattern) { "%M" }
-        it { should eq("test_method\n") }
+
+        it "returns correctly" do
+          expect(output).to eq("test_method\n")
+        end
       end
 
       context "%n" do
         let(:pattern) { "%n" }
-        it { should eq("123\n") }
+
+        it "returns correctly" do
+          expect(output).to eq("123\n")
+        end
       end
     end
 
     context "%N" do
       let(:pattern) { "%N" }
-      it { should eq("Yell\n") }
+
+      it "returns correctly" do
+        expect(output).to eq("Yell\n")
+      end
     end
   end
 
   describe "presets" do
     context "NoFormat" do
       let(:pattern) { Yell::NoFormat }
-      it { should eq("Hello World!\n") }
+
+      it "Retrns correctly" do
+        expect(output).to eq("Hello World!\n")
+      end
     end
 
     context "DefaultFormat" do
       let(:pattern) { Yell::DefaultFormat }
-      it { should eq("#{time.iso8601} [ INFO] #{$$} : Hello World!\n")  }
+
+      it "returns correctly" do
+        expect(output).to eq("#{time.iso8601} [ INFO] #{$$} : Hello World!\n")
+      end
     end
 
     context "BasicFormat" do
       let(:pattern) { Yell::BasicFormat }
-      it { should eq("I, #{time.iso8601} : Hello World!\n") }
+
+      it "returns correctly" do
+        expect(output).to eq("I, #{time.iso8601} : Hello World!\n")
+      end
     end
 
     context "ExtendedFormat" do
       let(:pattern) { Yell::ExtendedFormat }
-      it { should eq("#{time.iso8601} [ INFO] #{$$} #{Socket.gethostname} : Hello World!\n") }
+
+      it "Returns correctly" do
+        expect(output).to eq("#{time.iso8601} [ INFO] #{$$} #{Socket.gethostname} : Hello World!\n")
+      end
     end
   end
 
@@ -122,16 +169,20 @@ describe Yell::Formatter do
     let(:message) { StandardError.new("This is an Exception") }
 
     before do
-      stub(message).backtrace { ["backtrace"] }
+      allow(message).to receive(:backtrace) { ["backtrace"] }
     end
 
-    it { should eq("StandardError: This is an Exception\n\tbacktrace\n") }
+    it "returns correctly" do
+      expect(output).to eq("StandardError: This is an Exception\n\tbacktrace\n")
+    end
   end
 
   describe "Hash" do
     let(:message) { {:test => 'message'} }
 
-    it { should eq("test: message\n") }
+    it "Returns correctly" do
+      expect(output).to eq("test: message\n")
+    end
   end
 
   describe "custom message modifiers" do
@@ -139,8 +190,8 @@ describe Yell::Formatter do
       Yell::Formatter.new(pattern) { |f| f.modify(String) { |m| "Modified! #{m}" } }
     end
 
-    it { should eq("Modified! #{message}\n") }
+    it "Returns correctly" do
+      expect(output).to eq("Modified! #{message}\n")
+    end
   end
-
 end
-

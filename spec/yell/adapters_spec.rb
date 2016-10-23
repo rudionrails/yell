@@ -11,35 +11,33 @@ describe Yell::Adapters do
     end
 
     it "should accept STDOUT" do
-      mock.proxy(Yell::Adapters::Stdout).new(anything)
+      expect(Yell::Adapters::Stdout).to receive(:new).with(anything)
 
       Yell::Adapters.new(STDOUT)
     end
 
     it "should accept STDERR" do
-      mock.proxy(Yell::Adapters::Stderr).new(anything)
+      expect(Yell::Adapters::Stderr).to receive(:new).with(anything)
 
       Yell::Adapters.new(STDERR)
     end
 
     it "should raise an unregistered adapter" do
       expect {
-        Yell::Adapters.new :unknown
+        Yell::Adapters.new(:unknown)
       }.to raise_error(Yell::AdapterNotFound)
     end
   end
 
   context ".register" do
-    let(:name) { :test }
-    let(:klass) { mock }
-
-    before { Yell::Adapters.register(name, klass) }
+    let(:type) { :test }
+    let(:klass) { double }
 
     it "should allow to being called from :new" do
-      mock(klass).new(anything)
+      Yell::Adapters.register(type, klass)
+      expect(klass).to receive(:new).with(anything)
 
-      Yell::Adapters.new(name)
+      Yell::Adapters.new(type)
     end
   end
-
 end

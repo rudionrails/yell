@@ -5,14 +5,10 @@ ENV['YELL_ENV'] = 'test'
 
 require 'rspec/core'
 require 'rspec/expectations'
+require 'rspec/mocks'
 require 'rspec/its'
-require 'rr'
 require 'timecop'
-
-begin
-  require 'pry'
-rescue LoadError
-end
+require 'byebug'
 
 begin
   require 'coveralls'
@@ -34,8 +30,6 @@ end
 require 'yell'
 
 RSpec.configure do |config|
-  config.mock_framework = :rr
-
   config.before :each do
     Yell::Repository.loggers.clear
 

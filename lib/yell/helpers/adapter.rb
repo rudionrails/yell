@@ -2,7 +2,6 @@
 module Yell #:nodoc:
   module Helpers #:nodoc:
     module Adapter #:nodoc:
-
       # Define an adapter to be used for logging.
       #
       # @example Standard adapter
@@ -31,7 +30,6 @@ module Yell #:nodoc:
         @__adapters__
       end
 
-
       private
 
       def reset!
@@ -39,8 +37,6 @@ module Yell #:nodoc:
 
         super
       end
-
     end
   end
 end
-

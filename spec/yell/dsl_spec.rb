@@ -28,7 +28,7 @@ describe "Yell Adapter DSL spec" do
 
   it "should perform #write" do
     event = 'event'
-    stub(event).level { 0 }
+    allow(event).to receive(:level) { 0 }
 
     adapter = DSLAdapter.new
     expect(adapter.test_write?).to be_falsey
