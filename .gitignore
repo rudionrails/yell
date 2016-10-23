@@ -4,7 +4,7 @@ pkg/*
 .idea
 
 # bundler
-Gemfile.lock
+Gemfile.*lock
 
 # vim
 *.swp
