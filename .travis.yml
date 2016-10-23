@@ -1,19 +1,22 @@
+sudo: false
 language: ruby
 
 script: "rspec"
 
 rvm:
-  - 1.8.7
-  - 1.9.3
-  - 2.0.0
-  - 2.1.1
+  - ruby-head
   - 2.3.1
-  - jruby-18mode
-  - jruby-19mode
-  - rbx-2
-  - ree
+  - 2.2.5
+  - 2.1.10
+  - 2.0.0
+
+  - jruby-9.1.5.0
+  - jruby-9.0.5.0
+  - jruby-1.7.26
+
+  - rubinius-3.9
+  - rubinius-2.9
 
 notifications:
-  email:
-    - me@rudionrails.com
-
+  on_success: change
+  on_failure: change
