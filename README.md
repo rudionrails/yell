@@ -3,7 +3,10 @@
 
 **Yell - Your Extensible Logging Library** is a comprehensive logging replacement for Ruby.
 
-Yell works and is tested with ruby 1.8.7, 1.9.x, 2.0.0, jruby 1.8 and 1.9 mode, rubinius 1.8 and 1.9 as well as ree.
+Yell works and its test suite currently runs on:
+
+- ruby-head, 2.3.1, 2.2.5, 2.2.2, 2.1.0, 2.0.0 
+- jruby-head, jruby-9.1.0.0, jruby-9.0.0.0
 
 If you want to conveniently use Yell with Rails, then head over to [yell-rails](https://github.com/rudionrails/yell-rails). You'll find all the documentation in this repository, though.
 
