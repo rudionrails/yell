@@ -1,4 +1,4 @@
-# Yell [![Gem Version](https://badge.fury.io/rb/yell.png)](http://badge.fury.io/rb/yell) [![Build Status](https://travis-ci.org/rudionrails/yell.png?branch=master)](https://travis-ci.org/rudionrails/yell) [![Code Climate](https://codeclimate.com/github/rudionrails/yell.png)](https://codeclimate.com/github/rudionrails/yell) [![Coverage Status](https://coveralls.io/repos/rudionrails/yell/badge.png?branch=master)](https://coveralls.io/r/rudionrails/yell)
+# Yell [![Gem Version](https://badge.fury.io/rb/yell.svg)](http://badge.fury.io/rb/yell) [![Build Status](https://travis-ci.org/rudionrails/yell.svg?branch=master)](https://travis-ci.org/rudionrails/yell) [![Code Climate](https://codeclimate.com/github/rudionrails/yell.svg)](https://codeclimate.com/github/rudionrails/yell) [![Coverage Status](https://coveralls.io/repos/rudionrails/yell/badge.svg?branch=master)](https://coveralls.io/r/rudionrails/yell)
 
 
 **Yell - Your Extensible Logging Library** is a comprehensive logging replacement for Ruby.
