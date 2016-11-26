@@ -1,5 +1,5 @@
 language: ruby
-before_script: gem install bundler
+before_install: gem install bundler
 script: "bundle exec rspec"
 
 matrix:
