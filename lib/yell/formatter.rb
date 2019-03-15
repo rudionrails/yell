@@ -163,7 +163,7 @@ module Yell #:nodoc:
         when false then Yell::NoFormat
         when nil then Yell::DefaultFormat
         else pattern
-        end
+        end.dup
 
         @pattern << "\n" unless @pattern[-1] == ?\n # add newline if not present
         @date_pattern = date_pattern || :iso8601
