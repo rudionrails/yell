@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 module Yell #:nodoc:
 
   # The +Level+ class handles the severities for you in order to determine 

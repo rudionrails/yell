@@ -1,4 +1,3 @@
-# encoding: utf-8
 module Yell #:nodoc:
   # AdapterNotFound is raised whenever you want to instantiate an 
   # adapter that does not exist.

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 module Yell #:nodoc:
   # Include this module to add a logger to any class.
   #

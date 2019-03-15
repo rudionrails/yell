@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # Copyright (c) 2011-2014 Rudolf Schmidt
 #
 # Permission is hereby granted, free of charge, to any person obtaining

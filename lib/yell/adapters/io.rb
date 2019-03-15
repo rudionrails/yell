@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 module Yell #:nodoc:
   module Adapters #:nodoc:
     class Io < Yell::Adapters::Base

@@ -1,4 +1,3 @@
-# encoding: utf-8
 require 'time'
 
 # TODO: Register custom formats

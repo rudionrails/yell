@@ -1,4 +1,3 @@
-# encoding: utf-8
 module Yell #:nodoc:
 
   # The +Yell::Silencer+ is your handly helper for stiping out unwanted log messages.

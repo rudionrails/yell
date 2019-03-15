@@ -1,4 +1,3 @@
-# encoding: utf-8
 module Yell #:nodoc:
   module Helpers #:nodoc:
     module Silencer
