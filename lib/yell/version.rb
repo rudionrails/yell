@@ -1,4 +1,4 @@
 module Yell #:nodoc:
-  VERSION = "2.0.7"
+  VERSION = "2.1.0"
 end
 
