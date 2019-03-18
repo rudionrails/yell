@@ -10,6 +10,7 @@ matrix:
     - rvm: 2.3
     - rvm: jruby-head
     - rvm: jruby-9.1
+    - rvm: jruby-9.2
 
 notifications:
   on_success: change
