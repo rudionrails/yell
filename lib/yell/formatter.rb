@@ -13,7 +13,7 @@ module Yell #:nodoc:
   # No format on the log message
   #
   # @example
-  #   logger = Yell.new STDOUT, :format => false
+  #   logger = Yell.new STDOUT, format: false
   #   logger.info "Hello World!"
   #   #=> "Hello World!"
   NoFormat = "%m"
@@ -21,7 +21,7 @@ module Yell #:nodoc:
   # Default Format
   #
   # @example
-  #   logger = Yell.new STDOUT, :format => Yell::DefaultFormat
+  #   logger = Yell.new STDOUT, format: Yell::DefaultFormat
   #   logger.info "Hello World!"
   #   #=> "2012-02-29T09:30:00+01:00 [ INFO] 65784 : Hello World!"
   #   #    ^                         ^       ^       ^
@@ -31,7 +31,7 @@ module Yell #:nodoc:
   # Basic Format
   #
   # @example
-  #   logger = Yell.new STDOUT, :format => Yell::BasicFormat
+  #   logger = Yell.new STDOUT, format: Yell::BasicFormat
   #   logger.info "Hello World!"
   #   #=> "I, 2012-02-29T09:30:00+01:00 : Hello World!"
   #   #    ^  ^                          ^
@@ -42,7 +42,7 @@ module Yell #:nodoc:
   # Extended Format
   #
   # @example
-  #   logger = Yell.new STDOUT, :format => Yell::ExtendedFormat
+  #   logger = Yell.new STDOUT, format: Yell::ExtendedFormat
   #   logger.info "Hello World!"
   #   #=> "2012-02-29T09:30:00+01:00 [ INFO] 65784 localhost : Hello World!"
   #   #    ^                          ^      ^     ^           ^
@@ -130,7 +130,7 @@ module Yell #:nodoc:
       end
 
       def set( key, &block )
-        @repository.merge!(key => block)
+        @repository.merge!("#{key}": block)
       end
 
       def call( message )
