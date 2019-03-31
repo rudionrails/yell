@@ -208,7 +208,7 @@ module Yell #:nodoc:
       # Determine whether to write at the given severity.
       #
       # @example
-      #   write? Yell::Event.new( 'INFO', 'Hwllo Wold!' )
+      #   write? Yell::Event.new( 'INFO', 'Hello Wold!' )
       #
       # @param [Yell::Event] event The log event
       #
