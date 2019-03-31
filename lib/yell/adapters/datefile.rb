@@ -52,12 +52,12 @@ module Yell #:nodoc:
 
       # @overload setup!( options )
       def setup!( options )
-        self.header = Yell.__fetch__(options, :header, :default => true)
-        self.date_pattern = Yell.__fetch__(options, :date_pattern, :default => DefaultDatePattern)
-        self.keep = Yell.__fetch__(options, :keep, :default => false)
-        self.symlink = Yell.__fetch__(options, :symlink, :default => true)
+        self.header = Yell.__fetch__(options, :header, default: true)
+        self.date_pattern = Yell.__fetch__(options, :date_pattern, default: DefaultDatePattern)
+        self.keep = Yell.__fetch__(options, :keep, default: false)
+        self.symlink = Yell.__fetch__(options, :symlink, default: true)
 
-        @original_filename  = ::File.expand_path(Yell.__fetch__(options, :filename, :default => default_filename))
+        @original_filename  = ::File.expand_path(Yell.__fetch__(options, :filename, default: default_filename))
         options[:filename]  = @original_filename
 
         @date = Time.now
