@@ -7,7 +7,7 @@ puts <<-EOS
 # The default formatting string looks like: %d [%5L] %p : %m and is used when 
 # nothing else is defined.
 
-logger = Yell.new STDOUT, :format => Yell::DefaultFormat
+logger = Yell.new STDOUT, format: Yell::DefaultFormat
 logger.info "Hello World!"
 #=> "2012-02-29T09:30:00+01:00 [ INFO] 65784 : Hello World!"
 #    ^                         ^       ^       ^
@@ -16,7 +16,7 @@ logger.info "Hello World!"
 
 EOS
 
-puts "=== actuale example ==="
-logger = Yell.new STDOUT, :format => Yell::DefaultFormat
+puts "=== actual example ==="
+logger = Yell.new STDOUT, format: Yell::DefaultFormat
 logger.info "Hello World!"
 
