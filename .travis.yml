@@ -13,6 +13,6 @@ matrix:
     # ruby-head is always finicky with bundler and such
     - rvm: ruby-head
 
-#notifications:
-#  on_success: change
-#  on_failure: change
+notifications:
+  on_success: change
+  on_failure: change
