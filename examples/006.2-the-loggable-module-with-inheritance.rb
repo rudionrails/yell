@@ -10,7 +10,7 @@ puts <<-EOS
 # can use it, though, you will need to define a logger providing the :name of
 # your class.
 
-Yell.new :stdout, :name => 'Foo'
+Yell.new :stdout, name: 'Foo'
 
 # Define the class
 class Foo
@@ -28,7 +28,7 @@ EOS
 
 puts "=== actual example ==="
 
-Yell.new :stdout, :name => 'Foo'
+Yell.new :stdout, name: 'Foo'
 
 class Foo
   include Yell::Loggable
