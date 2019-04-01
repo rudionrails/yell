@@ -13,7 +13,6 @@ Gem::Specification.new do |spec|
   spec.summary     = %q{Yell - Your Extensible Logging Library}
   spec.description = %q{Yell - Your Extensible Logging Library. Define multiple adapters, various log level combinations or message formatting options like you've never done before}
 
-  spec.rubyforge_project = "yell"
 
   spec.files         = `git ls-files -z`.split("\x0")
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
