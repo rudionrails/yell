@@ -70,7 +70,7 @@ describe Yell::Repository do
   end
 
   context "loggers" do
-    let(:loggers) { { name: logger } }
+    let(:loggers) { { name => logger } }
     subject { Yell::Repository.loggers }
     before { Yell::Repository[name] = logger }
 
