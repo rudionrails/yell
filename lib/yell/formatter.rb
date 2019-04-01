@@ -130,7 +130,7 @@ module Yell #:nodoc:
       end
 
       def set( key, &block )
-        @repository.merge!("#{key}": block)
+        @repository.merge!(key => block)
       end
 
       def call( message )
