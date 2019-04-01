@@ -143,7 +143,7 @@ describe Yell::Level do
   end
 
   context "given an Array" do
-    let(:level) { Yell::Level.new( [:debug, :warn, :fatal] ) }
+    let(:level) { Yell::Level.new( %i[debug warn fatal] ) }
 
     it "should return correctly" do
       expect(level.at?(:debug)).to be_truthy

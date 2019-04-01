@@ -12,7 +12,7 @@ describe Yell::Repository do
     end
 
     context "when logger with :name exists" do
-      let!(:logger) { Yell.new(:stdout, :name => name) }
+      let!(:logger) { Yell.new(:stdout, name: name) }
 
       it "should eq(logger)" do
         expect(subject).to eq(logger)
@@ -20,7 +20,7 @@ describe Yell::Repository do
     end
 
     context "given a Class" do
-      let!(:logger) { Yell.new(:stdout, :name => "Numeric") }
+      let!(:logger) { Yell.new(:stdout, name: "Numeric") }
 
       it "should raise with the correct :name when logger not found" do
         expect(Yell::LoggerNotFound).to(
@@ -50,7 +50,7 @@ describe Yell::Repository do
   end
 
   context ".[]= with a named logger" do
-    let!(:logger) { Yell.new(:stdout, :name => name) }
+    let!(:logger) { Yell.new(:stdout, name: name) }
     before { Yell::Repository[name] = logger }
 
     it "should eq(logger)" do
@@ -60,7 +60,7 @@ describe Yell::Repository do
 
   context ".[]= with a named logger of a different name" do
     let(:other) { 'other' }
-    let(:logger) { Yell.new(:stdout, :name => other) }
+    let(:logger) { Yell.new(:stdout, name: other) }
     before { Yell::Repository[name] = logger }
 
     it "should add logger to both repositories" do
@@ -70,7 +70,7 @@ describe Yell::Repository do
   end
 
   context "loggers" do
-    let(:loggers) { { name => logger } }
+    let(:loggers) { { name: logger } }
     subject { Yell::Repository.loggers }
     before { Yell::Repository[name] = logger }
 

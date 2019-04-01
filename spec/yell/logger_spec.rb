@@ -71,7 +71,7 @@ describe Yell::Logger do
 
   describe "initialize with #name" do
     let(:name) { 'test' }
-    let!(:logger) { Yell.new(:name => name) }
+    let!(:logger) { Yell.new(name: name) }
 
     it "should set the name correctly" do
       expect(logger.name).to eq(name)
@@ -84,7 +84,7 @@ describe Yell::Logger do
 
   context "initialize with #level" do
     let(:level) { :error }
-    let(:logger) { Yell.new(:level => level) }
+    let(:logger) { Yell.new(level: level) }
     subject { logger.level }
 
     it { should be_instance_of(Yell::Level) }
@@ -93,7 +93,7 @@ describe Yell::Logger do
 
   context "initialize with #trace" do
     let(:trace) { :info }
-    let(:logger) { Yell.new(:trace => trace) }
+    let(:logger) { Yell.new(trace: trace) }
     subject { logger.trace }
 
     it { should be_instance_of(Yell::Level) }
@@ -102,7 +102,7 @@ describe Yell::Logger do
 
   context "initialize with #silence" do
     let(:silence) { "test" }
-    let(:logger) { Yell.new(:silence => silence) }
+    let(:logger) { Yell.new(silence: silence) }
     subject { logger.silencer }
 
     it { should be_instance_of(Yell::Silencer) }
@@ -112,7 +112,7 @@ describe Yell::Logger do
   context "initialize with a #filename" do
     it "should call adapter with :file" do
       expect(Yell::Adapters::File).to(
-        receive(:new).with(:filename => filename).and_call_original
+        receive(:new).with(filename: filename).and_call_original
       )
 
       Yell::Logger.new(filename)
@@ -124,7 +124,7 @@ describe Yell::Logger do
 
     it "should call adapter with :file" do
       expect(Yell::Adapters::File).to(
-        receive(:new).with(:filename => pathname).and_call_original
+        receive(:new).with(filename: pathname).and_call_original
       )
 
       Yell::Logger.new(pathname)
@@ -165,7 +165,7 @@ describe Yell::Logger do
 
     context "with arity" do
       let(:logger) do
-        Yell::Logger.new(:level => level) { |l| l.adapter(:stdout) }
+        Yell::Logger.new(level: level) { |l| l.adapter(:stdout) }
       end
 
       it "should pass the level correctly" do
@@ -179,7 +179,7 @@ describe Yell::Logger do
 
     context "without arity" do
       let(:logger) do
-        Yell::Logger.new(:level => level) { adapter(:stdout) }
+        Yell::Logger.new(level: level) { adapter(:stdout) }
       end
 
       it "should pass the level correctly" do
@@ -200,22 +200,22 @@ describe Yell::Logger do
       )
       expect(Yell::Adapters::Stderr).to(
         receive(:new).
-          with(hash_including(:level => :error)).
+          with(hash_including(level: :error)).
           and_call_original
       )
 
       Yell::Logger.new(
-        :adapters => [
+        adapters: [
           :stdout,
-          {:stderr => {:level => :error}}
+          {stderr: {level: :error}}
         ]
       )
     end
   end
 
   context "caller's :file, :line and :method" do
-    let(:stdout) { Yell::Adapters::Stdout.new(:format => "%F, %n: %M") }
-    let(:logger) { Yell::Logger.new(:trace => true) { |l| l.adapter(stdout) } }
+    let(:stdout) { Yell::Adapters::Stdout.new(format: "%F, %n: %M") }
+    let(:logger) { Yell::Logger.new(trace: true) { |l| l.adapter(stdout) } }
 
     it "should write correctly" do
       factory = LoggerFactory.new
@@ -234,7 +234,7 @@ describe Yell::Logger do
   end
 
   context "logging in general" do
-    let(:logger) { Yell::Logger.new(filename, :format => "%m") }
+    let(:logger) { Yell::Logger.new(filename, format: "%m") }
     let(:line) { File.open(filename, &:readline) }
 
     it "should output a single message" do
@@ -244,19 +244,19 @@ describe Yell::Logger do
     end
 
     it "should output multiple messages" do
-      logger.info ["Hello", "W", "o", "r", "l", "d"]
-
+      # logger.info ["Hello", "W", "o", "r", "l", "d"]
+      logger.info %w[Hello W o r l d]
       expect(line).to eq("Hello W o r l d\n")
     end
 
     it "should output a hash and message" do
-      logger.info ["Hello World", {:test => :message}]
+      logger.info ["Hello World", {test: :message}]
 
       expect(line).to eq("Hello World test: message\n")
     end
 
     it "should output a hash and message" do
-      logger.info [{:test => :message}, "Hello World"]
+      logger.info [{test: :message}, "Hello World"]
 
       expect(line).to eq("test: message Hello World\n")
     end
@@ -271,7 +271,7 @@ describe Yell::Logger do
   context "logging with a silencer" do
     let(:silence) { "this" }
     let(:stdout) { Yell::Adapters::Stdout.new }
-    let(:logger) { Yell::Logger.new(stdout, :silence => silence) }
+    let(:logger) { Yell::Logger.new(stdout, silence: silence) }
 
     it "should not pass a matching message to any adapter" do
       expect(stdout).to_not receive(:write)
