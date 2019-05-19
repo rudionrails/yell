@@ -10,10 +10,10 @@ module Yell #:nodoc:
       #   adapter :file, 'development.log'
       #
       #   # Alternative notation for filename in options
-      #   adapter :file, :filename => 'developent.log'
+      #   adapter :file, filename: 'developent.log'
       #
       # @example Standard adapter with filename and additional options
-      #   adapter :file, 'development.log', :level => :warn
+      #   adapter :file, 'development.log', level: :warn
       #
       # @example Set the adapter directly from an adapter instance
       #   adapter Yell::Adapter::File.new

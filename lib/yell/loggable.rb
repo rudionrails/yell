@@ -6,7 +6,7 @@ module Yell #:nodoc:
   # provide it with the name of your class.
   #
   # @example
-  #   Yell.new :stdout, :name => 'Foo'
+  #   Yell.new :stdout, name: 'Foo'
   #
   #   class Foo
   #     include Yell::Loggable
