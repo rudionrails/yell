@@ -3,7 +3,7 @@ require 'logger'
 class Logger
 
   def level_with_yell=( level )
-    self.level_without_yell= Integer(level)
+    self.level_without_yell= level.is_a?(Yell::Level) ? Integer(level) : level
   end
   alias_method :level_without_yell=, :level=
   alias_method :level=, :level_with_yell=
@@ -15,4 +15,3 @@ class Logger
   alias_method :add, :add_with_yell
 
 end
-
