@@ -9,7 +9,7 @@ module Yell #:nodoc:
 
       # @overload setup!( options )
       def setup!( options )
-        @filename = ::File.expand_path(Yell.__fetch__(options, :filename, :default => default_filename))
+        @filename = ::File.expand_path(Yell.__fetch__(options, :filename, default: default_filename))
 
         super
       end

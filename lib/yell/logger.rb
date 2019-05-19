@@ -26,14 +26,14 @@ module Yell #:nodoc:
     #   Yell::Logger.new :datefile, 'development.log'
     #
     # @example Setting the log level
-    #   Yell::Logger.new :level => :warn
+    #   Yell::Logger.new level: :warn
     #
     #   Yell::Logger.new do |l|
     #     l.level = :warn
     #   end
     #
     # @example Combined settings
-    #   Yell::Logger.new 'development.log', :level => :warn
+    #   Yell::Logger.new 'development.log', level: :warn
     #
     #   Yell::Logger.new :datefile, 'development.log' do |l|
     #     l.level = :info
@@ -53,13 +53,13 @@ module Yell #:nodoc:
       self.formatter = Yell.__fetch__(@options, :format, :formatter)
       self.level = Yell.__fetch__(@options, :level, :default => 0)
       self.name = Yell.__fetch__(@options, :name)
-      self.trace = Yell.__fetch__(@options, :trace, :default => :error)
+      self.trace = Yell.__fetch__(@options, :trace, default: :error)
 
       # silencer
-      self.silence(*Yell.__fetch__(@options, :silence, :default => []))
+      self.silence(*Yell.__fetch__(@options, :silence, default: []))
 
       # adapters may be passed in the options
-      extract!(*Yell.__fetch__(@options, :adapters, :default => []))
+      extract!(*Yell.__fetch__(@options, :adapters, default: []))
 
       # extract adapter
       self.adapter(args.pop) if args.any?
@@ -140,7 +140,7 @@ module Yell #:nodoc:
     #   extract!(:stdout, :stderr)
     #
     # @example
-    #   extract!(:stdout => {:level => :info}, :stderr => {:level => :error})
+    #   extract!(stdout: {level: :info}, stderr: {level: :error})
     def extract!( *list )
       list.each do |a|
         if a.is_a?(Hash)

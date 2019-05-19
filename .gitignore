@@ -2,7 +2,8 @@ pkg/*
 *.gem
 .bundle
 .idea
-
+.vscode
+vendor/
 # bundler
 Gemfile.*lock
 

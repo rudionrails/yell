@@ -7,7 +7,7 @@ puts <<-EOS
 # You can add a logger to the global repository.
 #
 # create a logger named 'mylog' that logs to stdout
-Yell.new :stdout, :name => 'mylog'
+Yell.new :stdout, name: 'mylog'
 
 # Later in the code, you can get your logger back
 Yell['mylog'].info "Hello World!"
@@ -15,7 +15,7 @@ Yell['mylog'].info "Hello World!"
 
 EOS
 
-puts "=== actuale example ==="
-Yell.new :stdout, :name => 'mylog'
+puts "=== actual example ==="
+Yell.new :stdout, name: 'mylog'
 Yell['mylog'].info "Hello World!"
 

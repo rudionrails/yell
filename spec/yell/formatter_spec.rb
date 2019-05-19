@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 describe Yell::Formatter do
-  let(:logger) { Yell::Logger.new(:stdout, :name => 'Yell') }
+  let(:logger) { Yell::Logger.new(:stdout, name: 'Yell') }
   let(:message) { "Hello World!" }
   let(:event) { Yell::Event.new(logger, 1, message) }
   let(:time) { Time.now }
@@ -180,7 +180,7 @@ describe Yell::Formatter do
   end
 
   describe "Hash" do
-    let(:message) { {:test => 'message'} }
+    let(:message) { {test: 'message'} }
 
     it "Returns correctly" do
       expect(output).to eq("test: message\n")
