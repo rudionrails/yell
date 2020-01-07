@@ -219,5 +219,5 @@ You can find further examples and additional adapters in the [wiki](https://gith
 or have a look into the examples folder.
 
 
-Copyright &copy; 2011-2015 Rudolf Schmidt, released under the MIT license
+Copyright &copy; 2011-current Rudolf Schmidt, released under the MIT license
 
