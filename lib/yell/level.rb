@@ -41,6 +41,7 @@ module Yell #:nodoc:
     #
     # @param [Integer,String,Symbol,Array,Range,nil] severity The severity for the level.
     def initialize( *severities )
+      @tainted = false
       set(*severities)
     end
 
@@ -176,7 +177,7 @@ module Yell #:nodoc:
       else set!( index ) # :==
       end
 
-      taint unless tainted?
+      @tainted = true unless @tainted
     end
 
     def index_from( severity )
@@ -203,7 +204,7 @@ module Yell #:nodoc:
     end
 
     def set!( index, val = true )
-      @severities.map! { false } unless tainted?
+      @severities.map! { false } unless @tainted
 
       @severities[index] = val
     end
