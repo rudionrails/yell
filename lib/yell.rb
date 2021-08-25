@@ -134,7 +134,11 @@ require File.dirname(__FILE__) + '/yell/logger'
 require File.dirname(__FILE__) + '/yell/loggable'
 
 # core extensions
-require File.dirname(__FILE__) + '/core_ext/logger'
+require File.dirname(__FILE__) + '/yell/stdlib_log_wrapper'
+
+# Patch stdlib ::Logger
+require 'logger'
+::Logger.prepend(Yell::StdlibLogWrapper)
 
 # register known adapters
 Yell.register :null, Yell::Adapters::Base # adapter that does nothing (for convenience only)
