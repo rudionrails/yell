@@ -85,7 +85,7 @@ describe Yell::Logger do
 
   describe 'initialize with #name' do
     let(:name) { 'test' }
-    let!(:logger) { Yell.new(name:) }
+    let!(:logger) { Yell.new(name: name) }
 
     it 'sets the name correctly' do
       expect(logger.name).to eq(name)
@@ -100,7 +100,7 @@ describe Yell::Logger do
     subject { logger.level }
 
     let(:level) { :warn }
-    let(:logger) { Yell.new(level:) }
+    let(:logger) { Yell.new(level: level) }
 
     it { is_expected.to be_instance_of(Yell::Level) }
 
@@ -113,7 +113,7 @@ describe Yell::Logger do
     subject { logger.trace }
 
     let(:trace) { :info }
-    let(:logger) { Yell.new(trace:) }
+    let(:logger) { Yell.new(trace: trace) }
 
     it { is_expected.to be_instance_of(Yell::Level) }
 
@@ -126,7 +126,7 @@ describe Yell::Logger do
     subject { logger.silencer }
 
     let(:silence) { 'test' }
-    let(:logger) { Yell.new(silence:) }
+    let(:logger) { Yell.new(silence: silence) }
 
     it { is_expected.to be_instance_of(Yell::Silencer) }
 
@@ -140,7 +140,7 @@ describe Yell::Logger do
 
     it 'calls adapter with :file' do
       expect(Yell::Adapters::File).to(
-        receive(:new).with(hash_including(filename:)).and_call_original
+        receive(:new).with(hash_including(filename: filename)).and_call_original
       )
 
       described_class.new(filename)
@@ -194,7 +194,7 @@ describe Yell::Logger do
 
     context 'with arity' do
       let(:logger) do
-        described_class.new(level:) { |l| l.adapter(:stdout) }
+        described_class.new(level: level) { |l| l.adapter(:stdout) }
       end
 
       it 'passes the level correctly' do
@@ -208,7 +208,7 @@ describe Yell::Logger do
 
     context 'without arity' do
       let(:logger) do
-        described_class.new(level:) { adapter(:stdout) }
+        described_class.new(level: level) { adapter(:stdout) }
       end
 
       it 'passes the level correctly' do
@@ -300,7 +300,7 @@ describe Yell::Logger do
   context 'logging with a silencer' do
     let(:silence) { 'this' }
     let(:stdout) { Yell::Adapters::Stdout.new }
-    let(:logger) { described_class.new(stdout, silence:) }
+    let(:logger) { described_class.new(stdout, silence: silence) }
 
     it 'does not pass a matching message to any adapter' do
       expect(stdout).not_to receive(:write)

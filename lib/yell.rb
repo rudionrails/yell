@@ -31,8 +31,8 @@ module Yell # :nodoc:
     # Refer to #Yell::Loggger for usage.
     #
     # @return [Yell::Logger] The logger instance
-    def new(...)
-      Yell::Logger.new(...)
+    def new(*args, &block)
+      Yell::Logger.new(*args, &block)
     end
 
     # Shortcut to Yell::Level.new
@@ -59,8 +59,8 @@ module Yell # :nodoc:
     # Shortcut to Yell::Fomatter.new
     #
     # @return [Yell::Formatter] A Yell::Formatter instance
-    def format(pattern = nil, date_pattern = nil, &)
-      Yell::Formatter.new(pattern, date_pattern, &)
+    def format(pattern = nil, date_pattern = nil, &block)
+      Yell::Formatter.new(pattern, date_pattern, &block)
     end
 
     # Loads a config from a YAML file

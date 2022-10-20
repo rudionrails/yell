@@ -23,8 +23,8 @@ module Yell # :nodoc:
       # @param [Symbol] type The type of the adapter, may be `:file` or `:datefile` (default `:file`)
       # @return [Yell::Adapter] The instance
       # @raise [Yell::NoSuchAdapter] Will be thrown when the adapter is not defined
-      def adapter(type = :file, *args, &)
-        adapters.add(type, *args, &)
+      def adapter(type = :file, *args, &block)
+        adapters.add(type, *args, &block)
       end
 
       def adapters

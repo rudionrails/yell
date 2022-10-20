@@ -37,7 +37,7 @@ describe Yell::Adapters::File do
 
     context 'with given :filename' do
       let(:filename) { "#{fixture_path}/filename.log" }
-      let(:adapter) { described_class.new(filename:) }
+      let(:adapter) { described_class.new(filename: filename) }
 
       it 'prints to file' do
         expect(File).to(

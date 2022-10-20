@@ -24,7 +24,7 @@ module Yell # :nodoc:
   class Level
     include Comparable
 
-    InterpretRegexp = /(at|gt|gte|lt|lte)?\.?(#{Yell::Severities.join('|')})/i
+    InterpretRegexp = /(at|gt|gte|lt|lte)?\.?(#{Yell::Severities.join('|')})/i.freeze
 
     # Create a new level instance.
     #

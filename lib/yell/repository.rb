@@ -5,7 +5,9 @@ require 'singleton'
 
 module Yell # :nodoc:
   class LoggerNotFound < StandardError # :nodoc:
-    def message = "Could not find a Yell::Logger instance with the name '#{super}'"
+    def message
+      "Could not find a Yell::Logger instance with the name '#{super}'"
+    end
   end
 
   class Repository # :nodoc:

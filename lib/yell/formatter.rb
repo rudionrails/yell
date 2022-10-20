@@ -78,7 +78,7 @@ module Yell # :nodoc:
       'P' => 'progname'
     )
 
-    PatternMatcher = /([^%]*)(%\d*)?(#{Table.keys.join('|')})?(.*)/m
+    PatternMatcher = /([^%]*)(%\d*)?(#{Table.keys.join('|')})?(.*)/m.freeze
 
     attr_reader :pattern, :date_pattern
 
@@ -101,8 +101,8 @@ module Yell # :nodoc:
     #   Formatter.new do |f|
     #     f.modify(Hash) { |h| "Hash: #{h.inspect}" }
     #   end
-    def initialize(*args, &)
-      builder = Builder.new(*args, &)
+    def initialize(*args, &block)
+      builder = Builder.new(*args, &block)
 
       @pattern = builder.pattern
       @date_pattern = builder.date_pattern
@@ -168,8 +168,8 @@ module Yell # :nodoc:
         block&.call(self)
       end
 
-      def modify(key, &)
-        modifier.set(key, &)
+      def modify(key, &block)
+        modifier.set(key, &block)
       end
     end
 

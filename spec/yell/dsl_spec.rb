@@ -15,9 +15,17 @@ class DSLAdapter < Yell::Adapters::Base
     @test_close = true
   end
 
-  def test_setup? = @test_setup
-  def test_write? = @test_write
-  def test_close? = @test_close
+  def test_setup?
+    @test_setup
+  end
+
+  def test_write?
+    @test_write
+  end
+
+  def test_close?
+    @test_close
+  end
 end
 
 describe 'Yell Adapter DSL spec' do

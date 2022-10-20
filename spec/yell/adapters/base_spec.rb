@@ -8,7 +8,7 @@ describe Yell::Adapters::Base do
       let(:level) { Yell::Level.new(:warn) }
 
       it 'sets the level' do
-        adapter = described_class.new(level:)
+        adapter = described_class.new(level: level)
 
         expect(adapter.level).to eq(level)
       end

@@ -1,4 +1,5 @@
 AllCops:
+  TargetRubyVersion: 2.6
   NewCops: enable
   Exclude:
     - 'yell.gemspec'
@@ -7,6 +8,10 @@ AllCops:
 Lint/RescueException:
   Exclude:
     - 'lib/yell/adapters/base.rb'
+
+Security/YAMLLoad:
+  Exclude:
+    - 'lib/yell/configuration.rb'
 
 Metrics/AbcSize:
   Enabled: false

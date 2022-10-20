@@ -4,10 +4,12 @@ module Yell # :nodoc:
   # The +Yell::Silencer+ is your handly helper for stiping out unwanted log messages.
   class Silencer
     class PresetNotFound < StandardError # :nodoc:
-      def message = "Could not find a preset for #{super.inspect}"
+      def message
+        "Could not find a preset for #{super.inspect}"
+      end
     end
 
-    PRESETS = {
+    Presets = {
       assets: [%r{\AStarted GET "/assets}, /\AServed asset/, /\A\s*\z/] # for Rails
     }.freeze
 
@@ -60,7 +62,7 @@ module Yell # :nodoc:
 
     def fetch(pattern)
       case pattern
-      when Symbol then PRESETS[pattern] or raise(PresetNotFound, pattern)
+      when Symbol then Presets[pattern] or raise(PresetNotFound, pattern)
       else [pattern]
       end
     end

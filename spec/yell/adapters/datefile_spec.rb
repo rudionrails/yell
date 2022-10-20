@@ -25,7 +25,7 @@ describe Yell::Adapters::Datefile do
 
   describe '#write' do
     let(:today_lines) { File.readlines(today_filename) }
-    let(:adapter) { described_class.new(filename:, format:) }
+    let(:adapter) { described_class.new(filename: filename, format: format) }
 
     before do
       adapter.write(event)
@@ -68,7 +68,7 @@ describe Yell::Adapters::Datefile do
   end
 
   describe '#keep' do
-    let(:adapter) { described_class.new(filename:, format:, symlink: false, keep: 2) }
+    let(:adapter) { described_class.new(filename: filename, format: format, symlink: false, keep: 2) }
 
     it 'keeps the specified number or files upon rollover' do
       adapter.write(event)
@@ -84,7 +84,7 @@ describe Yell::Adapters::Datefile do
 
   describe '#symlink' do
     context 'when true (default)' do
-      let(:adapter) { described_class.new(filename:, format:) }
+      let(:adapter) { described_class.new(filename: filename, format: format) }
 
       it 'is created on the original filename' do
         adapter.write(event)
@@ -104,7 +104,7 @@ describe Yell::Adapters::Datefile do
     end
 
     context 'when false' do
-      let(:adapter) { described_class.new(filename:, format:, symlink: false) }
+      let(:adapter) { described_class.new(filename: filename, format: format, symlink: false) }
 
       it 'does not create the sylink the original filename' do
         adapter.write(event)
@@ -118,7 +118,7 @@ describe Yell::Adapters::Datefile do
     let(:header) { File.open(today_filename, &:readline) }
 
     context 'when true (default)' do
-      let(:adapter) { described_class.new(filename:, format:) }
+      let(:adapter) { described_class.new(filename: filename, format: format) }
 
       it 'is written' do
         adapter.write(event)
@@ -137,7 +137,7 @@ describe Yell::Adapters::Datefile do
     end
 
     context 'when false' do
-      let(:adapter) { described_class.new(filename:, format:, header: false) }
+      let(:adapter) { described_class.new(filename: filename, format: format, header: false) }
 
       it 'is not written' do
         adapter.write(event)
@@ -148,8 +148,8 @@ describe Yell::Adapters::Datefile do
   end
 
   context 'another adapter with the same :filename' do
-    let(:adapter) { described_class.new(filename:, format:) }
-    let(:another_adapter) { described_class.new(filename:) }
+    let(:adapter) { described_class.new(filename: filename, format: format) }
+    let(:another_adapter) { described_class.new(filename: filename) }
 
     before do
       adapter.write(event)

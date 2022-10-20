@@ -35,7 +35,9 @@ module Yell # :nodoc:
       #
       # @example
       #   colorize!
-      def colorize! = @colors = true
+      def colorize!
+        @colors = true
+      end
 
       private
 

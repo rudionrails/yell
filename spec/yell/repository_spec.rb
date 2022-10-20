@@ -14,7 +14,7 @@ describe Yell::Repository do
     end
 
     context 'when logger with :name exists' do
-      let!(:logger) { Yell.new(:stdout, name:) }
+      let!(:logger) { Yell.new(:stdout, name: name) }
 
       it 'eq(logger)s' do
         expect(subject).to eq(logger)
@@ -49,7 +49,7 @@ describe Yell::Repository do
   end
 
   describe '.[]= with a named logger' do
-    let!(:logger) { Yell.new(:stdout, name:) }
+    let!(:logger) { Yell.new(:stdout, name: name) }
 
     before { described_class[name] = logger }
 

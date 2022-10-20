@@ -15,7 +15,7 @@ module Yell # :nodoc:
         @collection = []
       end
 
-      def add(type = :file, *args, &)
+      def add(type = :file, *args, &block)
         options = [@options, *args].inject({}) do |h, c|
           h.merge([String, Pathname].include?(c.class) ? { filename: c } : c)
         end
@@ -23,7 +23,7 @@ module Yell # :nodoc:
         # remove possible :null adapters
         @collection.shift if @collection.first.instance_of?(Yell::Adapters::Base)
 
-        new_adapter = Yell::Adapters.new(type, options, &)
+        new_adapter = Yell::Adapters.new(type, options, &block)
         @collection.push(new_adapter)
 
         new_adapter
@@ -60,7 +60,7 @@ module Yell # :nodoc:
     #
     # @example A simple file adapter
     #   Yell::Adapters.new( :file )
-    def self.new(type, options = {}, &)
+    def self.new(type, options = {}, &block)
       return type if type.is_a?(Yell::Adapters::Base)
 
       adapter = case type
@@ -71,7 +71,7 @@ module Yell # :nodoc:
 
       raise AdapterNotFound, type if adapter.nil?
 
-      adapter.new(options, &)
+      adapter.new(options, &block)
     end
   end
 end

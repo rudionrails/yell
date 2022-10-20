@@ -50,8 +50,8 @@ module Yell # :nodoc:
         #   setup do |options|
         #     @file_handle = File.new( '/dev/null', 'w' )
         #   end
-        def setup(&)
-          compile!(:setup!, &)
+        def setup(&block)
+          compile!(:setup!, &block)
         end
 
         # Define your write method with this helper.
@@ -60,8 +60,8 @@ module Yell # :nodoc:
         #   write do |event|
         #     @file_handle.puts event.message
         #   end
-        def write(&)
-          compile!(:write!, &)
+        def write(&block)
+          compile!(:write!, &block)
         end
 
         # Define your open method with this helper.
@@ -70,8 +70,8 @@ module Yell # :nodoc:
         #   open do
         #     @stream = ::File.open( 'test.log', ::File::WRONLY|::File::APPEND|::File::CREAT )
         #   end
-        def open(&)
-          compile!(:open!, &)
+        def open(&block)
+          compile!(:open!, &block)
         end
 
         # Define your close method with this helper.
@@ -80,8 +80,8 @@ module Yell # :nodoc:
         #   close do
         #     @stream.close
         #   end
-        def close(&)
-          compile!(:close!, &)
+        def close(&block)
+          compile!(:close!, &block)
         end
 
         private
@@ -99,17 +99,17 @@ module Yell # :nodoc:
         #     puts event.method
         #     super
         #   end
-        def compile!(name, &)
+        def compile!(name, &block)
           # Get the already defined method
           original_method = instance_method(name)
 
           # Create a new method with leading underscore
-          define_method("_#{name}", &)
+          define_method("_#{name}", &block)
           unbound_method = instance_method("_#{name}")
           remove_method("_#{name}")
 
           # Define instance method
-          define!(name, unbound_method, original_method, &)
+          define!(name, unbound_method, original_method, &block)
         end
 
         # Define instance method by given name and call the unbound

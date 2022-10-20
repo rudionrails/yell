@@ -16,7 +16,7 @@ describe Yell::Adapters::Io do
       let(:level) { Yell::Level.new(:warn) }
 
       it 'sets the level' do
-        adapter = described_class.new(level:)
+        adapter = described_class.new(level: level)
 
         expect(adapter.level).to eq(level)
       end
@@ -32,7 +32,7 @@ describe Yell::Adapters::Io do
       let(:format) { Yell::Formatter.new }
 
       it 'sets the level' do
-        adapter = described_class.new(format:)
+        adapter = described_class.new(format: format)
 
         expect(adapter.format).to eq(format)
       end

@@ -9,8 +9,8 @@ class Logger # :nodoc:
   alias level_without_yell= level=
   alias level= level_with_yell=
 
-  def add_with_yell(severity, message = nil, progname = nil, &)
-    add_without_yell(Integer(severity), message, progname, &)
+  def add_with_yell(severity, message = nil, progname = nil, &block)
+    add_without_yell(Integer(severity), message, progname, &block)
   end
   alias add_without_yell add
   alias add add_with_yell

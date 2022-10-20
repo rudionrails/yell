@@ -12,7 +12,7 @@ module Yell # :nodoc:
 
       # Metadata
       Header = ->(date, pattern) { "# -*- #{date.iso8601} (#{date.to_f}) [#{pattern}] -*-" }
-      HeaderRegexp = /^# -\*- (.+) \((\d+\.\d+)\) \[(.+)\] -\*-$/
+      HeaderRegexp = /^# -\*- (.+) \((\d+\.\d+)\) \[(.+)\] -\*-$/.freeze
 
       # The pattern to be used for the files
       #

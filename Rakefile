@@ -17,7 +17,7 @@ task :examples do
   require 'benchmark'
 
   seconds = Benchmark.realtime do
-    Dir['./examples/*.rb'].each do |file|
+    Dir['./examples/*.rb'].sort.each do |file|
       puts "\n\n=== Running #{file} ==="
       require file
     end

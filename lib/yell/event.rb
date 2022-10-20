@@ -8,7 +8,7 @@ module Yell # :nodoc:
   # #=> Hello World scope: Application
   class Event
     # regex to fetch caller attributes
-    CallerRegexp = /^(.+?):(\d+)(?::in `(.+)')?/
+    CallerRegexp = /^(.+?):(\d+)(?::in `(.+)')?/.freeze
 
     # jruby and rubinius seem to have a different caller
     CallerIndex = defined?(RUBY_ENGINE) && %w[rbx jruby].include?(RUBY_ENGINE) ? 1 : 2

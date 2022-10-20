@@ -13,7 +13,7 @@ Gem::Specification.new do |spec|
   spec.description = "Yell - Your Extensible Logging Library. Define multiple adapters, various log level combinations or message formatting options like you've never done before"
   spec.homepage    = 'https://github.com/rudionrails/yell'
   spec.license = 'MIT'
-  spec.required_ruby_version = '>= 2.6.0'
+  spec.required_ruby_version = '>= 2.6'
 
   spec.metadata['homepage_uri'] = spec.homepage
   spec.metadata['source_code_uri'] = 'https://github.com/rudionrails/yell'
