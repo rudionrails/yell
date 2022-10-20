@@ -40,7 +40,9 @@ describe Yell::Logger do
     end
 
     context "default #name" do
-      its(:name) { should eq("<Yell::Logger##{logger.object_id}>") }
+      it "has the correct name" do
+        expect(logger.name).to eq("<Yell::Logger##{logger.object_id}>")
+      end
 
       it "should not be added to the repository" do
         expect { Yell::Repository[logger.name] }.to raise_error(Yell::LoggerNotFound)
@@ -50,22 +52,30 @@ describe Yell::Logger do
     context "default #adapter" do
       subject { logger.adapters.instance_variable_get(:@collection) }
 
-      its(:size) { should == 1 }
-      its(:first) { should be_kind_of(Yell::Adapters::File) }
+      it "has is a file adapter" do
+        expect(subject.size).to eq(1)
+        expect(subject.first).to be_kind_of(Yell::Adapters::File)
+      end
     end
 
     context "default #level" do
       subject { logger.level }
 
       it { should be_instance_of(Yell::Level) }
-      its(:severities) { should eq([true, true, true, true, true, true]) }
+
+      it "has the right values" do
+        expect(subject.severities).to eq([true, true, true, true, true, true])
+      end
     end
 
     context "default #trace" do
       subject { logger.trace }
 
       it { should be_instance_of(Yell::Level) }
-      its(:severities) { should eq([false, false, false, true, true, true]) } # from error onwards
+
+      it "is configured from error level onwards" do
+        expect(subject.severities).to eq([false, false, false, true, true, true])
+      end
     end
   end
 
@@ -83,12 +93,15 @@ describe Yell::Logger do
   end
 
   context "initialize with #level" do
-    let(:level) { :error }
+    let(:level) { :warn }
     let(:logger) { Yell.new(level: level) }
     subject { logger.level }
 
     it { should be_instance_of(Yell::Level) }
-    its(:severities) { should eq([false, false, false, true, true, true]) }
+
+    it "has the correct values" do
+      expect(subject.severities).to eq([false, false, true, true, true, true])
+    end
   end
 
   context "initialize with #trace" do
@@ -97,7 +110,10 @@ describe Yell::Logger do
     subject { logger.trace }
 
     it { should be_instance_of(Yell::Level) }
-    its(:severities) { should eq([false, true, true, true, true, true]) }
+
+    it "has the correct values" do
+      expect(subject.severities).to eq([false, true, true, true, true, true])
+    end
   end
 
   context "initialize with #silence" do
@@ -106,25 +122,31 @@ describe Yell::Logger do
     subject { logger.silencer }
 
     it { should be_instance_of(Yell::Silencer) }
-    its(:patterns) { should eq([silence]) }
-  end
-
-  context "initialize with a #filename" do
-    it "should call adapter with :file" do
-      expect(Yell::Adapters::File).to(
-        receive(:new).with(filename: filename).and_call_original
-      )
-
-      Yell::Logger.new(filename)
+    
+    it "has the correct values" do
+      expect(subject.patterns).to eq([silence])
     end
   end
 
-  context "initialize with a #filename of Pathname type" do
-    let(:pathname) { Pathname.new(filename) }
+  context "initialize with a #filename" do
+    # let(:adapters) { logger.adapters.instance_variable_get(:@collection) }
 
     it "should call adapter with :file" do
       expect(Yell::Adapters::File).to(
-        receive(:new).with(filename: pathname).and_call_original
+        receive(:new).with(hash_including(filename: filename)).and_call_original
+      )
+
+      Yell::Logger.new(filename)
+      # adapter = logger.adapters.instance_variable_get(:@collection).first
+      #
+      # expect(adapter).to be_kind_of(Yell::Adapters::File)
+    end
+
+    it "should call adapter with :file of type Pathname" do
+      pathname = Pathname.new(filename)
+
+      expect(Yell::Adapters::File).to(
+        receive(:new).with(hash_including(filename: pathname)).and_call_original
       )
 
       Yell::Logger.new(pathname)

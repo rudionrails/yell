@@ -148,7 +148,7 @@ module Yell #:nodoc:
       # The method receives the log `event` and determines whether to 
       # actually write or not.
       def write( event )
-        synchronize { write!(event) } if write?(event)
+        synchronize { write!(event) if write?(event) }
       rescue Exception => e
         # make sure the adapter is closed and re-raise the exception
         synchronize { close }

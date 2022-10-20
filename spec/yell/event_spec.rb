@@ -79,17 +79,33 @@ describe Yell::Event do
     subject { EventFactory.event(logger, 1, "Hello World") }
 
     context "with trace" do
-      its(:file) { should eq(__FILE__) }
-      its(:line) { should eq("8") }
-      its(:method) { should eq("event") }
+      it "has the correct :file" do
+        expect(subject.file).to eq(__FILE__)
+      end
+
+      it "has the correct :line" do
+        expect(subject.line).to eq("8");
+      end
+
+      it "has the correct :method" do
+        expect(subject.method).to eq("event")
+      end
     end
 
     context "without trace" do
       before { logger.trace = false }
 
-      its(:file) { should eq("") }
-      its(:line) { should eq("") }
-      its(:method) { should eq("") }
+      it "has the correct :file" do
+        expect(subject.file).to eq("")
+      end
+
+      it "has the correct :line" do
+        expect(subject.line).to eq("");
+      end
+
+      it "has the correct :method" do
+        expect(subject.method).to eq("")
+      end
     end
   end
 

@@ -75,9 +75,9 @@ module Yell #:nodoc:
         # exit when file ready present
         return super if ::File.exist?(@filename)
 
-        header! if header?
-        symlink! if symlink?
-        cleanup! if cleanup?
+        header! if !!header
+        symlink! if !!symlink
+        cleanup! if !!keep && keep.to_i > 0
 
         super
       end
@@ -123,42 +123,31 @@ module Yell #:nodoc:
           pattern.nil? || pattern == self.date_pattern
         end
 
-        ::File.unlink( *files[0..-keep-1] )
-      end
-
-      # Cleanup old logfiles?
-      #
-      # @return [Boolean] true or false
-      def cleanup?
-        !!keep && keep.to_i > 0
+        ::FileUtils.rm( files[0..-keep-1], force: true )
       end
 
       # Symlink the current filename to the original one.
       def symlink!
         # do nothing, because symlink is already correct
-        return if ::File.symlink?(@original_filename) && ::File.readlink(@original_filename) == @filename
+        return if already_symlinked?
 
-        ::File.unlink(@original_filename) if ::File.exist?(@original_filename) || ::File.symlink?(@original_filename)
-        ::File.symlink(@filename, @original_filename)
+        # ::FileUtils.rm(@original_filename) if ::File.exist?(@original_filename) || ::File.symlink?(@original_filename)
+        ::FileUtils.ln_sf(@filename, @original_filename)
+      rescue Errno::EEXIST
+        # do nothing
       end
 
-      # Symlink the original filename?
-      #
-      # @return [Boolean] true or false
-      def symlink?
-        !!symlink
+      # Symlink and target are correct? This can raise when files have been already cleaned up,
+      # so we catch and return false.
+      def already_symlinked?
+        ::File.symlink?(@original_filename) && ::File.readlink(@original_filename) == @filename
+      rescue Errno::ENOENT
+        false
       end
 
       # Write the header information into the file
       def header!
         stream.puts( Header.call(@date, date_pattern) )
-      end
-
-      # Write header into the file?
-      #
-      # @return [Boolean] true or false
-      def header?
-        !!header
       end
 
       # Sets the filename with the `:date_pattern` appended to it.
@@ -175,9 +164,13 @@ module Yell #:nodoc:
           # In case there is no header: we need to take a good guess
           #
           # Since the pattern can not be determined, we will just return the Posix ctime. 
-          # That is NOT the creatint time, so the value will potentially be wrong!
+          # That is NOT the creation time, so the value will potentially be wrong
           [::File.ctime(file), nil]
         end
+      rescue Errno::ENOENT
+        # file probably does not exist anymore, some other process 
+        # or thread may have cleaned it up already.
+        [ nil, nil ]
       end
 
       # @overload inspectables
