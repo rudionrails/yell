@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'fileutils'
+
 module Yell # :nodoc:
   module Adapters # :nodoc:
     # The +Datefile+ adapter is similar to the +File+ adapter. However, it

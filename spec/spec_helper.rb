@@ -14,23 +14,6 @@ rescue LoadError
   # do nothing when not available
 end
 
-begin
-  require 'coveralls'
-  require 'simplecov'
-
-  warn 'Running coverage...'
-  SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new([
-                                                                   SimpleCov::Formatter::HTMLFormatter,
-                                                                   Coveralls::SimpleCov::Formatter
-                                                                 ])
-
-  SimpleCov.start do
-    add_filter 'spec'
-  end
-rescue LoadError
-  # do nothing when not available
-end
-
 require 'yell'
 
 RSpec.configure do |config|
