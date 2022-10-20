@@ -8,13 +8,13 @@ gemspec
 group :development, :test do
   gem 'rake'
 
-  gem 'rspec'
   gem 'byebug', platform: :mri
+  gem 'rspec'
   gem 'timecop'
 
   gem 'activesupport'
 
-  gem 'rubocop', require: false
   gem 'coveralls', require: false
+  gem 'rubocop', require: false
   gem 'simplecov', require: false
 end

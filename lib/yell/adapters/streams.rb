@@ -1,8 +1,8 @@
-module Yell #:nodoc:
-  module Adapters #:nodoc:
+# frozen_string_literal: true
 
-    class Stdout < Yell::Adapters::Io
-
+module Yell # :nodoc:
+  module Adapters # :nodoc:
+    class Stdout < Yell::Adapters::Io # :nodoc:
       private
 
       # @overload open!
@@ -10,11 +10,9 @@ module Yell #:nodoc:
         @stream = $stdout.clone
         super
       end
-
     end
 
-    class Stderr < Yell::Adapters::Io
-
+    class Stderr < Yell::Adapters::Io # :nodoc:
       private
 
       # @overload open!
@@ -22,9 +20,6 @@ module Yell #:nodoc:
         @stream = $stderr.clone
         super
       end
-
     end
-
   end
 end
-

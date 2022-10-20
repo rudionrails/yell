@@ -1,5 +1,7 @@
-$:.unshift File.expand_path('..', __FILE__)
-$:.unshift File.expand_path('../../lib', __FILE__)
+# frozen_string_literal: true
+
+$LOAD_PATH.unshift File.expand_path(__dir__)
+$LOAD_PATH.unshift File.expand_path('../lib', __dir__)
 
 ENV['YELL_ENV'] = 'test'
 
@@ -16,11 +18,11 @@ begin
   require 'coveralls'
   require 'simplecov'
 
-  STDERR.puts "Running coverage..."
+  warn 'Running coverage...'
   SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new([
-    SimpleCov::Formatter::HTMLFormatter,
-    Coveralls::SimpleCov::Formatter
-  ])
+                                                                   SimpleCov::Formatter::HTMLFormatter,
+                                                                   Coveralls::SimpleCov::Formatter
+                                                                 ])
 
   SimpleCov.start do
     add_filter 'spec'
@@ -46,21 +48,19 @@ RSpec.configure do |config|
     c.syntax = :expect
   end
 
-  config.before :each do
+  config.before do
     Yell::Repository.loggers.clear
 
-    Dir[ fixture_path + "/*.log" ].each { |f| File.delete f }
+    Dir["#{fixture_path}/*.log"].each { |f| File.delete f }
   end
 
-  config.after :each do
+  config.after do
     Timecop.return # release time after each test
   end
 
   private
 
   def fixture_path
-    File.expand_path( "fixtures", File.dirname(__FILE__) ).to_s
+    File.expand_path('fixtures', File.dirname(__FILE__)).to_s
   end
-
 end
-

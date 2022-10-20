@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Copyright (c) 2011-2014 Rudolf Schmidt
 #
 # Permission is hereby granted, free of charge, to any person obtaining
@@ -19,9 +21,9 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-module Yell #:nodoc:
+module Yell # :nodoc:
   # Holds all Yell severities
-  Severities = ['DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL', 'UNKNOWN'].freeze
+  Severities = %w[DEBUG INFO WARN ERROR FATAL UNKNOWN].freeze
 
   class << self
     # Creates a new logger instance.
@@ -29,47 +31,47 @@ module Yell #:nodoc:
     # Refer to #Yell::Loggger for usage.
     #
     # @return [Yell::Logger] The logger instance
-    def new( *args, &block )
-      Yell::Logger.new(*args, &block)
+    def new(...)
+      Yell::Logger.new(...)
     end
 
     # Shortcut to Yell::Level.new
     #
     # @return [Yell::Level] The level instance
-    def level( val = nil )
+    def level(val = nil)
       Yell::Level.new(val)
     end
 
     # Shortcut to Yell::Repository[]
     #
     # @return [Yell::Logger] The logger instance
-    def []( name )
+    def [](name)
       Yell::Repository[name]
     end
 
     # Shortcut to Yell::Repository[]=
     #
     # @return [Yell::Logger] The logger instance
-    def []=( name, logger )
+    def []=(name, logger)
       Yell::Repository[name] = logger
     end
 
     # Shortcut to Yell::Fomatter.new
     #
     # @return [Yell::Formatter] A Yell::Formatter instance
-    def format( pattern = nil, date_pattern = nil, &block )
-      Yell::Formatter.new(pattern, date_pattern, &block)
+    def format(pattern = nil, date_pattern = nil, &)
+      Yell::Formatter.new(pattern, date_pattern, &)
     end
 
     # Loads a config from a YAML file
     #
     # @return [Yell::Logger] The logger instance
-    def load!( file )
+    def load!(file)
       Yell.new Yell::Configuration.load!(file)
     end
 
     # Shortcut to Yell::Adapters.register
-    def register( name, klass )
+    def register(name, klass)
       Yell::Adapters.register(name, klass)
     end
 
@@ -87,8 +89,8 @@ module Yell #:nodoc:
     end
 
     # @private
-    def __deprecate__( version, message, options = {} ) #:nodoc:
-      messages = ["Deprecation Warning (since v#{version}): #{message}" ]
+    def __deprecate__(version, message, options = {}) # :nodoc:
+      messages = ["Deprecation Warning (since v#{version}): #{message}"]
       messages << "  before: #{options[:before]}" if options[:before]
       messages << "  after:  #{options[:after]}" if options[:after]
 
@@ -96,14 +98,12 @@ module Yell #:nodoc:
     end
 
     # @private
-    def __warn__( *messages ) #:nodoc:
-      $stderr.puts "[Yell] " + messages.join("\n")
-    rescue Exception => e
-      # do nothing
+    def __warn__(*messages)
+      warn "[Yell] #{messages.join("\n")}"
     end
 
     # @private
-    def __fetch__( hash, *args )
+    def __fetch__(hash, *args)
       options = args.last.is_a?(Hash) ? args.pop : {}
       value = args.map { |key| hash.fetch(key.to_sym, hash[key.to_s]) }.compact.first
 
@@ -113,28 +113,28 @@ module Yell #:nodoc:
 end
 
 # helpers
-require File.dirname(__FILE__) + '/yell/helpers/base'
-require File.dirname(__FILE__) + '/yell/helpers/adapter'
-require File.dirname(__FILE__) + '/yell/helpers/formatter'
-require File.dirname(__FILE__) + '/yell/helpers/level'
-require File.dirname(__FILE__) + '/yell/helpers/tracer'
-require File.dirname(__FILE__) + '/yell/helpers/silencer'
+require_relative 'yell/helpers/base'
+require_relative 'yell/helpers/adapter'
+require_relative 'yell/helpers/formatter'
+require_relative 'yell/helpers/level'
+require_relative 'yell/helpers/tracer'
+require_relative 'yell/helpers/silencer'
 
 # classes
-require File.dirname(__FILE__) + '/yell/configuration'
-require File.dirname(__FILE__) + '/yell/repository'
-require File.dirname(__FILE__) + '/yell/event'
-require File.dirname(__FILE__) + '/yell/level'
-require File.dirname(__FILE__) + '/yell/formatter'
-require File.dirname(__FILE__) + '/yell/silencer'
-require File.dirname(__FILE__) + '/yell/adapters'
-require File.dirname(__FILE__) + '/yell/logger'
+require_relative 'yell/configuration'
+require_relative 'yell/repository'
+require_relative 'yell/event'
+require_relative 'yell/level'
+require_relative 'yell/formatter'
+require_relative 'yell/silencer'
+require_relative 'yell/adapters'
+require_relative 'yell/logger'
 
 # modules
-require File.dirname(__FILE__) + '/yell/loggable'
+require_relative 'yell/loggable'
 
 # core extensions
-require File.dirname(__FILE__) + '/core_ext/logger'
+require_relative 'core_ext/logger'
 
 # register known adapters
 Yell.register :null, Yell::Adapters::Base # adapter that does nothing (for convenience only)

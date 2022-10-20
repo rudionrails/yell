@@ -1,61 +1,65 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe Yell::Adapters::Datefile do
   let(:logger) { Yell::Logger.new }
-  let(:message) { "Hello World" }
+  let(:message) { 'Hello World' }
   let(:event) { Yell::Event.new(logger, 1, message) }
 
   let(:today) { Time.now }
-  let(:tomorrow) { Time.now + 86400 }
+  let(:tomorrow) { Time.now + 86_400 }
 
-  let(:filename) { fixture_path + '/test.log' }
+  let(:format) { '%m' }
+  let(:filename) { "#{fixture_path}/test.log" }
   let(:today_filename) { fixture_path + "/test.#{today.strftime(Yell::Adapters::Datefile::DefaultDatePattern)}.log" }
-  let(:tomorrow_filename) { fixture_path + "/test.#{tomorrow.strftime(Yell::Adapters::Datefile::DefaultDatePattern)}.log" }
-
-  let(:adapter) { Yell::Adapters::Datefile.new(:filename => filename, :format => "%m") }
+  let(:tomorrow_filename) do
+    fixture_path + "/test.#{tomorrow.strftime(Yell::Adapters::Datefile::DefaultDatePattern)}.log"
+  end
 
   before do
     Timecop.freeze(today)
   end
 
-  it { should be_kind_of Yell::Adapters::File }
+  it { is_expected.to be_a Yell::Adapters::File }
 
-  describe "#write" do
+  describe '#write' do
     let(:today_lines) { File.readlines(today_filename) }
+    let(:adapter) { described_class.new(filename:, format:) }
 
     before do
       adapter.write(event)
     end
 
-    it "should be output to filename with date pattern" do
-      expect(File.exist?(today_filename)).to be_truthy
+    it 'is output to filename with date pattern' do
+      expect(File).to exist(today_filename)
 
       expect(today_lines.size).to eq(2) # includes header line
       expect(today_lines.last).to match(message)
     end
 
-    it "should output to the same file" do
+    it 'outputs to the same file' do
       adapter.write(event)
 
-      expect(File.exist?(today_filename)).to be_truthy
+      expect(File).to exist(today_filename)
       expect(today_lines.size).to eq(3) # includes header line
     end
 
-    it "should not open file handle again" do
-      expect(File).to_not receive(:open)
+    it 'does not open file handle again' do
+      expect(File).not_to receive(:open)
 
       adapter.write(event)
     end
 
-    context "on rollover" do
+    context 'on rollover' do
       let(:tomorrow_lines) { File.readlines(tomorrow_filename) }
 
       before do
         Timecop.freeze(tomorrow) { adapter.write(event) }
       end
 
-      it "should rotate file" do
-        expect(File.exist?(tomorrow_filename)).to be_truthy
+      it 'rotates file' do
+        expect(File).to exist(tomorrow_filename)
 
         expect(tomorrow_lines.size).to eq(2) # includes header line
         expect(tomorrow_lines.last).to match(message)
@@ -63,83 +67,79 @@ describe Yell::Adapters::Datefile do
     end
   end
 
-  describe "#keep" do
-    before do
-      adapter.symlink = false # to not taint the Dir
-      adapter.keep = 2
+  describe '#keep' do
+    let(:adapter) { described_class.new(filename:, format:, symlink: false, keep: 2) }
 
+    it 'keeps the specified number or files upon rollover' do
       adapter.write(event)
-    end
-
-    it "should keep the specified number or files upon rollover" do
-      expect(Dir[fixture_path + '/*.log'].size).to eq(1)
+      expect(Dir["#{fixture_path}/*.log"].size).to eq(1)
 
       Timecop.freeze(tomorrow) { adapter.write(event) }
-      expect(Dir[fixture_path + '/*.log'].size).to eq(2)
+      expect(Dir["#{fixture_path}/*.log"].size).to eq(2)
 
-      Timecop.freeze(tomorrow + 86400 ) { adapter.write(event) }
-      expect(Dir[fixture_path + '/*.log'].size).to eq(2)
+      Timecop.freeze(tomorrow + 86_400) { adapter.write(event) }
+      expect(Dir["#{fixture_path}/*.log"].size).to eq(2)
     end
   end
 
-  describe "#symlink" do
-    context "when true (default)" do
-      before do
-        adapter.write(event)
-      end
+  describe '#symlink' do
+    context 'when true (default)' do
+      let(:adapter) { described_class.new(filename:, format:) }
 
-      it "should be created on the original filename" do
-        expect(File.symlink?(filename)).to be_truthy
+      it 'is created on the original filename' do
+        adapter.write(event)
+
+        expect(File).to be_symlink(filename)
         expect(File.readlink(filename)).to eq(today_filename)
       end
 
-      it "should be recreated upon rollover" do
+      it 'is recreated upon rollover' do
+        adapter.write(event)
+
         Timecop.freeze(tomorrow) { adapter.write(event) }
 
-        expect(File.symlink?(filename)).to be_truthy
+        expect(File).to be_symlink(filename)
         expect(File.readlink(filename)).to eq(tomorrow_filename)
       end
     end
 
-    context "when false" do
-      before do
-        adapter.symlink = false
-      end
+    context 'when false' do
+      let(:adapter) { described_class.new(filename:, format:, symlink: false) }
 
-      it "should not create the sylink the original filename" do
-        adapter.write( event )
+      it 'does not create the sylink the original filename' do
+        adapter.write(event)
 
-        expect(File.symlink?(filename)).to be_falsey
+        expect(File).not_to be_symlink(filename)
       end
     end
   end
 
-  describe "#header" do
+  describe '#header' do
     let(:header) { File.open(today_filename, &:readline) }
 
-    context "when true (default)" do
-      before do
-        adapter.write(event)
-      end
+    context 'when true (default)' do
+      let(:adapter) { described_class.new(filename:, format:) }
 
-      it "should be written" do
+      it 'is written' do
+        adapter.write(event)
+
         expect(header).to match(Yell::Adapters::Datefile::HeaderRegexp)
       end
 
-      it "should be rewritten upon rollover" do
+      it 'is rewritten upon rollover' do
+        adapter.write(event)
+
         Timecop.freeze(tomorrow) { adapter.write(event) }
 
-        expect(File.symlink?(filename)).to be_truthy
+        expect(File).to be_symlink(filename)
         expect(File.readlink(filename)).to eq(tomorrow_filename)
       end
     end
 
-    context "when false" do
-      before do
-        adapter.header = false
-      end
+    context 'when false' do
+      let(:adapter) { described_class.new(filename:, format:, header: false) }
 
-      it "should not be written" do
+      it 'is not written' do
         adapter.write(event)
 
         expect(header).to eq("Hello World\n")
@@ -147,14 +147,15 @@ describe Yell::Adapters::Datefile do
     end
   end
 
-  context "another adapter with the same :filename" do
-    let(:another_adapter) { Yell::Adapters::Datefile.new(:filename => filename) }
+  context 'another adapter with the same :filename' do
+    let(:adapter) { described_class.new(filename:, format:) }
+    let(:another_adapter) { described_class.new(filename:) }
 
     before do
       adapter.write(event)
     end
 
-    it "should not write the header again" do
+    it 'does not write the header again' do
       another_adapter.write(event)
 
       # 1: header
@@ -163,6 +164,4 @@ describe Yell::Adapters::Datefile do
       expect(File.readlines(today_filename).size).to eq(3)
     end
   end
-
 end
-

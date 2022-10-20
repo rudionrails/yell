@@ -1,6 +1,8 @@
-module Yell #:nodoc:
-  module Helpers #:nodoc:
-    module Adapter #:nodoc:
+# frozen_string_literal: true
+
+module Yell # :nodoc:
+  module Helpers # :nodoc:
+    module Adapter # :nodoc:
       # Define an adapter to be used for logging.
       #
       # @example Standard adapter
@@ -21,8 +23,8 @@ module Yell #:nodoc:
       # @param [Symbol] type The type of the adapter, may be `:file` or `:datefile` (default `:file`)
       # @return [Yell::Adapter] The instance
       # @raise [Yell::NoSuchAdapter] Will be thrown when the adapter is not defined
-      def adapter( type = :file, *args, &block )
-        adapters.add(type, *args, &block)
+      def adapter(type = :file, *args, &)
+        adapters.add(type, *args, &)
       end
 
       def adapters

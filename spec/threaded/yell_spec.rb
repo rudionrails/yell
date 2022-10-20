@@ -1,13 +1,15 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
-describe "running Yell multi-threaded" do
-  let( :threads ) { 100 }
-  let( :range ) { (1..threads) }
+describe 'running Yell multi-threaded' do
+  let(:threads) { 100 }
+  let(:range) { (1..threads) }
 
-  let( :filename ) { fixture_path + '/threaded.log' }
-  let( :lines ) { `wc -l #{filename}`.to_i }
+  let(:filename) { "#{fixture_path}/threaded.log" }
+  let(:lines) { `wc -l #{filename}`.to_i }
 
-  context "one instance" do
+  context 'one instance' do
     before do
       logger = Yell.new filename
 
@@ -18,8 +20,8 @@ describe "running Yell multi-threaded" do
       sleep 0.5
     end
 
-    it "should write all messages" do
-      expect(lines).to eq(10*threads)
+    it 'writes all messages' do
+      expect(lines).to eq(10 * threads)
     end
   end
 
@@ -41,31 +43,34 @@ describe "running Yell multi-threaded" do
   #   end
   # end
 
-  context "one instance in the repository" do
+  context 'one instance in the repository' do
     before do
-      Yell[ 'threaded' ] = Yell.new( filename )
+      Yell['threaded'] = Yell.new(filename)
     end
 
-    it "should write all messages" do
+    it 'writes all messages' do
       range.map do |count|
         Thread.new { 10.times { Yell['threaded'].info count } }
       end.each(&:join)
 
-      expect(lines).to eq(10*threads)
+      expect(lines).to eq(10 * threads)
     end
   end
 
-  context "multiple datefile instances" do
-    let( :threadlist ) { [] }
-    let( :date ) { Time.now }
+  context 'multiple datefile instances' do
+    let(:threadlist) { [] }
+    let(:date) { Time.now }
 
     before do
-      Timecop.freeze( date - 86400 )
+      Timecop.freeze(date - 86_400)
 
-      range.each do |count|
+      range.each do |_count|
         threadlist << Thread.new do
-          logger = Yell.new :datefile, :filename => filename, :keep => 2
-          loop { logger.info :info; sleep 0.1 }
+          logger = Yell.new :datefile, filename: filename, keep: 2
+          loop do
+            logger.info :info
+            sleep 0.1
+          end
         end
       end
 
@@ -76,13 +81,13 @@ describe "running Yell multi-threaded" do
       threadlist.each(&:kill)
     end
 
-    it "should safely rollover" do
+    it 'safelies rollover' do
       # now cycle the days
       7.times do |count|
-        Timecop.freeze( date + 86400*count )
+        Timecop.freeze(date + (86_400 * count))
         sleep 0.3
 
-        files = Dir[ fixture_path + '/*.*.log' ]
+        files = Dir["#{fixture_path}/*.*.log"]
         expect(files.size).to eq(2)
 
         # files.last.should match( datefile_pattern_for(Time.now) ) # today
@@ -93,9 +98,7 @@ describe "running Yell multi-threaded" do
 
   private
 
-  def datefile_pattern_for( time )
+  def datefile_pattern_for(time)
     time.strftime(Yell::Adapters::Datefile::DefaultDatePattern)
   end
-
 end
-

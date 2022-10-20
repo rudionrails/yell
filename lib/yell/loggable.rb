@@ -1,8 +1,10 @@
-module Yell #:nodoc:
+# frozen_string_literal: true
+
+module Yell # :nodoc:
   # Include this module to add a logger to any class.
   #
-  # When including this module, your class will have a :logger instance method 
-  # available. Before you can use it, you will need to define a Yell logger and 
+  # When including this module, your class will have a :logger instance method
+  # available. Before you can use it, you will need to define a Yell logger and
   # provide it with the name of your class.
   #
   # @example
@@ -18,7 +20,7 @@ module Yell #:nodoc:
       base.extend(ClassMethods)
     end
 
-    module ClassMethods
+    module ClassMethods # :nodoc:
       def logger
         Yell[self]
       end

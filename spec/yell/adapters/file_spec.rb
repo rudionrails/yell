@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe Yell::Adapters::File do
@@ -7,70 +9,70 @@ describe Yell::Adapters::File do
     allow(File).to receive(:open) { devnull }
   end
 
-  it { should be_kind_of(Yell::Adapters::Io) }
+  it { is_expected.to be_a(Yell::Adapters::Io) }
 
-  context "#stream" do
-    subject { Yell::Adapters::File.new.send(:stream) }
+  describe '#stream' do
+    subject { described_class.new.send(:stream) }
 
-    it { should be_kind_of(File) }
+    it { is_expected.to be_a(File) }
   end
 
-  context "#write" do
+  describe '#write' do
     let(:logger) { Yell::Logger.new }
-    let(:event) { Yell::Event.new(logger, 1, "Hello World") }
+    let(:event) { Yell::Event.new(logger, 1, 'Hello World') }
 
-    context "default filename" do
+    context 'default filename' do
       let(:filename) { File.expand_path "#{Yell.env}.log" }
-      let(:adapter) { Yell::Adapters::File.new }
+      let(:adapter) { described_class.new }
 
-      it "should print to file" do
+      it 'prints to file' do
         expect(File).to(
-          receive(:open).
-            with(filename, File::WRONLY|File::APPEND|File::CREAT) { devnull }
+          receive(:open)
+            .with(filename, File::WRONLY | File::APPEND | File::CREAT) { devnull }
         )
 
         adapter.write(event)
       end
     end
 
-    context "with given :filename" do
-      let(:filename) { fixture_path + '/filename.log' }
-      let(:adapter) { Yell::Adapters::File.new(:filename => filename) }
+    context 'with given :filename' do
+      let(:filename) { "#{fixture_path}/filename.log" }
+      let(:adapter) { described_class.new(filename:) }
 
-      it "should print to file" do
+      it 'prints to file' do
         expect(File).to(
-          receive(:open).
-            with(filename, File::WRONLY|File::APPEND|File::CREAT) { devnull }
+          receive(:open)
+            .with(filename, File::WRONLY | File::APPEND | File::CREAT) { devnull }
         )
 
         adapter.write(event)
       end
     end
 
-    context "with given :pathname" do
+    context 'with given :pathname' do
       let(:pathname) { Pathname.new(fixture_path).join('filename.log') }
-      let(:adapter) { Yell::Adapters::File.new( :filename => pathname ) }
+      let(:adapter) { described_class.new(filename: pathname) }
 
-      it "should accept pathanme as filename" do
+      it 'accepts pathanme as filename' do
         expect(File).to(
-          receive(:open).
-            with(pathname.to_s, File::WRONLY|File::APPEND|File::CREAT) { devnull }
+          receive(:open)
+            .with(pathname.to_s, File::WRONLY | File::APPEND | File::CREAT) { devnull }
         )
 
         adapter.write(event)
       end
     end
 
-    context "#sync" do
-      let(:adapter) { Yell::Adapters::File.new }
+    describe '#sync' do
+      let(:adapter) { described_class.new }
 
-      it "should sync by default" do
+      it 'syncs by default' do
         expect(devnull).to receive(:sync=).with(true)
 
         adapter.write(event)
       end
 
-      it "pass the option to File" do
+      it 'pass the option to File' do
         adapter.sync = false
 
         expect(devnull).to receive(:sync=).with(false)
@@ -79,6 +81,4 @@ describe Yell::Adapters::File do
       end
     end
   end
-
 end
-

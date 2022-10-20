@@ -1,22 +1,24 @@
-module Yell #:nodoc:
-  module Adapters #:nodoc:
-    class Io < Yell::Adapters::Base
+# frozen_string_literal: true
+
+module Yell # :nodoc:
+  module Adapters # :nodoc:
+    class Io < Yell::Adapters::Base # :nodoc:
       include Yell::Helpers::Formatter
 
       # The possible unix log colors
       TTYColors = {
-        0   => "\033[1;32m",  # green
-        1   => "\033[0m",     # normal
-        2   => "\033[1;33m",  # yellow
-        3   => "\033[1;31m",  # red
-        4   => "\033[1;35m",  # magenta
-        5   => "\033[1;36m",  # cyan
-        -1  => "\033[0m"      # normal
-      }
+        0 => "\033[1;32m",  # green
+        1 => "\033[0m",     # normal
+        2 => "\033[1;33m",  # yellow
+        3 => "\033[1;31m",  # red
+        4 => "\033[1;35m",  # magenta
+        5 => "\033[1;36m",  # cyan
+        -1 => "\033[0m" # normal
+      }.freeze
 
       # Sets the “sync mode” to true or false.
       #
-      # When true (default), every log event is immediately written to the file. 
+      # When true (default), every log event is immediately written to the file.
       # When false, the log event is buffered internally.
       attr_accessor :sync
 
@@ -33,13 +35,12 @@ module Yell #:nodoc:
       #
       # @example
       #   colorize!
-      def colorize!; @colors = true; end
-
+      def colorize! = @colors = true
 
       private
 
       # @overload setup!( options )
-      def setup!( options )
+      def setup!(options)
         @stream = nil
 
         self.colors = Yell.__fetch__(options, :colors, default: false)
@@ -50,11 +51,11 @@ module Yell #:nodoc:
       end
 
       # @overload write!( event )
-      def write!( event )
+      def write!(event)
         message = formatter.call(event)
 
         # colorize if applicable
-        if colors and color = TTYColors[event.level]
+        if colors && (color = TTYColors[event.level])
           message = color + message + TTYColors[-1]
         end
 
@@ -65,7 +66,7 @@ module Yell #:nodoc:
 
       # @overload open!
       def open!
-        @stream.sync = self.sync if @stream.respond_to?(:sync)
+        @stream.sync = sync if @stream.respond_to?(:sync)
         @stream.flush if @stream.respond_to?(:flush)
 
         super
@@ -81,17 +82,19 @@ module Yell #:nodoc:
 
       # The IO stream
       #
-      # Adapter classes should provide their own implementation 
+      # Adapter classes should provide their own implementation
       # of this method.
       def stream
-        synchronize { open! if @stream.nil?; @stream }
+        synchronize do
+          open! if @stream.nil?
+          @stream
+        end
       end
 
       # @overload inspectables
       def inspectables
-        super.concat [:formatter, :colors, :sync]
+        super.concat %i[formatter colors sync]
       end
     end
   end
 end
-
