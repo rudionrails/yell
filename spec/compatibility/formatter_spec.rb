@@ -1,7 +1,10 @@
+# frozen_string_literal: true
+
+require 'English'
 require 'spec_helper'
 require 'logger'
 
-describe "backwards compatible formatter" do
+describe 'backwards compatible formatter' do
   let(:time) { Time.now }
   let(:formatter) { Yell::Formatter.new(Yell::DefaultFormat) }
   let(:logger) { Logger.new($stdout) }
@@ -11,11 +14,11 @@ describe "backwards compatible formatter" do
     logger.formatter = formatter
   end
 
-  it "should format out the message correctly" do
+  it 'formats out the message correctly' do
     expect($stdout).to(
-      receive(:write).with("#{time.iso8601} [ INFO] #{$$} : Hello World!\n")
+      receive(:write).with("#{time.iso8601} [ INFO] #{$PROCESS_ID} : Hello World!\n")
     )
 
-    logger.info "Hello World!"
+    logger.info 'Hello World!'
   end
 end

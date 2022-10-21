@@ -1,21 +1,21 @@
-module Yell #:nodoc:
-  module Helpers #:nodoc:
-    module Formatter #:nodoc:
+# frozen_string_literal: true
 
+module Yell # :nodoc:
+  module Helpers # :nodoc:
+    module Formatter # :nodoc:
       # Set the format for your message.
-      def formatter=( pattern )
+      def formatter=(pattern)
         @__formatter__ = case pattern
-        when Yell::Formatter then pattern
-        else Yell::Formatter.new(*pattern)
-        end
+                         when Yell::Formatter then pattern
+                         else Yell::Formatter.new(*pattern)
+                         end
       end
-      alias :format= :formatter=
+      alias format= formatter=
 
       def formatter
         @__formatter__
       end
-      alias :format :formatter
-
+      alias format formatter
 
       private
 
@@ -24,8 +24,6 @@ module Yell #:nodoc:
 
         super
       end
-
     end
   end
 end
-

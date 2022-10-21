@@ -1,40 +1,35 @@
+# frozen_string_literal: true
+
 require 'time'
 require 'socket'
 
-module Yell #:nodoc:
-
+module Yell # :nodoc:
   # Yell::Event.new( :info, 'Hello World', { :scope => 'Application' } )
   # #=> Hello World scope: Application
   class Event
     # regex to fetch caller attributes
-    CallerRegexp = /^(.+?):(\d+)(?::in `(.+)')?/
+    CallerRegexp = /^(.+?):(\d+)(?::in `(.+)')?/.freeze
 
     # jruby and rubinius seem to have a different caller
-    CallerIndex = defined?(RUBY_ENGINE) && ["rbx", "jruby"].include?(RUBY_ENGINE) ? 1 : 2
+    CallerIndex = defined?(RUBY_ENGINE) && %w[rbx jruby].include?(RUBY_ENGINE) ? 1 : 2
 
-
-    class Options
+    class Options # :nodoc:
       include Comparable
 
-      attr_reader :severity
-      attr_reader :caller_offset
+      attr_reader :severity, :caller_offset
 
-      def initialize( severity, caller_offset )
+      def initialize(severity, caller_offset)
         @severity = severity
         @caller_offset = caller_offset
       end
 
-      def <=>( other )
+      def <=>(other)
         @severity <=> other
       end
 
-      alias :to_i :severity
-      alias :to_int :severity
+      alias to_i severity
+      alias to_int severity
     end
-
-    # Prefetch those values (no need to do that on every new instance)
-    @@hostname  = Socket.gethostname rescue nil
-    @@progname  = $0
 
     # Accessor to the log level
     attr_reader :level
@@ -48,8 +43,7 @@ module Yell #:nodoc:
     # Accessor to the logger's name
     attr_reader :name
 
-
-    def initialize( logger, options, *messages)
+    def initialize(logger, options, *messages)
       @time = Time.now
       @name = logger.name
 
@@ -67,12 +61,14 @@ module Yell #:nodoc:
 
     # Accessor to the hostname
     def hostname
-      @@hostname
+      Socket.gethostname
+    rescue StandardError
+      nil
     end
 
     # Accessor to the progname
     def progname
-      @@progname
+      $PROGRAM_NAME
     end
 
     # Accessor to the PID
@@ -87,23 +83,25 @@ module Yell #:nodoc:
 
     # Accessor to filename the log event occured
     def file
-      @file || (backtrace!; @file)
+      @file || (backtrace!
+                @file)
     end
 
     # Accessor to the line the log event occured
     def line
-      @line || (backtrace!; @line)
+      @line || (backtrace!
+                @line)
     end
 
     # Accessor to the method the log event occured
     def method
-      @method || (backtrace!; @method)
+      @method || (backtrace!
+                  @method)
     end
-
 
     private
 
-    def extract!( options )
+    def extract!(options)
       if options.is_a?(Yell::Event::Options)
         @level = options.severity
         @caller_offset = options.caller_offset
@@ -118,13 +116,15 @@ module Yell #:nodoc:
     end
 
     def backtrace!
-      if m = CallerRegexp.match(@caller)
-        @file, @line, @method = m[1..-1]
+      match = CallerRegexp.match(@caller)
+
+      if match.nil?
+        @file = ''
+        @line = ''
+        @method = ''
       else
-        @file, @line, @method = ['', '', '']
+        @file, @line, @method = match[1..]
       end
     end
-
   end
 end
-

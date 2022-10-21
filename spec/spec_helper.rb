@@ -1,56 +1,49 @@
-$:.unshift File.expand_path('..', __FILE__)
-$:.unshift File.expand_path('../../lib', __FILE__)
+# frozen_string_literal: true
+
+$LOAD_PATH.unshift File.expand_path(__dir__)
+$LOAD_PATH.unshift File.expand_path('../lib', __dir__)
 
 ENV['YELL_ENV'] = 'test'
 
-require 'rspec/core'
-require 'rspec/expectations'
-require 'rspec/mocks'
-require 'rspec/its'
+require 'rspec'
 require 'timecop'
 
 begin
   require 'byebug'
 rescue LoadError
-  # do nothing
-end
-
-begin
-  require 'coveralls'
-  require 'simplecov'
-
-  STDERR.puts "Running coverage..."
-  SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter[
-    SimpleCov::Formatter::HTMLFormatter,
-    Coveralls::SimpleCov::Formatter
-  ]
-
-  SimpleCov.start do
-    add_filter 'spec'
-  end
-rescue LoadError
-  # do nothing
+  # do nothing when not available
 end
 
 require 'yell'
 
 RSpec.configure do |config|
-  config.before :each do
+  # allow running only focussed specs
+  #
+  # it 'runs a test', :focus do
+  #   ...test code
+  # end
+  config.filter_run_when_matching :focus
+
+  # # Disable RSpec exposing methods globally on `Module` and `main`
+  # config.disable_monkey_patching!
+
+  config.expect_with :rspec do |c|
+    c.syntax = :expect
+  end
+
+  config.before do
     Yell::Repository.loggers.clear
 
-    Dir[ fixture_path + "/*.log" ].each { |f| File.delete f }
+    Dir["#{fixture_path}/*.log"].each { |f| File.delete f }
   end
 
-  config.after :each do
+  config.after do
     Timecop.return # release time after each test
   end
-
 
   private
 
   def fixture_path
-    File.expand_path( "fixtures", File.dirname(__FILE__) )
+    File.expand_path('fixtures', File.dirname(__FILE__)).to_s
   end
-
 end
-

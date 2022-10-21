@@ -1,5 +1,7 @@
-module Yell #:nodoc:
-  # AdapterNotFound is raised whenever you want to instantiate an 
+# frozen_string_literal: true
+
+module Yell # :nodoc:
+  # AdapterNotFound is raised whenever you want to instantiate an
   # adapter that does not exist.
   class AdapterNotFound < StandardError; end
 
@@ -7,15 +9,15 @@ module Yell #:nodoc:
   # the logger. You should not have to call the corresponding classes
   # directly.
   module Adapters
-    class Collection
-      def initialize( options = {} )
+    class Collection # :nodoc:
+      def initialize(options = {})
         @options = options
         @collection = []
       end
 
-      def add( type = :file, *args, &block )
-        options = [@options, *args].inject(Hash.new) do |h, c|
-          h.merge( [String, Pathname].include?(c.class) ? {:filename => c} : c  )
+      def add(type = :file, *args, &block)
+        options = [@options, *args].inject({}) do |h, c|
+          h.merge([String, Pathname].include?(c.class) ? { filename: c } : c)
         end
 
         # remove possible :null adapters
@@ -32,14 +34,14 @@ module Yell #:nodoc:
       end
 
       # @private
-      def write( event )
+      def write(event)
         @collection.each { |c| c.write(event) }
         true
       end
 
       # @private
       def close
-        @collection.each { |c| c.close }
+        @collection.each(&:close)
       end
     end
 
@@ -50,7 +52,7 @@ module Yell #:nodoc:
     #
     # @example
     #   Yell::Adapters.register( :myadapter, MyAdapter )
-    def self.register( name, klass )
+    def self.register(name, klass)
       @adapters[name.to_sym] = klass
     end
 
@@ -58,27 +60,27 @@ module Yell #:nodoc:
     #
     # @example A simple file adapter
     #   Yell::Adapters.new( :file )
-    def self.new( type, options = {}, &block )
+    def self.new(type, options = {}, &block)
       return type if type.is_a?(Yell::Adapters::Base)
 
       adapter = case type
-      when STDOUT then @adapters[:stdout]
-      when STDERR then @adapters[:stderr]
-      else @adapters[type.to_sym]
-      end
+                when $stdout then @adapters[:stdout]
+                when $stderr then @adapters[:stderr]
+                else @adapters[type.to_sym]
+                end
 
-      raise AdapterNotFound.new(type) if adapter.nil?
+      raise AdapterNotFound, type if adapter.nil?
+
       adapter.new(options, &block)
     end
   end
 end
 
 # Base for all adapters
-require File.dirname(__FILE__) + '/adapters/base'
+require "#{File.dirname(__FILE__)}/adapters/base"
 
 # IO based adapters
-require File.dirname(__FILE__) + '/adapters/io'
-require File.dirname(__FILE__) + '/adapters/streams'
-require File.dirname(__FILE__) + '/adapters/file'
-require File.dirname(__FILE__) + '/adapters/datefile'
-
+require "#{File.dirname(__FILE__)}/adapters/io"
+require "#{File.dirname(__FILE__)}/adapters/streams"
+require "#{File.dirname(__FILE__)}/adapters/file"
+require "#{File.dirname(__FILE__)}/adapters/datefile"

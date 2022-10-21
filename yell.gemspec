@@ -8,11 +8,12 @@ Gem::Specification.new do |spec|
   spec.name          = 'yell'
   spec.version       = Yell::VERSION
   spec.authors       = ['Rudolf Schmidt']
-  spec.license       = 'MIT'
 
   spec.summary     = 'Yell - Your Extensible Logging Library'
   spec.description = "Yell - Your Extensible Logging Library. Define multiple adapters, various log level combinations or message formatting options like you've never done before"
   spec.homepage    = 'https://github.com/rudionrails/yell'
+  spec.license = 'MIT'
+  spec.required_ruby_version = '>= 2.6'
 
   spec.metadata['homepage_uri'] = spec.homepage
   spec.metadata['source_code_uri'] = 'https://github.com/rudionrails/yell'
@@ -25,4 +26,5 @@ Gem::Specification.new do |spec|
   spec.bindir        = 'exe'
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
+  spec.metadata['rubygems_mfa_required'] = 'true'
 end

@@ -1,62 +1,66 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 # Since Yell::Event.new is not called directly, but through
-# the logger methods, we need to divert here in order to get 
+# the logger methods, we need to divert here in order to get
 # the correct caller.
 class EventFactory
   def self.event(logger, level, message)
-    self._event(logger, level, message)
+    _event(logger, level, message)
   end
-
-  private
 
   def self._event(logger, level, message)
     Yell::Event.new(logger, level, message)
   end
-
 end
 
 describe Yell::Event do
-  let(:logger) { Yell::Logger.new(:trace => true) }
-  let(:event) { Yell::Event.new(logger, 1, 'Hello World!') }
+  let(:logger) { Yell::Logger.new(trace: true) }
+  let(:event) { described_class.new(logger, 1, 'Hello World!') }
 
-  context "#level" do
+  describe '#level' do
     subject { event.level }
-    it { should eq(1) }
+
+    it { is_expected.to eq(1) }
   end
 
-  context "#messages" do
+  describe '#messages' do
     subject { event.messages }
-    it { should eq(['Hello World!']) }
+
+    it { is_expected.to eq(['Hello World!']) }
   end
 
-  context "#time" do
-    let(:time) { Time.now }
+  describe '#time' do
     subject { event.time.to_s }
+
+    let(:time) { Time.now }
 
     before { Timecop.freeze(time) }
 
-    it { should eq(time.to_s) }
+    it { is_expected.to eq(time.to_s) }
   end
 
-  context "#hostname" do
+  describe '#hostname' do
     subject { event.hostname }
-    it { should eq(Socket.gethostname) }
+
+    it { is_expected.to eq(Socket.gethostname) }
   end
 
-  context "#pid" do
+  describe '#pid' do
     subject { event.pid }
-    it { should eq(Process.pid) }
+
+    it { is_expected.to eq(Process.pid) }
   end
 
-  context "#id when forked", :pending => RUBY_PLATFORM == 'java' ? "No forking with jruby" : false do
+  describe '#id when forked', pending: RUBY_PLATFORM == 'java' ? 'No forking with jruby' : false do
     subject { @pid }
 
     before do
       read, write = IO.pipe
 
       @pid = Process.fork do
-        event = Yell::Event.new(logger, 1, 'Hello World!')
+        event = described_class.new(logger, 1, 'Hello World!')
         write.puts event.pid
       end
       Process.wait
@@ -66,32 +70,47 @@ describe Yell::Event do
       read.close
     end
 
-    it { should_not eq(Process.pid) }
-    it { should eq(@child_pid) }
+    it { is_expected.not_to eq(Process.pid) }
+    it { is_expected.to eq(@child_pid) }
   end
 
-  context "#progname" do
+  describe '#progname' do
     subject { event.progname }
-    it { should eq($0) }
+
+    it { is_expected.to eq($PROGRAM_NAME) }
   end
 
-  context ":caller" do
-    subject { EventFactory.event(logger, 1, "Hello World") }
+  context ':caller' do
+    subject { EventFactory.event(logger, 1, 'Hello World') }
 
-    context "with trace" do
-      its(:file) { should eq(__FILE__) }
-      its(:line) { should eq("8") }
-      its(:method) { should eq("event") }
+    context 'with trace' do
+      it 'has the correct :file' do
+        expect(subject.file).to eq(__FILE__)
+      end
+
+      it 'has the correct :line' do
+        expect(subject.line).to eq('10')
+      end
+
+      it 'has the correct :method' do
+        expect(subject.method).to eq('event')
+      end
     end
 
-    context "without trace" do
+    context 'without trace' do
       before { logger.trace = false }
 
-      its(:file) { should eq("") }
-      its(:line) { should eq("") }
-      its(:method) { should eq("") }
+      it 'has the correct :file' do
+        expect(subject.file).to eq('')
+      end
+
+      it 'has the correct :line' do
+        expect(subject.line).to eq('')
+      end
+
+      it 'has the correct :method' do
+        expect(subject.method).to eq('')
+      end
     end
   end
-
 end
-

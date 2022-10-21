@@ -1,200 +1,199 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe Yell::Level do
+  context 'default' do
+    let(:level) { described_class.new }
 
-  context "default" do
-    let(:level) { Yell::Level.new }
-
-    it "should should return correctly" do
-      expect(level.at?(:debug)).to be_truthy
-      expect(level.at?(:info)).to be_truthy
-      expect(level.at?(:warn)).to be_truthy
-      expect(level.at?(:error)).to be_truthy
-      expect(level.at?(:fatal)).to be_truthy
+    it 'shoulds return correctly' do
+      expect(level).to be_at(:debug)
+      expect(level).to be_at(:info)
+      expect(level).to be_at(:warn)
+      expect(level).to be_at(:error)
+      expect(level).to be_at(:fatal)
     end
   end
 
-  context "given a Symbol" do
-    let(:level) { Yell::Level.new(severity) }
+  context 'given a Symbol' do
+    let(:level) { described_class.new(severity) }
 
-    context ":debug" do
+    context ':debug' do
       let(:severity) { :debug }
 
-      it "should should return correctly" do
-        expect(level.at?(:debug)).to be_truthy
-        expect(level.at?(:info)).to be_truthy
-        expect(level.at?(:warn)).to be_truthy
-        expect(level.at?(:error)).to be_truthy
-        expect(level.at?(:fatal)).to be_truthy
+      it 'shoulds return correctly' do
+        expect(level).to be_at(:debug)
+        expect(level).to be_at(:info)
+        expect(level).to be_at(:warn)
+        expect(level).to be_at(:error)
+        expect(level).to be_at(:fatal)
       end
     end
 
-    context ":info" do
+    context ':info' do
       let(:severity) { :info }
 
-      it "should should return correctly" do
-        expect(level.at?(:debug)).to be_falsey
-        expect(level.at?(:info)).to be_truthy
-        expect(level.at?(:warn)).to be_truthy
-        expect(level.at?(:error)).to be_truthy
-        expect(level.at?(:fatal)).to be_truthy
+      it 'shoulds return correctly' do
+        expect(level).not_to be_at(:debug)
+        expect(level).to be_at(:info)
+        expect(level).to be_at(:warn)
+        expect(level).to be_at(:error)
+        expect(level).to be_at(:fatal)
       end
     end
 
-    context ":warn" do
+    context ':warn' do
       let(:severity) { :warn }
 
-      it "should should return correctly" do
-        expect(level.at?(:debug)).to be_falsey
-        expect(level.at?(:info)).to be_falsey
-        expect(level.at?(:warn)).to be_truthy
-        expect(level.at?(:error)).to be_truthy
-        expect(level.at?(:fatal)).to be_truthy
+      it 'shoulds return correctly' do
+        expect(level).not_to be_at(:debug)
+        expect(level).not_to be_at(:info)
+        expect(level).to be_at(:warn)
+        expect(level).to be_at(:error)
+        expect(level).to be_at(:fatal)
       end
     end
 
-    context ":error" do
+    context ':error' do
       let(:severity) { :error }
 
-      it "should should return correctly" do
-        expect(level.at?(:debug)).to be_falsey
-        expect(level.at?(:info)).to be_falsey
-        expect(level.at?(:warn)).to be_falsey
-        expect(level.at?(:error)).to be_truthy
-        expect(level.at?(:fatal)).to be_truthy
+      it 'shoulds return correctly' do
+        expect(level).not_to be_at(:debug)
+        expect(level).not_to be_at(:info)
+        expect(level).not_to be_at(:warn)
+        expect(level).to be_at(:error)
+        expect(level).to be_at(:fatal)
       end
     end
 
-    context ":fatal" do
+    context ':fatal' do
       let(:severity) { :fatal }
 
-      it "should should return correctly" do
-        expect(level.at?(:debug)).to be_falsey
-        expect(level.at?(:info)).to be_falsey
-        expect(level.at?(:warn)).to be_falsey
-        expect(level.at?(:error)).to be_falsey
-        expect(level.at?(:fatal)).to be_truthy
+      it 'shoulds return correctly' do
+        expect(level).not_to be_at(:debug)
+        expect(level).not_to be_at(:info)
+        expect(level).not_to be_at(:warn)
+        expect(level).not_to be_at(:error)
+        expect(level).to be_at(:fatal)
       end
     end
   end
 
-  context "given a String" do
-    let(:level) { Yell::Level.new(severity) }
+  context 'given a String' do
+    let(:level) { described_class.new(severity) }
 
-    context "basic string" do
+    context 'basic string' do
       let(:severity) { 'error' }
 
-      it "should should return correctly" do
-        expect(level.at?(:debug)).to be_falsey
-        expect(level.at?(:info)).to be_falsey
-        expect(level.at?(:warn)).to be_falsey
-        expect(level.at?(:error)).to be_truthy
-        expect(level.at?(:fatal)).to be_truthy
+      it 'shoulds return correctly' do
+        expect(level).not_to be_at(:debug)
+        expect(level).not_to be_at(:info)
+        expect(level).not_to be_at(:warn)
+        expect(level).to be_at(:error)
+        expect(level).to be_at(:fatal)
       end
     end
 
-    context "complex string with outer boundaries" do
+    context 'complex string with outer boundaries' do
       let(:severity) { 'gte.info lte.error' }
 
-      it "should should return correctly" do
-        expect(level.at?(:debug)).to be_falsey
-        expect(level.at?(:info)).to be_truthy
-        expect(level.at?(:warn)).to be_truthy
-        expect(level.at?(:error)).to be_truthy
-        expect(level.at?(:fatal)).to be_falsey
+      it 'shoulds return correctly' do
+        expect(level).not_to be_at(:debug)
+        expect(level).to be_at(:info)
+        expect(level).to be_at(:warn)
+        expect(level).to be_at(:error)
+        expect(level).not_to be_at(:fatal)
       end
     end
 
-    context "complex string with inner boundaries" do
+    context 'complex string with inner boundaries' do
       let(:severity) { 'gt.info lt.error' }
 
-      it "should be valid" do
-        expect(level.at?(:debug)).to be_falsey
-        expect(level.at?(:info)).to be_falsey
-        expect(level.at?(:warn)).to be_truthy
-        expect(level.at?(:error)).to be_falsey
-        expect(level.at?(:fatal)).to be_falsey
+      it 'is valid' do
+        expect(level).not_to be_at(:debug)
+        expect(level).not_to be_at(:info)
+        expect(level).to be_at(:warn)
+        expect(level).not_to be_at(:error)
+        expect(level).not_to be_at(:fatal)
       end
     end
 
-    context "complex string with precise boundaries" do
+    context 'complex string with precise boundaries' do
       let(:severity) { 'at.info at.error' }
 
-      it "should be valid" do
-        expect(level.at?(:debug)).to be_falsey
-        expect(level.at?(:info)).to be_truthy
-        expect(level.at?(:warn)).to be_falsey
-        expect(level.at?(:error)).to be_truthy
-        expect(level.at?(:fatal)).to be_falsey
+      it 'is valid' do
+        expect(level).not_to be_at(:debug)
+        expect(level).to be_at(:info)
+        expect(level).not_to be_at(:warn)
+        expect(level).to be_at(:error)
+        expect(level).not_to be_at(:fatal)
       end
     end
 
-    context "complex string with combined boundaries" do
+    context 'complex string with combined boundaries' do
       let(:severity) { 'gte.error at.debug' }
 
-      it "should be valid" do
-        expect(level.at?(:debug)).to be_truthy
-        expect(level.at?(:info)).to be_falsey
-        expect(level.at?(:warn)).to be_falsey
-        expect(level.at?(:error)).to be_truthy
-        expect(level.at?(:fatal)).to be_truthy
+      it 'is valid' do
+        expect(level).to be_at(:debug)
+        expect(level).not_to be_at(:info)
+        expect(level).not_to be_at(:warn)
+        expect(level).to be_at(:error)
+        expect(level).to be_at(:fatal)
       end
     end
   end
 
-  context "given an Array" do
-    let(:level) { Yell::Level.new( %i[debug warn fatal] ) }
+  context 'given an Array' do
+    let(:level) { described_class.new(%i[debug warn fatal]) }
 
-    it "should return correctly" do
-      expect(level.at?(:debug)).to be_truthy
-      expect(level.at?(:info)).to be_falsey
-      expect(level.at?(:warn)).to be_truthy
-      expect(level.at?(:error)).to be_falsey
-      expect(level.at?(:fatal)).to be_truthy
+    it 'returns correctly' do
+      expect(level).to be_at(:debug)
+      expect(level).not_to be_at(:info)
+      expect(level).to be_at(:warn)
+      expect(level).not_to be_at(:error)
+      expect(level).to be_at(:fatal)
     end
   end
 
-  context "given a Range" do
-    let(:level) { Yell::Level.new( (1..3) ) }
+  context 'given a Range' do
+    let(:level) { described_class.new((1..3)) }
 
-    it "should return correctly" do
-      expect(level.at?(:debug)).to be_falsey
-      expect(level.at?(:info)).to be_truthy
-      expect(level.at?(:warn)).to be_truthy
-      expect(level.at?(:error)).to be_truthy
-      expect(level.at?(:fatal)).to be_falsey
+    it 'returns correctly' do
+      expect(level).not_to be_at(:debug)
+      expect(level).to be_at(:info)
+      expect(level).to be_at(:warn)
+      expect(level).to be_at(:error)
+      expect(level).not_to be_at(:fatal)
     end
   end
 
-  context "given a Yell::Level instance" do
-    let(:level) { Yell::Level.new(:warn) }
+  context 'given a Yell::Level instance' do
+    let(:level) { described_class.new(:warn) }
 
-    it "should return correctly" do
-      expect(level.at?(:debug)).to be_falsey
-      expect(level.at?(:info)).to be_falsey
-      expect(level.at?(:warn)).to be_truthy
-      expect(level.at?(:error)).to be_truthy
-      expect(level.at?(:fatal)).to be_truthy
+    it 'returns correctly' do
+      expect(level).not_to be_at(:debug)
+      expect(level).not_to be_at(:info)
+      expect(level).to be_at(:warn)
+      expect(level).to be_at(:error)
+      expect(level).to be_at(:fatal)
     end
   end
 
-  context "backwards compatibility" do
-    let(:level) { Yell::Level.new :warn }
+  context 'backwards compatibility' do
+    let(:level) { described_class.new :warn }
 
-    it "should return correctly to :to_i" do
+    it 'returns correctly to :to_i' do
       expect(level.to_i).to eq(2)
     end
 
-    it "should typecast with Integer correctly" do
+    it 'typecasts with Integer correctly' do
       expect(Integer(level)).to eq(2)
     end
 
-    it "should be compatible when passing to array (https://github.com/rudionrails/yell/issues/1)" do
-      severities = %w(FINE INFO WARNING SEVERE SEVERE INFO)
+    it 'is compatible when passing to array (https://github.com/rudionrails/yell/issues/1)' do
+      severities = %w[FINE INFO WARNING SEVERE SEVERE INFO]
 
-      expect(severities[level]).to eq("WARNING")
+      expect(severities[level]).to eq('WARNING')
     end
   end
-
 end
-

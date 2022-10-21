@@ -1,19 +1,20 @@
-# encoding: utf-8
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 begin
   require 'active_support'
-rescue LoadError
+rescue LoadError => _e
+  # ignore
 end
 
 # make a setup just like in railties ~> 4.0.0
 #
 # We simulate the case when Rails 4 starts up its server
 # and wants to append the log output.
-describe "Compatibility to ActiveSupport::Logger",
-  :pending => (!defined?(ActiveSupport) || ActiveSupport::VERSION::MAJOR < 4) do
-
-  let!(:yell) { Yell.new($stdout, :format => "%m") }
+describe 'Compatibility to ActiveSupport::Logger',
+         pending: (!defined?(ActiveSupport) || ActiveSupport::VERSION::MAJOR < 4) do
+  let!(:yell) { Yell.new($stdout, format: '%m') }
 
   let!(:logger) do
     console = ActiveSupport::Logger.new($stdout)
@@ -25,12 +26,10 @@ describe "Compatibility to ActiveSupport::Logger",
     console
   end
 
-  it "should behave correctly" do
+  it 'behaves correctly' do
     expect($stdout).to receive(:syswrite).with("Hello World\n") # yell
     expect($stdout).to receive(:write).with("Hello World\n") # logger
 
-    yell.info "Hello World"
+    yell.info 'Hello World'
   end
-
 end
-

@@ -1,59 +1,61 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe Yell::Adapters::Io do
-  it { should be_kind_of Yell::Adapters::Base }
+  it { is_expected.to be_a Yell::Adapters::Base }
 
-  context "initialize" do
-    it "should set default :format" do
-      adapter = Yell::Adapters::Io.new
+  context 'initialize' do
+    it 'sets default :format' do
+      adapter = described_class.new
 
-      expect(adapter.format).to be_kind_of(Yell::Formatter)
+      expect(adapter.format).to be_a(Yell::Formatter)
     end
 
-    context ":level" do
+    context ':level' do
       let(:level) { Yell::Level.new(:warn) }
 
-      it "should set the level" do
-        adapter = Yell::Adapters::Io.new(:level => level)
+      it 'sets the level' do
+        adapter = described_class.new(level: level)
 
         expect(adapter.level).to eq(level)
       end
 
-      it "should set the level when block was given" do
-        adapter = Yell::Adapters::Io.new { |a| a.level = level }
+      it 'sets the level when block was given' do
+        adapter = described_class.new { |a| a.level = level }
 
         expect(adapter.level).to eq(level)
       end
     end
 
-    context ":format" do
+    context ':format' do
       let(:format) { Yell::Formatter.new }
 
-      it "should set the level" do
-        adapter = Yell::Adapters::Io.new(:format => format)
+      it 'sets the level' do
+        adapter = described_class.new(format: format)
 
         expect(adapter.format).to eq(format)
       end
 
-      it "should set the level when block was given" do
-        adapter = Yell::Adapters::Io.new { |a| a.format = format }
+      it 'sets the level when block was given' do
+        adapter = described_class.new { |a| a.format = format }
 
         expect(adapter.format).to eq(format)
       end
     end
   end
 
-  context "#write" do
+  describe '#write' do
     let(:logger) { Yell::Logger.new }
-    let(:event) { Yell::Event.new(logger, 1, "Hello World") }
-    let(:adapter) { Yell::Adapters::Io.new }
+    let(:event) { Yell::Event.new(logger, 1, 'Hello World') }
+    let(:adapter) { described_class.new }
     let(:stream) { File.new('/dev/null', 'w') }
 
     before do
       allow(adapter).to receive(:stream) { stream }
     end
 
-    it "should format the message" do
+    it 'formats the message' do
       expect(adapter.format).to(
         receive(:call).with(event).and_call_original
       )
@@ -61,7 +63,7 @@ describe Yell::Adapters::Io do
       adapter.write(event)
     end
 
-    it "should print formatted message to stream" do
+    it 'prints formatted message to stream' do
       formatted = Yell::Formatter.new.call(event)
       expect(stream).to receive(:syswrite).with(formatted)
 

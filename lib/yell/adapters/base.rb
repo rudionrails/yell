@@ -1,18 +1,19 @@
+# frozen_string_literal: true
+
 require 'monitor'
 
-module Yell #:nodoc:
-  module Adapters #:nodoc:
-
-    # This class provides the basic interface for all allowed operations on any 
-    # adapter implementation. Other adapters should inherit from it for the methods 
+module Yell # :nodoc:
+  module Adapters # :nodoc:
+    # This class provides the basic interface for all allowed operations on any
+    # adapter implementation. Other adapters should inherit from it for the methods
     # used by the {Yell::Logger}.
     #
-    # Writing your own adapter is really simple. Inherit from the base class and use 
-    # the `setup`, `write` and `close` methods. Yell requires the `write` method to be 
+    # Writing your own adapter is really simple. Inherit from the base class and use
+    # the `setup`, `write` and `close` methods. Yell requires the `write` method to be
     # specified (`setup` and `close` are optional).
     #
     #
-    # The following example shows how to define a basic Adapter to format and print 
+    # The following example shows how to define a basic Adapter to format and print
     # log events to STDOUT:
     #
     #   class PutsAdapter < Yell::Adapters::Base
@@ -49,7 +50,7 @@ module Yell #:nodoc:
         #   setup do |options|
         #     @file_handle = File.new( '/dev/null', 'w' )
         #   end
-        def setup( &block )
+        def setup(&block)
           compile!(:setup!, &block)
         end
 
@@ -59,7 +60,7 @@ module Yell #:nodoc:
         #   write do |event|
         #     @file_handle.puts event.message
         #   end
-        def write( &block )
+        def write(&block)
           compile!(:write!, &block)
         end
 
@@ -69,7 +70,7 @@ module Yell #:nodoc:
         #   open do
         #     @stream = ::File.open( 'test.log', ::File::WRONLY|::File::APPEND|::File::CREAT )
         #   end
-        def open( &block )
+        def open(&block)
           compile!(:open!, &block)
         end
 
@@ -79,10 +80,9 @@ module Yell #:nodoc:
         #   close do
         #     @stream.close
         #   end
-        def close( &block )
+        def close(&block)
           compile!(:close!, &block)
         end
-
 
         private
 
@@ -99,56 +99,56 @@ module Yell #:nodoc:
         #     puts event.method
         #     super
         #   end
-        def compile!( name, &block )
+        def compile!(name, &block)
           # Get the already defined method
-          m = instance_method( name )
+          original_method = instance_method(name)
 
           # Create a new method with leading underscore
           define_method("_#{name}", &block)
-          _m = instance_method("_#{name}")
+          unbound_method = instance_method("_#{name}")
           remove_method("_#{name}")
 
           # Define instance method
-          define!(name, _m, m, &block)
+          define!(name, unbound_method, original_method, &block)
         end
 
         # Define instance method by given name and call the unbound
         # methods in order with provided block.
-        def define!( name, _m, m, &block )
-          if block.arity == 0
+        def define!(name, unbound_method, original_method, &block)
+          if block.arity.zero?
             define_method(name) do
-              _m.bind(self).call
-              m.bind(self).call
+              unbound_method.bind(self).call
+              original_method.bind(self).call
             end
           else
             define_method(name) do |*args|
-              _m.bind(self).call(*args)
-              m.bind(self).call(*args)
+              unbound_method.bind(self).call(*args)
+              original_method.bind(self).call(*args)
             end
           end
         end
       end
 
-
       # Initializes a new Adapter.
       #
       # You should not overload the constructor, use #setup instead.
-      def initialize( options = {}, &block )
+      def initialize(options = {}, &block)
         super() # init the monitor superclass
 
         reset!
         setup!(options)
 
-        # eval the given block
-        block.arity > 0 ? block.call(self) : instance_eval(&block) if block_given?
+        return unless block_given?
+
+        block.arity.positive? ? block.call(self) : instance_eval(&block)
       end
 
       # The main method for calling the adapter.
       #
-      # The method receives the log `event` and determines whether to 
+      # The method receives the log `event` and determines whether to
       # actually write or not.
-      def write( event )
-        synchronize { write!(event) } if write?(event)
+      def write(event)
+        synchronize { write!(event) if write?(event) }
       rescue Exception => e
         # make sure the adapter is closed and re-raise the exception
         synchronize { close }
@@ -158,7 +158,7 @@ module Yell #:nodoc:
 
       # Close the adapter (stream, connection, etc).
       #
-      # Adapter classes should provide their own implementation 
+      # Adapter classes should provide their own implementation
       # of this method.
       def close
         close!
@@ -170,28 +170,27 @@ module Yell #:nodoc:
         "#<#{self.class.name} #{inspection * ', '}>"
       end
 
-
       private
 
       # Setup the adapter instance.
       #
-      # Adapter classes should provide their own implementation 
+      # Adapter classes should provide their own implementation
       # of this method (if applicable).
-      def setup!( options )
+      def setup!(options)
         self.level = Yell.__fetch__(options, :level)
       end
 
       # Perform the actual write.
       #
-      # Adapter classes must provide their own implementation 
+      # Adapter classes must provide their own implementation
       # of this method.
-      def write!( event )
+      def write!(event)
         # Not implemented
       end
 
       # Perform the actual open.
       #
-      # Adapter classes should provide their own implementation 
+      # Adapter classes should provide their own implementation
       # of this method.
       def open!
         # Not implemented
@@ -199,7 +198,7 @@ module Yell #:nodoc:
 
       # Perform the actual close.
       #
-      # Adapter classes should provide their own implementation 
+      # Adapter classes should provide their own implementation
       # of this method.
       def close!
         # Not implemented
@@ -213,7 +212,7 @@ module Yell #:nodoc:
       # @param [Yell::Event] event The log event
       #
       # @return [Boolean] true or false
-      def write?( event )
+      def write?(event)
         level.nil? || level.at?(event.level)
       end
 
@@ -221,9 +220,6 @@ module Yell #:nodoc:
       def inspectables
         [:level]
       end
-
     end
-
   end
 end
-

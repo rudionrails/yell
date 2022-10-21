@@ -1,7 +1,8 @@
-module Yell #:nodoc:
-  module Helpers #:nodoc:
-    module Tracer #:nodoc:
+# frozen_string_literal: true
 
+module Yell # :nodoc:
+  module Helpers # :nodoc:
+    module Tracer # :nodoc:
       # Set whether the logger should allow tracing or not. The trace option
       # will tell the logger when to provider caller information.
       #
@@ -16,18 +17,17 @@ module Yell #:nodoc:
       #   trace = 'gte.error'
       #
       # @return [Yell::Level] a level representation of the tracer
-      def trace=( severity )
+      def trace=(severity)
         @__trace__ = case severity
-        when Yell::Level then severity
-        when false then Yell::Level.new("gt.#{Yell::Severities.last}")
-        else Yell::Level.new(severity)
-        end
+                     when Yell::Level then severity
+                     when false then Yell::Level.new("gt.#{Yell::Severities.last}")
+                     else Yell::Level.new(severity)
+                     end
       end
 
       def trace
         @__trace__
       end
-
 
       private
 
@@ -40,8 +40,6 @@ module Yell #:nodoc:
       def inspectables
         [:trace] | super
       end
-
     end
   end
 end
-

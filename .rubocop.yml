@@ -1,0 +1,36 @@
+AllCops:
+  TargetRubyVersion: 2.6
+  NewCops: enable
+  Exclude:
+    - 'yell.gemspec'
+    - 'examples/*.rb'
+
+Lint/RescueException:
+  Exclude:
+    - 'lib/yell/adapters/base.rb'
+
+Security/YAMLLoad:
+  Exclude:
+    - 'lib/yell/configuration.rb'
+
+Metrics/AbcSize:
+  Enabled: false
+
+Style/FormatStringToken:
+  Enabled: false
+
+Metrics/MethodLength:
+  Max: 15
+
+Metrics/CyclomaticComplexity:
+  Max: 10
+
+Metrics/PerceivedComplexity:
+  Max: 10
+  
+Metrics/BlockLength:
+  Exclude:
+    - spec/**/*.rb
+
+Naming/ConstantName:
+  Enabled: false

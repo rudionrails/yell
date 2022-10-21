@@ -1,25 +1,25 @@
-module Yell #:nodoc:
-  module Helpers #:nodoc:
-    module Level
+# frozen_string_literal: true
 
+module Yell # :nodoc:
+  module Helpers # :nodoc:
+    module Level # :nodoc:
       # Set the minimum log level.
       #
       # @example Set the level to :warn
       #   level = :warn
       #
       # @param [String, Symbol, Integer] severity The minimum log level
-      def level=( severity )
+      def level=(severity)
         @__level__ = case severity
-        when Yell::Level then severity
-        else Yell::Level.new(severity)
-        end
+                     when Yell::Level then severity
+                     else Yell::Level.new(severity)
+                     end
       end
 
       # @private
       def level
         @__level__
       end
-
 
       private
 
@@ -32,8 +32,6 @@ module Yell #:nodoc:
       def inspectables
         [:level] | super
       end
-
     end
   end
 end
-

@@ -1,18 +1,19 @@
-module Yell #:nodoc:
+# frozen_string_literal: true
 
+module Yell # :nodoc:
   # The +Yell::Silencer+ is your handly helper for stiping out unwanted log messages.
   class Silencer
-
-    class PresetNotFound < StandardError
-      def message; "Could not find a preset for #{super.inspect}"; end
+    class PresetNotFound < StandardError # :nodoc:
+      def message
+        "Could not find a preset for #{super.inspect}"
+      end
     end
 
     Presets = {
-      :assets => [/\AStarted GET "\/assets/, /\AServed asset/, /\A\s*\z/] # for Rails
-    }
+      assets: [%r{\AStarted GET "/assets}, /\AServed asset/, /\A\s*\z/] # for Rails
+    }.freeze
 
-
-    def initialize( *patterns )
+    def initialize(*patterns)
       @patterns = patterns.dup
     end
 
@@ -26,7 +27,7 @@ module Yell #:nodoc:
     #   add( /password/ )
     #
     # @return [self] The silencer instance
-    def add( *patterns )
+    def add(*patterns)
       patterns.each { |pattern| add!(pattern) }
 
       self
@@ -39,7 +40,7 @@ module Yell #:nodoc:
     #   #=> ['username]
     #
     # @return [Array] The remaining messages
-    def call( *messages )
+    def call(*messages)
       return messages if @patterns.empty?
 
       messages.reject { |m| matches?(m) }
@@ -51,20 +52,17 @@ module Yell #:nodoc:
     end
 
     # @private
-    def patterns
-      @patterns
-    end
-
+    attr_reader :patterns
 
     private
 
-    def add!( pattern )
-      @patterns = @patterns | fetch(pattern)
+    def add!(pattern)
+      @patterns |= fetch(pattern)
     end
 
-    def fetch( pattern )
+    def fetch(pattern)
       case pattern
-      when Symbol then Presets[pattern] or raise PresetNotFound.new(pattern)
+      when Symbol then Presets[pattern] or raise(PresetNotFound, pattern)
       else [pattern]
       end
     end
@@ -76,10 +74,8 @@ module Yell #:nodoc:
     #   #=> true
     #
     # @return [Boolean] true or false
-    def matches?( message )
+    def matches?(message)
       @patterns.any? { |pattern| message.respond_to?(:match) && message.match(pattern) }
     end
-
   end
 end
-

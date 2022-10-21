@@ -8,17 +8,10 @@ gemspec
 group :development, :test do
   gem 'rake'
 
-  gem 'rspec-core', '~> 3'
-  gem 'rspec-expectations'
-  gem 'rspec-its'
-  gem 'rspec-mocks'
-
+  gem 'activesupport'
   gem 'byebug', platform: :mri
+  gem 'rspec'
   gem 'timecop'
 
-  gem 'activesupport', '~> 5'
-
-  gem 'coveralls', require: false
   gem 'rubocop', require: false
-  gem 'simplecov', require: false
 end
